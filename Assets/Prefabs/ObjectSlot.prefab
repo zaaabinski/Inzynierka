@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4020924381813545435}
+  - component: {fileID: 5600965015668674832}
   m_Layer: 0
   m_Name: ObjectSlot
   m_TagString: Untagged
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 7726835519176816505}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5600965015668674832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7062424326715300992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8538c05187aaae64c8ffab1a01467b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SingleSlot
+  possibleItems: []
+  folderPath: Models/CastlePieces/02_Mury
 --- !u!1001 &7832184756876529810
 PrefabInstance:
   m_ObjectHideFlags: 0
