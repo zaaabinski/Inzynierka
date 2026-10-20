@@ -1,6 +1,6 @@
 ﻿<Solution>
-  <Project Path="WFC.Core.csproj" />
   <Project Path="WFC.Tests.csproj" />
+  <Project Path="WFC.Core.csproj" />
   <Project Path="WFC.Editor.csproj" />
   <Project Path="WFC.Runtime.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
