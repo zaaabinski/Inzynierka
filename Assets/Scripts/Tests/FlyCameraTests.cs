@@ -4,7 +4,7 @@ using WFC.Runtime;
 
 namespace WFC.Tests
 {
-    /// <summary>Ustawienie kamery z kreatorów scen: odległość od celu i kierunek patrzenia.</summary>
+    /// <summary>Ustawienie kamery z kreatorów scen: odległość od celu, kierunek patrzenia i punkt obrotu.</summary>
     public sealed class FlyCameraTests
     {
         [Test]
@@ -20,6 +20,7 @@ namespace WFC.Tests
                 Assert.AreEqual(95f, Vector3.Distance(transform.position, target), 1e-3f);
                 Assert.Less(Vector3.Angle(transform.forward, target - transform.position), 0.01f);
                 Assert.Greater(transform.position.y, target.y, "kamera patrzy w dół, więc jest nad celem");
+                Assert.Less(Vector3.Distance(target, cameraObject.GetComponent<FlyCamera>().Pivot), 1e-3f, "cel jest punktem obrotu prawego przycisku");
             }
             finally
             {
