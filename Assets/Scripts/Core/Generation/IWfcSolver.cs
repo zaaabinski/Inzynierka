@@ -25,7 +25,7 @@ namespace WFC.Core
         public IContradictionHandler ContradictionHandler { get; set; } = new RestartHandler();
 
         /// <summary>Największa liczba prób jednej mapy przy starcie od nowa.</summary>
-        public int MaxAttempts { get; set; } = 100;
+        public int MaxAttempts { get; set; } = 1000;
 
         /// <summary>Limit czasu pracy rozwiązywacza w sekundach; 0 = bez limitu.</summary>
         public double TimeLimitSeconds { get; set; }

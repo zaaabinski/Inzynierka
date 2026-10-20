@@ -12,9 +12,20 @@ namespace WFC.Runtime
         Naive
     }
 
+    /// <summary>Heurystyka wyboru komórki (kolejność decyzji).</summary>
     public enum SelectorKind
     {
-        LevelFirst
+        [InspectorName("Piętrami, w piętrze najmniejsza entropia")]
+        LevelFirst,
+
+        [InspectorName("Scanline: po kolei")]
+        Scanline,
+
+        [InspectorName("MRV: najmniej możliwości")]
+        MinRemaining,
+
+        [InspectorName("Najmniejsza entropia")]
+        Entropy
     }
 
     public enum ContradictionKind
@@ -36,10 +47,12 @@ namespace WFC.Runtime
 
         [Header("Algorytm")]
         [SerializeField] SolverKind solver = SolverKind.Naive;
+        [Tooltip("Piętrami: domyślna, jak w prototypie. Scanline: komórki po kolei od dołu. MRV: komórka z najmniejszą liczbą możliwości. Entropia: najmniejsza entropia Shannona w całej siatce.")]
         [SerializeField] SelectorKind selector = SelectorKind.LevelFirst;
         [SerializeField] ContradictionKind contradiction = ContradictionKind.Restart;
         [SerializeField] uint seed = 1;
-        [SerializeField, Min(1)] int maxAttempts = 100;
+        [Tooltip("Limit prób jednej mapy przy starcie od nowa. MRV kończy się sprzecznością w około 97% prób.")]
+        [SerializeField, Min(1)] int maxAttempts = 1000;
 
         [Header("Scena")]
         [SerializeField] MapBuilder mapBuilder;
@@ -58,6 +71,12 @@ namespace WFC.Runtime
         {
             get => mapBuilder;
             set => mapBuilder = value;
+        }
+
+        public SelectorKind Selector
+        {
+            get => selector;
+            set => selector = value;
         }
 
         public uint Seed
@@ -209,6 +228,9 @@ namespace WFC.Runtime
             switch (selector)
             {
                 case SelectorKind.LevelFirst: return new LevelFirstSelector();
+                case SelectorKind.Scanline: return new ScanlineSelector();
+                case SelectorKind.MinRemaining: return new MinRemainingSelector();
+                case SelectorKind.Entropy: return new EntropySelector();
                 default: throw new ArgumentOutOfRangeException(nameof(selector), selector, null);
             }
         }
