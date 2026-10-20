@@ -10,7 +10,7 @@ namespace WFC.Editor
 {
     /// <summary>
     /// Tworzy scenę Generator z hierarchią z rozdziału 5: [Systemy] (GeneratorController, MapBuilder), [Mapa],
-    /// [Kamera] z OrbitCamera i [Swiatlo]. [Debug] i [UI] dojdą razem ze StepVisualizer i panelem ustawień.
+    /// [Kamera] z FlyCamera i [Swiatlo]. [Debug] i [UI] dojdą razem ze StepVisualizer i panelem ustawień.
     /// </summary>
     public static class GeneratorSceneBuilder
     {
@@ -55,7 +55,7 @@ namespace WFC.Editor
             camera.farClipPlane = 1000f;
             cameraObject.AddComponent<AudioListener>();
             Vector3 center = new Vector3(controller.GridSize.x, 0f, controller.GridSize.z) * (UnityGrid.CellSize / 2f);
-            cameraObject.AddComponent<OrbitCamera>().SetView(center + Vector3.up * 6f, 95f, 30f, 40f);
+            cameraObject.AddComponent<FlyCamera>().LookAt(center + Vector3.up * 6f, 95f, 30f, 40f);
 
             var lightGroup = new GameObject("[Swiatlo]");
             var light = new GameObject("Directional Light").AddComponent<Light>();

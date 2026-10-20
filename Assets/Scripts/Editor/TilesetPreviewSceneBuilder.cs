@@ -9,7 +9,7 @@ using WFC.Runtime;
 namespace WFC.Editor
 {
     /// <summary>
-    /// Tworzy scenę Scenes/TilesetPreview: TilesetPreviewer z zestawem Pelny, Main Camera z OrbitCamera
+    /// Tworzy scenę Scenes/TilesetPreview: TilesetPreviewer z zestawem Pelny, Main Camera z FlyCamera
     /// i Directional Light. Podgląd buduje się po wciśnięciu Play albo z menu kontekstowego TilesetPreviewer.
     /// </summary>
     public static class TilesetPreviewSceneBuilder
@@ -42,7 +42,7 @@ namespace WFC.Editor
             var camera = cameraObject.AddComponent<Camera>();
             camera.farClipPlane = 2000f;
             cameraObject.AddComponent<AudioListener>();
-            cameraObject.AddComponent<OrbitCamera>().SetView(previewer.Center, 150f, 0f, 55f);
+            cameraObject.AddComponent<FlyCamera>().LookAt(previewer.Center, 150f, 0f, 55f);
 
             var light = new GameObject("Directional Light").AddComponent<Light>();
             light.type = LightType.Directional;
