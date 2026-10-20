@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Donzon_Drzwi_Pochodnie
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Donzon_Drzwi_Pochodnie
+  prefab: {fileID: 1616175901544672895, guid: b356608a74de3f74c8a37d02f0a7f187, type: 3}
+  model: Donzon_Drzwi_Pochodnie
+  modelAvailable: 1
+  group: "Don\u017Con"
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: donzon_ciag
+  labelN: donzon_wnetrze
+  labelW: donzon_ciag_odbity
+  labelS: drzwi
+  labelUp: kolumna_sciany_donzonu*
+  labelDown: kolumna_sciany_donzonu*
+  description: "\u015Aciana z drzwiami i 2 pochodniami."

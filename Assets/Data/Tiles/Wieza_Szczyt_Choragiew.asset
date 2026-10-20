@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Wieza_Szczyt_Choragiew
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Wieza_Szczyt_Choragiew
+  prefab: {fileID: 4618556118695835559, guid: ffb7302f7e035e14db61216f7fd0b618, type: 3}
+  model: Wieza_Szczyt_Choragiew
+  modelAvailable: 1
+  group: "Wie\u017Ca"
+  weight: 0.5
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: wieza_blanki
+  labelN: wieza_blanki_odbity
+  labelW: wieza_sciana
+  labelS: wieza_sciana
+  labelUp: powietrze
+  labelDown: kolumna_wiezy*
+  description: "\u0106wiartka wie\u017Cy: blanki z chor\u0105gwi\u0105."

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Dach_Naroznik_Gora
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Dach_Naroznik_Gora
+  prefab: {fileID: 1768637750104512761, guid: 1ba0481244a0aff4394abe9204c4acc0, type: 3}
+  model: Dach_Naroznik_Gora
+  modelAvailable: 1
+  group: "Dach don\u017Conu"
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: dach_gora
+  labelN: dach_gora_odbity
+  labelW: powietrze
+  labelS: powietrze
+  labelUp: powietrze
+  labelDown: kolumna_naroznika_dachu*
+  description: "G\xF3rny naro\u017Cnik dachu."

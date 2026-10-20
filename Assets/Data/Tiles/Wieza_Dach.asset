@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Wieza_Dach
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Wieza_Dach
+  prefab: {fileID: 2989318589025274989, guid: fd102111318c7904f89ddca0e368bb01, type: 3}
+  model: Wieza_Dach
+  modelAvailable: 1
+  group: "Wie\u017Ca"
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: wieza_dach
+  labelN: wieza_dach_odbity
+  labelW: okap
+  labelS: okap
+  labelUp: kolumna_dachu_wiezy*
+  labelDown: kolumna_wiezy*
+  description: "\u0106wiartka wie\u017Cy: d\xF3\u0142 dachu z okapem."

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Donzon_Drzwi
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Donzon_Drzwi
+  prefab: {fileID: 8281440679547268729, guid: 44f37ada5ae47a449b3f5f4dd9d2fd67, type: 3}
+  model: Donzon_Drzwi
+  modelAvailable: 1
+  group: "Don\u017Con"
+  weight: 1.5
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: donzon_ciag
+  labelN: donzon_wnetrze
+  labelW: donzon_ciag_odbity
+  labelS: drzwi
+  labelUp: kolumna_sciany_donzonu*
+  labelDown: kolumna_sciany_donzonu*
+  description: "\u015Aciana z drzwiami na stronie S (na pi\u0119trze)."

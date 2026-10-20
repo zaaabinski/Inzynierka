@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Most_Koniec
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Most_Koniec
+  prefab: {fileID: 5797120025542220893, guid: 58e2b92e1182a0c4989a4a4795d07524, type: 3}
+  model: Most_Koniec
+  modelAvailable: 1
+  group: Most
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: most_przyczolek
+  labelN: powietrze
+  labelW: most_koniec
+  labelS: powietrze
+  labelUp: powietrze
+  labelDown: puste
+  description: "Koniec mostu: \u0142uk oparty o \u015Bcian\u0119 po stronie E."

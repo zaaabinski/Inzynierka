@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Dach_Szczyt_Choragiew
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Dach_Szczyt_Choragiew
+  prefab: {fileID: 1334943682632326768, guid: ddcd74c02d5a68f48a896c6481dd4a17, type: 3}
+  model: Dach_Szczyt_Choragiew
+  modelAvailable: 0
+  group: "Dach don\u017Conu"
+  weight: 0.5
+  symmetric: 1
+  rotations: 1
+  randomModelRotation: 1
+  labelE: dach_szczyt
+  labelN: dach_szczyt
+  labelW: dach_szczyt
+  labelS: dach_szczyt
+  labelUp: powietrze
+  labelDown: kolumna_wnetrza_donzonu
+  description: "Szczyt dachu z chor\u0105gwi\u0105."
