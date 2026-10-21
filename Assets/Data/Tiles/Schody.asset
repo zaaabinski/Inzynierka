@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Schody
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Schody
+  prefab: {fileID: 5672450715493639723, guid: 868846ea2c99a5343904dd9a0b579874, type: 3}
+  model: Schody
+  modelAvailable: 1
+  group: Schody
+  weight: 0.3
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: grunt
+  labelN: schody_szczyt
+  labelW: grunt
+  labelS: grunt
+  labelUp: nad_schodami*
+  labelDown: podloze
+  description: "Schody na wysoko\u015B\u0107 3 m; wy\u017Cszy koniec po stronie N."

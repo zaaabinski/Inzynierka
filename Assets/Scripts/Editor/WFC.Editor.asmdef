@@ -1,0 +1,20 @@
+{
+    "name": "WFC.Editor",
+    "rootNamespace": "WFC.Editor",
+    "references": [
+        "WFC.Core",
+        "WFC.Runtime",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

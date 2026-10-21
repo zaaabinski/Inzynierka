@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Mur_Naroznik_Gora
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Mur_Naroznik_Gora
+  prefab: {fileID: 690226004523212906, guid: f1d4bf75246a17344b1227864afcc69b, type: 3}
+  model: Mur_Naroznik_Gora
+  modelAvailable: 1
+  group: "Naro\u017Cnik muru"
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: mur_gora
+  labelN: mur_gora_odbity
+  labelW: mur_bok_wyzej
+  labelS: mur_bok_wyzej
+  labelUp: powietrze
+  labelDown: kolumna_naroznika_muru*
+  description: "G\xF3ra naro\u017Cnika z blankami."

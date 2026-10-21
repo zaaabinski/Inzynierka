@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Powietrze_Nad_Schodami
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Powietrze_Nad_Schodami
+  prefab: {fileID: 0}
+  model: 
+  modelAvailable: 1
+  group: Powietrze
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: powietrze
+  labelN: przed_drzwiami
+  labelW: powietrze
+  labelS: powietrze
+  labelUp: powietrze
+  labelDown: nad_schodami*
+  description: "Niewidoczny. Pusta kom\xF3rka nad schodami; strona N musi styka\u0107 si\u0119 z drzwiami."

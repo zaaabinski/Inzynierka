@@ -73,3 +73,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Pliki rozwiązania generowane przez Unity i IDE
+*.slnx
+
+# Pamięć podręczna Pythona (skrypty w Analiza)
+__pycache__/

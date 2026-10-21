@@ -1,0 +1,1509 @@
+{
+  "wersja": "2026-10-21",
+  "opis": "Reguly laczenia kostek WFC zamku. Zrodlo: ten sam zestaw co arkusz Zasady_laczenia_WFC_zamek.xlsx; sprawdzony prototypem w Pythonie (224 mapy 20x20x13, 0 naruszen).",
+  "konwencje": {
+    "kierunki": "Uklad Blendera: E = +X, N = +Y, W = -X, S = -Y, gora = +Z. W Unity siatka: E = +X, N = +Z, gora = +Y, a model w prefabie obrocony o 180 stopni wokol Y.",
+    "obrot": "Obrot k = k * 90 stopni przeciwnie do ruchu wskazowek zegara patrzac z gory. Jeden krok obrotu: nowe N = stare E, nowe W = stare N, nowe S = stare W, nowe E = stare S. W Unity: Quaternion.Euler(0, -90 * k, 0).",
+    "etykietyPionowe": "Etykieta pionowa z gwiazdka (*) dostaje numer obrotu kafelka (np. kolumna_muru@90); kostka nad i pod musi miec ten sam obrot. Etykiety bez gwiazdki sa niezalezne od obrotu.",
+    "zgodnoscBoczna": "Dwie etykiety boczne pasuja, jesli para jest na liscie paryZgodne (kolejnosc w parze bez znaczenia). Lista zawiera juz pary do_siebie i pary X / X_odbity.",
+    "zgodnoscPionowa": "Gora kostki pod spodem musi byc rowna dolowi kostki nad nia; wyjatek z listy wyjatkiPionowe.",
+    "stanyKolejnosc": "Stany = kafelki w kolejnosci listy, kazdy w obrotach 0..obroty-1; waga stanu = waga kafelka."
+  },
+  "siatka": {
+    "x": 20,
+    "y": 20,
+    "z": 13,
+    "rozmiarKostkiM": 3.0,
+    "uwaga": "x = E, y = N, z = gora (uklad regul). Pozycja komorki w Unity: (3x + 1.5, 3*pietro, 3y + 1.5) m."
+  },
+  "krawedzMapy": {
+    "bokNaParterze": "grunt",
+    "bokWyzej": "powietrze",
+    "dnoSiatki": "podloze",
+    "goraSiatkiDozwolone": [
+      "powietrze",
+      "puste"
+    ]
+  },
+  "wyjatkiPionowe": [
+    {
+      "podSpodem": "puste",
+      "nadSpodem": "powietrze"
+    }
+  ],
+  "algorytm": {
+    "kolejnoscDomyslna": "Najpierw caly parter, potem kolejne pietra; w pietrze komorka o najmniejszej entropii Shannona z wagami; remis rozstrzyga drobny losowy dodatek staly dla komorki.",
+    "wybor": "Losowanie wazone wagami stanow.",
+    "propagacja": "Po kazdej decyzji ograniczenia we wszystkich 6 kierunkach az do ustalenia.",
+    "sprzecznosc": "Domyslnie start od nowa z kolejnym ziarnem, bez cofania."
+  },
+  "kafelki": [
+    {
+      "nazwa": "Teren_Trawa",
+      "model": "Teren_Trawa",
+      "modelDostepny": true,
+      "grupa": "Teren",
+      "waga": 10,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "grunt",
+      "N": "grunt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "powietrze",
+      "dol": "podloze",
+      "opis": "Trawa."
+    },
+    {
+      "nazwa": "Teren_Trawa_V2",
+      "model": "Teren_Trawa_V2",
+      "modelDostepny": true,
+      "grupa": "Teren",
+      "waga": 3,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "grunt",
+      "N": "grunt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "powietrze",
+      "dol": "podloze",
+      "opis": "Trawa z kamieniami i kępkami."
+    },
+    {
+      "nazwa": "Teren_Trawa_Skladowisko",
+      "model": "Teren_Trawa_Skladowisko",
+      "modelDostepny": true,
+      "grupa": "Teren",
+      "waga": 1.0,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "grunt",
+      "N": "grunt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "powietrze",
+      "dol": "podloze",
+      "opis": "Trawa z beczkami i skrzyniami."
+    },
+    {
+      "nazwa": "Teren_Trawa_Woz",
+      "model": "Teren_Trawa_Woz",
+      "modelDostepny": true,
+      "grupa": "Teren",
+      "waga": 0.8,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "grunt",
+      "N": "grunt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "powietrze",
+      "dol": "podloze",
+      "opis": "Trawa z wozem."
+    },
+    {
+      "nazwa": "Teren_Trawa_Studnia",
+      "model": "Teren_Trawa_Studnia",
+      "modelDostepny": true,
+      "grupa": "Teren",
+      "waga": 0.3,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "grunt",
+      "N": "grunt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "powietrze",
+      "dol": "podloze",
+      "opis": "Trawa ze studnią."
+    },
+    {
+      "nazwa": "Schody",
+      "model": "Schody",
+      "modelDostepny": true,
+      "grupa": "Schody",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "grunt",
+      "N": "schody_szczyt",
+      "W": "grunt",
+      "S": "grunt",
+      "gora": "nad_schodami*",
+      "dol": "podloze",
+      "opis": "Schody na wysokość 3 m; wyższy koniec po stronie N."
+    },
+    {
+      "nazwa": "Powietrze",
+      "model": "",
+      "modelDostepny": true,
+      "grupa": "Powietrze",
+      "waga": 10,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": false,
+      "E": "powietrze",
+      "N": "powietrze",
+      "W": "powietrze",
+      "S": "powietrze",
+      "gora": "puste",
+      "dol": "powietrze",
+      "opis": "Pusta komórka."
+    },
+    {
+      "nazwa": "Powietrze_Nad_Schodami",
+      "model": "",
+      "modelDostepny": true,
+      "grupa": "Powietrze",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "powietrze",
+      "N": "przed_drzwiami",
+      "W": "powietrze",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "nad_schodami*",
+      "opis": "Niewidoczny. Pusta komórka nad schodami; strona N musi stykać się z drzwiami."
+    },
+    {
+      "nazwa": "Mur_Dol",
+      "model": "Mur_Dol",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_bok_parter",
+      "W": "mur_parter_odbity",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_muru*",
+      "dol": "podloze",
+      "opis": "Dół muru: cokół na zewnątrz (S), pas bruku od dziedzińca (N)."
+    },
+    {
+      "nazwa": "Mur_Dol_Beczki",
+      "model": "Mur_Dol_Beczki",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_bok_parter",
+      "W": "mur_parter_odbity",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_muru*",
+      "dol": "podloze",
+      "opis": "Dół muru z beczkami od dziedzińca (N)."
+    },
+    {
+      "nazwa": "Mur_Dol_Skrzynie",
+      "model": "Mur_Dol_Skrzynie",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_bok_parter",
+      "W": "mur_parter_odbity",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_muru*",
+      "dol": "podloze",
+      "opis": "Dół muru ze skrzyniami od dziedzińca (N)."
+    },
+    {
+      "nazwa": "Brama_Dol",
+      "model": "Brama_Dol",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_bok_parter",
+      "W": "mur_parter_odbity",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_muru*",
+      "dol": "podloze",
+      "opis": "Brama z kratą; przejazd S–N."
+    },
+    {
+      "nazwa": "Brama_Dol_Pochodnie",
+      "model": "Brama_Dol_Pochodnie",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_bok_parter",
+      "W": "mur_parter_odbity",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_muru*",
+      "dol": "podloze",
+      "opis": "Brama z kratą i 4 pochodniami."
+    },
+    {
+      "nazwa": "Mur_Srodek",
+      "model": "Mur_Srodek",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_srodek",
+      "N": "mur_bok_wyzej",
+      "W": "mur_srodek",
+      "S": "mur_bok_wyzej",
+      "gora": "kolumna_muru*",
+      "dol": "kolumna_muru*",
+      "opis": "Środek muru, gładki."
+    },
+    {
+      "nazwa": "Mur_Srodek_V2",
+      "model": "Mur_Srodek_V2",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_srodek",
+      "N": "mur_bok_wyzej",
+      "W": "mur_srodek",
+      "S": "mur_bok_wyzej",
+      "gora": "kolumna_muru*",
+      "dol": "kolumna_muru*",
+      "opis": "Środek muru z wystającymi kamieniami."
+    },
+    {
+      "nazwa": "Mur_Srodek_V3",
+      "model": "Mur_Srodek_V3",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_srodek",
+      "N": "mur_bok_wyzej",
+      "W": "mur_srodek",
+      "S": "mur_bok_wyzej",
+      "gora": "kolumna_muru*",
+      "dol": "kolumna_muru*",
+      "opis": "Środek muru ze szczeliną."
+    },
+    {
+      "nazwa": "Mur_Gora",
+      "model": "Mur_Gora",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_gora",
+      "N": "mur_bok_wyzej",
+      "W": "mur_gora_odbity",
+      "S": "mur_bok_wyzej",
+      "gora": "powietrze",
+      "dol": "kolumna_muru*",
+      "opis": "Góra muru: blanki po stronie zewnętrznej (S)."
+    },
+    {
+      "nazwa": "Mur_Gora_V2",
+      "model": "Mur_Gora_V2",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_gora",
+      "N": "mur_bok_wyzej",
+      "W": "mur_gora_odbity",
+      "S": "mur_bok_wyzej",
+      "gora": "powietrze",
+      "dol": "kolumna_muru*",
+      "opis": "Góra muru z uszkodzonymi blankami."
+    },
+    {
+      "nazwa": "Brama_Gora",
+      "model": "Brama_Gora",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 0.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_gora",
+      "N": "mur_bok_wyzej",
+      "W": "mur_gora_odbity",
+      "S": "mur_bok_wyzej",
+      "gora": "powietrze",
+      "dol": "kolumna_muru*",
+      "opis": "Galeria wysunięta na zewnątrz (S)."
+    },
+    {
+      "nazwa": "Mur_Gora_Przejscie",
+      "model": "Mur_Gora_Przejscie",
+      "modelDostepny": true,
+      "grupa": "Mur obronny",
+      "waga": 1.0,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_gora",
+      "N": "drzwi",
+      "W": "mur_gora_odbity",
+      "S": "mur_bok_wyzej",
+      "gora": "powietrze",
+      "dol": "kolumna_muru*",
+      "opis": "Góra muru z podestem od dziedzińca (N) – początek albo koniec mostu."
+    },
+    {
+      "nazwa": "Mur_Naroznik_Dol",
+      "model": "Mur_Naroznik_Dol",
+      "modelDostepny": true,
+      "grupa": "Narożnik muru",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_parter",
+      "N": "mur_parter_odbity",
+      "W": "mur_bok_parter",
+      "S": "mur_bok_parter",
+      "gora": "kolumna_naroznika_muru*",
+      "dol": "podloze",
+      "opis": "Dół narożnika: ramiona E i N, zewnątrz W i S."
+    },
+    {
+      "nazwa": "Mur_Naroznik_Srodek",
+      "model": "Mur_Naroznik_Srodek",
+      "modelDostepny": true,
+      "grupa": "Narożnik muru",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_srodek",
+      "N": "mur_srodek",
+      "W": "mur_bok_wyzej",
+      "S": "mur_bok_wyzej",
+      "gora": "kolumna_naroznika_muru*",
+      "dol": "kolumna_naroznika_muru*",
+      "opis": "Środek narożnika."
+    },
+    {
+      "nazwa": "Mur_Naroznik_Gora",
+      "model": "Mur_Naroznik_Gora",
+      "modelDostepny": true,
+      "grupa": "Narożnik muru",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "mur_gora",
+      "N": "mur_gora_odbity",
+      "W": "mur_bok_wyzej",
+      "S": "mur_bok_wyzej",
+      "gora": "powietrze",
+      "dol": "kolumna_naroznika_muru*",
+      "opis": "Góra narożnika z blankami."
+    },
+    {
+      "nazwa": "Wieza_Podstawa",
+      "model": "Wieza_Podstawa",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_cwiartka",
+      "N": "wieza_cwiartka_odbity",
+      "W": "wieza_sciana",
+      "S": "wieza_sciana",
+      "gora": "kolumna_wiezy*",
+      "dol": "podloze",
+      "opis": "Ćwiartka wieży: podstawa ze skarpą."
+    },
+    {
+      "nazwa": "Wieza_Srodek",
+      "model": "Wieza_Srodek",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_cwiartka",
+      "N": "wieza_cwiartka_odbity",
+      "W": "wieza_sciana",
+      "S": "wieza_sciana",
+      "gora": "kolumna_wiezy*",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: piętro gładkie."
+    },
+    {
+      "nazwa": "Wieza_Strzelnica",
+      "model": "Wieza_Strzelnica",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_cwiartka",
+      "N": "wieza_cwiartka_odbity",
+      "W": "wieza_sciana",
+      "S": "wieza_sciana",
+      "gora": "kolumna_wiezy*",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: piętro ze strzelnicą."
+    },
+    {
+      "nazwa": "Wieza_Wejscie",
+      "model": "Wieza_Wejscie",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_cwiartka",
+      "N": "wieza_cwiartka_odbity",
+      "W": "wieza_sciana",
+      "S": "drzwi",
+      "gora": "kolumna_wiezy*",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: piętro z drzwiami na stronie S."
+    },
+    {
+      "nazwa": "Wieza_Szczyt",
+      "model": "Wieza_Szczyt",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_blanki",
+      "N": "wieza_blanki_odbity",
+      "W": "wieza_sciana",
+      "S": "wieza_sciana",
+      "gora": "powietrze",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: blanki."
+    },
+    {
+      "nazwa": "Wieza_Szczyt_Choragiew",
+      "model": "Wieza_Szczyt_Choragiew",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 0.5,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_blanki",
+      "N": "wieza_blanki_odbity",
+      "W": "wieza_sciana",
+      "S": "wieza_sciana",
+      "gora": "powietrze",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: blanki z chorągwią."
+    },
+    {
+      "nazwa": "Wieza_Dach",
+      "model": "Wieza_Dach",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_dach",
+      "N": "wieza_dach_odbity",
+      "W": "okap",
+      "S": "okap",
+      "gora": "kolumna_dachu_wiezy*",
+      "dol": "kolumna_wiezy*",
+      "opis": "Ćwiartka wieży: dół dachu z okapem."
+    },
+    {
+      "nazwa": "Wieza_Dach_Gora",
+      "model": "Wieza_Dach_Gora",
+      "modelDostepny": true,
+      "grupa": "Wieża",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "wieza_iglica",
+      "N": "wieza_iglica_odbity",
+      "W": "powietrze",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "kolumna_dachu_wiezy*",
+      "opis": "Ćwiartka wieży: iglica."
+    },
+    {
+      "nazwa": "Donzon_Sciana_Parter",
+      "model": "Donzon_Sciana",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "donzon_sciana",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "podloze",
+      "opis": "Ściana donżonu na parterze."
+    },
+    {
+      "nazwa": "Donzon_Okno_Parter",
+      "model": "Donzon_Okno",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "donzon_sciana",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "podloze",
+      "opis": "Ściana z oknem na parterze."
+    },
+    {
+      "nazwa": "Donzon_Naroznik_Parter",
+      "model": "Donzon_Naroznik",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_ciag_odbity",
+      "W": "donzon_sciana",
+      "S": "donzon_sciana",
+      "gora": "kolumna_naroznika_donzonu*",
+      "dol": "podloze",
+      "opis": "Narożnik donżonu na parterze: ciąg E i N, zewnątrz W i S."
+    },
+    {
+      "nazwa": "Donzon_Posadzka",
+      "model": "Teren_Trawa",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": false,
+      "E": "donzon_wnetrze",
+      "N": "donzon_wnetrze",
+      "W": "donzon_wnetrze",
+      "S": "donzon_wnetrze",
+      "gora": "kolumna_wnetrza_donzonu",
+      "dol": "podloze",
+      "opis": "Wnętrze donżonu na parterze (model trawy)."
+    },
+    {
+      "nazwa": "Donzon_Sciana",
+      "model": "Donzon_Sciana",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "donzon_sciana",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "kolumna_sciany_donzonu*",
+      "opis": "Ściana donżonu na piętrze."
+    },
+    {
+      "nazwa": "Donzon_Okno",
+      "model": "Donzon_Okno",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1.3,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "donzon_sciana",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "kolumna_sciany_donzonu*",
+      "opis": "Ściana z oknem na piętrze."
+    },
+    {
+      "nazwa": "Donzon_Drzwi",
+      "model": "Donzon_Drzwi",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1.5,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "drzwi",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "kolumna_sciany_donzonu*",
+      "opis": "Ściana z drzwiami na stronie S (na piętrze)."
+    },
+    {
+      "nazwa": "Donzon_Drzwi_Pochodnie",
+      "model": "Donzon_Drzwi_Pochodnie",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1.0,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_wnetrze",
+      "W": "donzon_ciag_odbity",
+      "S": "drzwi",
+      "gora": "kolumna_sciany_donzonu*",
+      "dol": "kolumna_sciany_donzonu*",
+      "opis": "Ściana z drzwiami i 2 pochodniami."
+    },
+    {
+      "nazwa": "Donzon_Naroznik",
+      "model": "Donzon_Naroznik",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "donzon_ciag",
+      "N": "donzon_ciag_odbity",
+      "W": "donzon_sciana",
+      "S": "donzon_sciana",
+      "gora": "kolumna_naroznika_donzonu*",
+      "dol": "kolumna_naroznika_donzonu*",
+      "opis": "Narożnik donżonu na piętrze."
+    },
+    {
+      "nazwa": "Donzon_Wnetrze",
+      "model": "",
+      "modelDostepny": true,
+      "grupa": "Donżon",
+      "waga": 1,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": false,
+      "E": "donzon_wnetrze",
+      "N": "donzon_wnetrze",
+      "W": "donzon_wnetrze",
+      "S": "donzon_wnetrze",
+      "gora": "kolumna_wnetrza_donzonu",
+      "dol": "kolumna_wnetrza_donzonu",
+      "opis": "Niewidoczny. Wnętrze donżonu na piętrach."
+    },
+    {
+      "nazwa": "Dach_Skos",
+      "model": "Dach_Skos",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "dach_dol",
+      "N": "donzon_wnetrze",
+      "W": "dach_dol_odbity",
+      "S": "okap",
+      "gora": "kolumna_spadku_dachu*",
+      "dol": "kolumna_sciany_donzonu*",
+      "opis": "Dolny spadek dachu nad ścianą; okap na S."
+    },
+    {
+      "nazwa": "Dach_Naroznik",
+      "model": "Dach_Naroznik",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "dach_dol",
+      "N": "dach_dol_odbity",
+      "W": "okap",
+      "S": "okap",
+      "gora": "kolumna_naroznika_dachu*",
+      "dol": "kolumna_naroznika_donzonu*",
+      "opis": "Dolny narożnik dachu; okap na W i S."
+    },
+    {
+      "nazwa": "Dach_Skos_Gora",
+      "model": "Dach_Skos_Gora",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "dach_gora",
+      "N": "dach_szczyt",
+      "W": "dach_gora_odbity",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "kolumna_spadku_dachu*",
+      "opis": "Górny spadek dachu."
+    },
+    {
+      "nazwa": "Dach_Naroznik_Gora",
+      "model": "Dach_Naroznik_Gora",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "dach_gora",
+      "N": "dach_gora_odbity",
+      "W": "powietrze",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "kolumna_naroznika_dachu*",
+      "opis": "Górny narożnik dachu."
+    },
+    {
+      "nazwa": "Dach_Szczyt",
+      "model": "Dach_Szczyt",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 1,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "dach_szczyt",
+      "N": "dach_szczyt",
+      "W": "dach_szczyt",
+      "S": "dach_szczyt",
+      "gora": "powietrze",
+      "dol": "kolumna_wnetrza_donzonu",
+      "opis": "Szczyt dachu nad wnętrzem."
+    },
+    {
+      "nazwa": "Dach_Szczyt_Choragiew",
+      "model": "Dach_Szczyt_Choragiew",
+      "modelDostepny": true,
+      "grupa": "Dach donżonu",
+      "waga": 0.5,
+      "symetryczny": true,
+      "obroty": 1,
+      "losowyObrotModelu": true,
+      "E": "dach_szczyt",
+      "N": "dach_szczyt",
+      "W": "dach_szczyt",
+      "S": "dach_szczyt",
+      "gora": "powietrze",
+      "dol": "kolumna_wnetrza_donzonu",
+      "opis": "Szczyt dachu z chorągwią."
+    },
+    {
+      "nazwa": "Most_Poczatek",
+      "model": "Most_Poczatek",
+      "modelDostepny": true,
+      "grupa": "Most",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "most_poczatek",
+      "N": "powietrze",
+      "W": "most_przyczolek",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "puste",
+      "opis": "Początek mostu: łuk oparty o ścianę po stronie W."
+    },
+    {
+      "nazwa": "Most_Srodek",
+      "model": "Most_Srodek",
+      "modelDostepny": true,
+      "grupa": "Most",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "most_srodek_do_konca",
+      "N": "powietrze",
+      "W": "most_srodek_od_poczatku",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "puste",
+      "opis": "Środek mostu (może się powtarzać)."
+    },
+    {
+      "nazwa": "Most_Koniec",
+      "model": "Most_Koniec",
+      "modelDostepny": true,
+      "grupa": "Most",
+      "waga": 1,
+      "symetryczny": false,
+      "obroty": 4,
+      "losowyObrotModelu": false,
+      "E": "most_przyczolek",
+      "N": "powietrze",
+      "W": "most_koniec",
+      "S": "powietrze",
+      "gora": "powietrze",
+      "dol": "puste",
+      "opis": "Koniec mostu: łuk oparty o ścianę po stronie E."
+    }
+  ],
+  "etykietyBoczne": [
+    {
+      "nazwa": "grunt",
+      "rodzaj": "do_siebie",
+      "opis": "Płaski teren na parterze (wolne pole)."
+    },
+    {
+      "nazwa": "powietrze",
+      "rodzaj": "do_siebie",
+      "opis": "Pusta przestrzeń powyżej parteru (wolne pole)."
+    },
+    {
+      "nazwa": "mur_parter",
+      "rodzaj": "para_odbita",
+      "opis": "Koniec dolnej części muru (profil z cokołem)."
+    },
+    {
+      "nazwa": "mur_parter_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "mur_srodek",
+      "rodzaj": "do_siebie",
+      "opis": "Koniec środkowej części muru (profil symetryczny)."
+    },
+    {
+      "nazwa": "mur_gora",
+      "rodzaj": "para_odbita",
+      "opis": "Koniec górnej części muru z blankami."
+    },
+    {
+      "nazwa": "mur_gora_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "mur_bok_parter",
+      "rodzaj": "z_listy",
+      "opis": "Bok muru na parterze: od zewnątrz albo od dziedzińca."
+    },
+    {
+      "nazwa": "mur_bok_wyzej",
+      "rodzaj": "z_listy",
+      "opis": "Bok muru powyżej parteru."
+    },
+    {
+      "nazwa": "drzwi",
+      "rodzaj": "z_listy",
+      "opis": "Strona z drzwiami: donżon, ćwiartka wieży, przejście na murze."
+    },
+    {
+      "nazwa": "wieza_cwiartka",
+      "rodzaj": "para_odbita",
+      "opis": "Styk dwóch ćwiartek tej samej wieży na piętrze."
+    },
+    {
+      "nazwa": "wieza_cwiartka_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "wieza_blanki",
+      "rodzaj": "para_odbita",
+      "opis": "Styk ćwiartek na wysokości blanków."
+    },
+    {
+      "nazwa": "wieza_blanki_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "wieza_dach",
+      "rodzaj": "para_odbita",
+      "opis": "Styk ćwiartek w dolnej części dachu."
+    },
+    {
+      "nazwa": "wieza_dach_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "wieza_iglica",
+      "rodzaj": "para_odbita",
+      "opis": "Styk ćwiartek w iglicy."
+    },
+    {
+      "nazwa": "wieza_iglica_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "wieza_sciana",
+      "rodzaj": "z_listy",
+      "opis": "Zewnętrzna ściana wieży."
+    },
+    {
+      "nazwa": "okap",
+      "rodzaj": "z_listy",
+      "opis": "Strona dachu z okapem wystającym w bok."
+    },
+    {
+      "nazwa": "donzon_ciag",
+      "rodzaj": "para_odbita",
+      "opis": "Styk dwóch ścian donżonu w pierścieniu."
+    },
+    {
+      "nazwa": "donzon_ciag_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "donzon_sciana",
+      "rodzaj": "z_listy",
+      "opis": "Zewnętrzna ściana donżonu."
+    },
+    {
+      "nazwa": "donzon_wnetrze",
+      "rodzaj": "do_siebie",
+      "opis": "Strona zwrócona do wnętrza donżonu."
+    },
+    {
+      "nazwa": "dach_dol",
+      "rodzaj": "para_odbita",
+      "opis": "Styk dolnych części dachu donżonu."
+    },
+    {
+      "nazwa": "dach_dol_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "dach_gora",
+      "rodzaj": "para_odbita",
+      "opis": "Styk górnych części dachu donżonu."
+    },
+    {
+      "nazwa": "dach_gora_odbity",
+      "rodzaj": "para_odbita",
+      "opis": "Ta sama krawędź widziana z drugiej strony."
+    },
+    {
+      "nazwa": "dach_szczyt",
+      "rodzaj": "do_siebie",
+      "opis": "Styk górnej części dachu ze szczytem."
+    },
+    {
+      "nazwa": "most_poczatek",
+      "rodzaj": "z_listy",
+      "opis": "Strona początku mostu zwrócona do środka."
+    },
+    {
+      "nazwa": "most_srodek_od_poczatku",
+      "rodzaj": "z_listy",
+      "opis": "Strona środka mostu od strony początku."
+    },
+    {
+      "nazwa": "most_srodek_do_konca",
+      "rodzaj": "z_listy",
+      "opis": "Strona środka mostu w stronę końca."
+    },
+    {
+      "nazwa": "most_koniec",
+      "rodzaj": "z_listy",
+      "opis": "Strona końca mostu zwrócona do środka."
+    },
+    {
+      "nazwa": "most_przyczolek",
+      "rodzaj": "z_listy",
+      "opis": "Strona początku albo końca mostu oparta o drzwi."
+    },
+    {
+      "nazwa": "schody_szczyt",
+      "rodzaj": "z_listy",
+      "opis": "Wyższy koniec schodów."
+    },
+    {
+      "nazwa": "przed_drzwiami",
+      "rodzaj": "z_listy",
+      "opis": "Strona powietrza nad schodami zwrócona do drzwi."
+    }
+  ],
+  "etykietyPionowe": [
+    {
+      "nazwa": "podloze",
+      "tenSamObrot": false,
+      "opis": "Kafelek stoi na dnie siatki (tylko najniższy poziom)."
+    },
+    {
+      "nazwa": "powietrze",
+      "tenSamObrot": false,
+      "opis": "Jako góra: nad kafelkiem tylko zwykłe Powietrze. Jako dół: Powietrze stoi na górze „powietrze” albo „puste”."
+    },
+    {
+      "nazwa": "puste",
+      "tenSamObrot": false,
+      "opis": "Góra Powietrza: może na niej stanąć Powietrze albo most. Dół mostu: most stoi tylko na Powietrzu."
+    },
+    {
+      "nazwa": "kolumna_muru*",
+      "tenSamObrot": true,
+      "opis": "Części muru jedna na drugiej (dół → środki → góra)."
+    },
+    {
+      "nazwa": "kolumna_naroznika_muru*",
+      "tenSamObrot": true,
+      "opis": "Części narożnika muru jedna na drugiej."
+    },
+    {
+      "nazwa": "kolumna_wiezy*",
+      "tenSamObrot": true,
+      "opis": "Piętra tej samej ćwiartki wieży."
+    },
+    {
+      "nazwa": "kolumna_dachu_wiezy*",
+      "tenSamObrot": true,
+      "opis": "Dół dachu wieży → iglica."
+    },
+    {
+      "nazwa": "kolumna_sciany_donzonu*",
+      "tenSamObrot": true,
+      "opis": "Ściany donżonu jedna na drugiej → spadek dachu."
+    },
+    {
+      "nazwa": "kolumna_naroznika_donzonu*",
+      "tenSamObrot": true,
+      "opis": "Narożniki donżonu jeden na drugim → narożnik dachu."
+    },
+    {
+      "nazwa": "kolumna_wnetrza_donzonu",
+      "tenSamObrot": false,
+      "opis": "Wnętrze donżonu → szczyt dachu."
+    },
+    {
+      "nazwa": "kolumna_spadku_dachu*",
+      "tenSamObrot": true,
+      "opis": "Dolny spadek dachu → górny spadek."
+    },
+    {
+      "nazwa": "kolumna_naroznika_dachu*",
+      "tenSamObrot": true,
+      "opis": "Dolny narożnik dachu → górny narożnik."
+    },
+    {
+      "nazwa": "nad_schodami*",
+      "tenSamObrot": true,
+      "opis": "Schody → powietrze nad schodami."
+    }
+  ],
+  "paryZgodne": [
+    {
+      "a": "grunt",
+      "b": "grunt"
+    },
+    {
+      "a": "grunt",
+      "b": "mur_bok_parter"
+    },
+    {
+      "a": "grunt",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "grunt",
+      "b": "donzon_sciana"
+    },
+    {
+      "a": "powietrze",
+      "b": "powietrze"
+    },
+    {
+      "a": "powietrze",
+      "b": "mur_bok_wyzej"
+    },
+    {
+      "a": "powietrze",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "powietrze",
+      "b": "okap"
+    },
+    {
+      "a": "powietrze",
+      "b": "donzon_sciana"
+    },
+    {
+      "a": "mur_parter",
+      "b": "mur_parter_odbity"
+    },
+    {
+      "a": "mur_parter",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "mur_parter_odbity",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "mur_srodek",
+      "b": "mur_srodek"
+    },
+    {
+      "a": "mur_srodek",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "mur_gora",
+      "b": "mur_gora_odbity"
+    },
+    {
+      "a": "mur_gora",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "mur_gora_odbity",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "drzwi",
+      "b": "most_przyczolek"
+    },
+    {
+      "a": "drzwi",
+      "b": "przed_drzwiami"
+    },
+    {
+      "a": "wieza_cwiartka",
+      "b": "wieza_cwiartka_odbity"
+    },
+    {
+      "a": "wieza_blanki",
+      "b": "wieza_blanki_odbity"
+    },
+    {
+      "a": "wieza_dach",
+      "b": "wieza_dach_odbity"
+    },
+    {
+      "a": "wieza_iglica",
+      "b": "wieza_iglica_odbity"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "schody_szczyt"
+    },
+    {
+      "a": "donzon_ciag",
+      "b": "donzon_ciag_odbity"
+    },
+    {
+      "a": "donzon_sciana",
+      "b": "schody_szczyt"
+    },
+    {
+      "a": "donzon_wnetrze",
+      "b": "donzon_wnetrze"
+    },
+    {
+      "a": "dach_dol",
+      "b": "dach_dol_odbity"
+    },
+    {
+      "a": "dach_gora",
+      "b": "dach_gora_odbity"
+    },
+    {
+      "a": "dach_szczyt",
+      "b": "dach_szczyt"
+    },
+    {
+      "a": "most_poczatek",
+      "b": "most_srodek_od_poczatku"
+    },
+    {
+      "a": "most_srodek_od_poczatku",
+      "b": "most_srodek_do_konca"
+    },
+    {
+      "a": "most_srodek_do_konca",
+      "b": "most_koniec"
+    }
+  ],
+  "paryDodatkowe": [
+    {
+      "a": "mur_bok_parter",
+      "b": "grunt"
+    },
+    {
+      "a": "mur_bok_wyzej",
+      "b": "powietrze"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "grunt"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "powietrze"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "mur_parter"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "mur_parter_odbity"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "mur_srodek"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "mur_gora"
+    },
+    {
+      "a": "wieza_sciana",
+      "b": "mur_gora_odbity"
+    },
+    {
+      "a": "donzon_sciana",
+      "b": "grunt"
+    },
+    {
+      "a": "donzon_sciana",
+      "b": "powietrze"
+    },
+    {
+      "a": "okap",
+      "b": "powietrze"
+    },
+    {
+      "a": "most_poczatek",
+      "b": "most_srodek_od_poczatku"
+    },
+    {
+      "a": "most_srodek_do_konca",
+      "b": "most_srodek_od_poczatku"
+    },
+    {
+      "a": "most_srodek_do_konca",
+      "b": "most_koniec"
+    },
+    {
+      "a": "most_przyczolek",
+      "b": "drzwi"
+    },
+    {
+      "a": "schody_szczyt",
+      "b": "wieza_sciana"
+    },
+    {
+      "a": "schody_szczyt",
+      "b": "donzon_sciana"
+    },
+    {
+      "a": "drzwi",
+      "b": "przed_drzwiami"
+    }
+  ],
+  "zestawy": {
+    "Prosty": [
+      "Teren_Trawa",
+      "Powietrze",
+      "Mur_Dol",
+      "Mur_Srodek",
+      "Mur_Gora",
+      "Mur_Naroznik_Dol",
+      "Mur_Naroznik_Srodek",
+      "Mur_Naroznik_Gora"
+    ],
+    "Sredni": [
+      "Teren_Trawa",
+      "Powietrze",
+      "Mur_Dol",
+      "Mur_Srodek",
+      "Mur_Gora",
+      "Mur_Naroznik_Dol",
+      "Mur_Naroznik_Srodek",
+      "Mur_Naroznik_Gora",
+      "Teren_Trawa_V2",
+      "Mur_Dol_Beczki",
+      "Mur_Dol_Skrzynie",
+      "Brama_Dol",
+      "Mur_Srodek_V2",
+      "Mur_Srodek_V3",
+      "Mur_Gora_V2",
+      "Brama_Gora",
+      "Wieza_Podstawa",
+      "Wieza_Srodek",
+      "Wieza_Strzelnica",
+      "Wieza_Szczyt",
+      "Wieza_Dach",
+      "Wieza_Dach_Gora"
+    ],
+    "PelnyBezDekoracji": [
+      "Teren_Trawa",
+      "Teren_Trawa_V2",
+      "Schody",
+      "Powietrze",
+      "Powietrze_Nad_Schodami",
+      "Mur_Dol",
+      "Brama_Dol",
+      "Mur_Srodek",
+      "Mur_Srodek_V2",
+      "Mur_Srodek_V3",
+      "Mur_Gora",
+      "Mur_Gora_V2",
+      "Brama_Gora",
+      "Mur_Gora_Przejscie",
+      "Mur_Naroznik_Dol",
+      "Mur_Naroznik_Srodek",
+      "Mur_Naroznik_Gora",
+      "Wieza_Podstawa",
+      "Wieza_Srodek",
+      "Wieza_Strzelnica",
+      "Wieza_Wejscie",
+      "Wieza_Szczyt",
+      "Wieza_Dach",
+      "Wieza_Dach_Gora",
+      "Donzon_Sciana_Parter",
+      "Donzon_Okno_Parter",
+      "Donzon_Naroznik_Parter",
+      "Donzon_Posadzka",
+      "Donzon_Sciana",
+      "Donzon_Okno",
+      "Donzon_Drzwi",
+      "Donzon_Naroznik",
+      "Donzon_Wnetrze",
+      "Dach_Skos",
+      "Dach_Naroznik",
+      "Dach_Skos_Gora",
+      "Dach_Naroznik_Gora",
+      "Dach_Szczyt",
+      "Most_Poczatek",
+      "Most_Srodek",
+      "Most_Koniec"
+    ],
+    "Pelny": [
+      "Teren_Trawa",
+      "Teren_Trawa_V2",
+      "Teren_Trawa_Skladowisko",
+      "Teren_Trawa_Woz",
+      "Teren_Trawa_Studnia",
+      "Schody",
+      "Powietrze",
+      "Powietrze_Nad_Schodami",
+      "Mur_Dol",
+      "Mur_Dol_Beczki",
+      "Mur_Dol_Skrzynie",
+      "Brama_Dol",
+      "Brama_Dol_Pochodnie",
+      "Mur_Srodek",
+      "Mur_Srodek_V2",
+      "Mur_Srodek_V3",
+      "Mur_Gora",
+      "Mur_Gora_V2",
+      "Brama_Gora",
+      "Mur_Gora_Przejscie",
+      "Mur_Naroznik_Dol",
+      "Mur_Naroznik_Srodek",
+      "Mur_Naroznik_Gora",
+      "Wieza_Podstawa",
+      "Wieza_Srodek",
+      "Wieza_Strzelnica",
+      "Wieza_Wejscie",
+      "Wieza_Szczyt",
+      "Wieza_Szczyt_Choragiew",
+      "Wieza_Dach",
+      "Wieza_Dach_Gora",
+      "Donzon_Sciana_Parter",
+      "Donzon_Okno_Parter",
+      "Donzon_Naroznik_Parter",
+      "Donzon_Posadzka",
+      "Donzon_Sciana",
+      "Donzon_Okno",
+      "Donzon_Drzwi",
+      "Donzon_Drzwi_Pochodnie",
+      "Donzon_Naroznik",
+      "Donzon_Wnetrze",
+      "Dach_Skos",
+      "Dach_Naroznik",
+      "Dach_Skos_Gora",
+      "Dach_Naroznik_Gora",
+      "Dach_Szczyt",
+      "Dach_Szczyt_Choragiew",
+      "Most_Poczatek",
+      "Most_Srodek",
+      "Most_Koniec"
+    ]
+  },
+  "kontrola": {
+    "kafelki": 50,
+    "stany": 170,
+    "etykietyBoczne": 36,
+    "etykietyPionowe": 13,
+    "paryZgodne": 33,
+    "zestawy": {
+      "Prosty": {
+        "kafelki": 8,
+        "stany": 26
+      },
+      "Sredni": {
+        "kafelki": 22,
+        "stany": 79
+      },
+      "PelnyBezDekoracji": {
+        "kafelki": 41,
+        "stany": 146
+      },
+      "Pelny": {
+        "kafelki": 50,
+        "stany": 170
+      }
+    }
+  }
+}

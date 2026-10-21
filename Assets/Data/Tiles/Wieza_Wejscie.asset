@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Wieza_Wejscie
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Wieza_Wejscie
+  prefab: {fileID: 599380482886046640, guid: e39c326bdb9fada428e4547a79f28fe4, type: 3}
+  model: Wieza_Wejscie
+  modelAvailable: 1
+  group: "Wie\u017Ca"
+  weight: 3
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: wieza_cwiartka
+  labelN: wieza_cwiartka_odbity
+  labelW: wieza_sciana
+  labelS: drzwi
+  labelUp: kolumna_wiezy*
+  labelDown: kolumna_wiezy*
+  description: "\u0106wiartka wie\u017Cy: pi\u0119tro z drzwiami na stronie S."

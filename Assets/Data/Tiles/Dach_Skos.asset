@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5372b49aec270154dac598072fd4557c, type: 3}
+  m_Name: Dach_Skos
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
+  tileName: Dach_Skos
+  prefab: {fileID: 4469338641755008205, guid: 395f3acfbc64e8f4ebf6257988bc8c57, type: 3}
+  model: Dach_Skos
+  modelAvailable: 1
+  group: "Dach don\u017Conu"
+  weight: 1
+  symmetric: 0
+  rotations: 4
+  randomModelRotation: 0
+  labelE: dach_dol
+  labelN: donzon_wnetrze
+  labelW: dach_dol_odbity
+  labelS: okap
+  labelUp: kolumna_spadku_dachu*
+  labelDown: kolumna_sciany_donzonu*
+  description: "Dolny spadek dachu nad \u015Bcian\u0105; okap na S."

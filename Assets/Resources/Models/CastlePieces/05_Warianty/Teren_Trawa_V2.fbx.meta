@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: 331aaf975346852408ce19f9b08da5f6
+guid: 093fd3503aeb1d24fa0c68b1a5f23a58
 ModelImporter:
   serializedVersion: 24600
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Kamien_Akcent
+    second: {fileID: 2100000, guid: 5faef6080d07a1b4e985d242479eb4ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Trawa
+    second: {fileID: 2100000, guid: 23659278a512775408b48e0533041c15, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Trawa_Kepki
+    second: {fileID: 2100000, guid: b8681eb8a468d54488c7cfb253e4a27e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -42,10 +57,10 @@ ModelImporter:
     preBakeConvexCollisionMesh: 0
     preBakeTriangleCollisionMesh: 0
     importPhysicalCameras: 1
-    importVisibility: 1
-    importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
@@ -85,7 +100,7 @@ ModelImporter:
     normalSmoothingSource: 0
     calculateBlendshapeNormalsDeltaFromImportedNormals: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -104,7 +119,7 @@ ModelImporter:
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
