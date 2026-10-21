@@ -92,7 +92,7 @@ namespace WFC.Tests
                 var solver = new NaiveSolver();
                 solver.Initialize(rules, Small, seed, new SolverSettings { Selector = Create(name) });
                 GenerationResult result = solver.Run();
-                Assert.IsTrue(result.Success, $"{name}, ziarno {seed}: {result.Status} po {result.Metrics.Attempts} próbach");
+                Assert.IsTrue(result.Success, $"{name}, ziarno {seed}: {result.Status}, próby: {result.Metrics.Attempts}");
                 Assert.AreEqual(name, result.SelectorName);
                 RuleCheckReport check = RuleChecker.Check(rules, Small, result.States);
                 Assert.AreEqual(0, check.Total, $"{name}, ziarno {seed}: {check}");

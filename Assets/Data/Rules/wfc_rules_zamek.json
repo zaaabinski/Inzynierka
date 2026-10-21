@@ -1,5 +1,5 @@
 {
-  "wersja": "2026-10-13",
+  "wersja": "2026-10-21",
   "opis": "Reguly laczenia kostek WFC zamku. Zrodlo: ten sam zestaw co arkusz Zasady_laczenia_WFC_zamek.xlsx; sprawdzony prototypem w Pythonie (224 mapy 20x20x13, 0 naruszen).",
   "konwencje": {
     "kierunki": "Uklad Blendera: E = +X, N = +Y, W = -X, S = -Y, gora = +Z. W Unity siatka: E = +X, N = +Z, gora = +Y, a model w prefabie obrocony o 180 stopni wokol Y.",
@@ -823,7 +823,7 @@
     {
       "nazwa": "Dach_Szczyt_Choragiew",
       "model": "Dach_Szczyt_Choragiew",
-      "modelDostepny": false,
+      "modelDostepny": true,
       "grupa": "Dach donżonu",
       "waga": 0.5,
       "symetryczny": true,

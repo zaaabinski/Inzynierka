@@ -115,4 +115,4 @@ MonoBehaviour:
   weightMultipliers: []
   expectedTileCount: 22
   expectedStateCount: 79
-  rulesVersion: 2026-10-13
+  rulesVersion: 2026-10-21

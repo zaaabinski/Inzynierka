@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143ab5729739c974f8f5cdc283edef55, type: 3}
+  m_Name: E5
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
+  experimentName: E5
+  description: "Liczba kafelk\xF3w (pytanie 5): zestawy Prosty (26 stan\xF3w), \u015Aredni (79), PelnyBezDekoracji (146) i Pe\u0142ny (170)."
+  solvers: 00000000i
+  selectors: 00000000i
+  contradictionHandlers: 00000000i
+  tilesets:
+  - {fileID: 11400000, guid: b452bd5503d18dc4ba179feab96acb42, type: 2}
+  - {fileID: 11400000, guid: 68317e1685489fa45a57a11ebd56dab6, type: 2}
+  - {fileID: 11400000, guid: 7df771427ae691f4aa061d821ff1a09f, type: 2}
+  - {fileID: 11400000, guid: b1eba3fe7f014ea43beca3ecdcc05b8e, type: 2}
+  gridSizes:
+  - {x: 20, y: 13, z: 20}
+  firstSeed: 1
+  seedCount: 100
+  repetitions: 1
+  warmupRuns: 5
+  maxAttempts: 1000
+  timeLimitSeconds: 0
+  showEveryNth: 1

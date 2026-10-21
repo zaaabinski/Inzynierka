@@ -29,11 +29,11 @@ namespace WFC.Editor
 
         public static Scene Create()
         {
+            // Nowa scena zwalnia nieużywane zasoby, więc zestaw wczytujemy dopiero po niej.
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var tileset = AssetDatabase.LoadAssetAtPath<TilesetDefinition>(WfcPaths.Tileset(DefaultTileset));
             if (tileset == null)
                 throw new InvalidOperationException($"Brak zestawu {WfcPaths.Tileset(DefaultTileset)}. Najpierw uruchom WFC → Importuj reguły i modele.");
-
-            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             var previewer = new GameObject("TilesetPreviewer").AddComponent<TilesetPreviewer>();
             previewer.Tileset = tileset;

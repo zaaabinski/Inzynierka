@@ -9,7 +9,7 @@ using WFC.Runtime;
 namespace WFC.Tests
 {
     /// <summary>
-    /// Zasoby po imporcie (WFC → Importuj reguły i modele): 50 TileDefinition, 4 TilesetDefinition, 42 prefaby,
+    /// Zasoby po imporcie (WFC → Importuj reguły i modele): 50 TileDefinition, 4 TilesetDefinition, 43 prefaby,
     /// 12 materiałów. Zestawy z zasobów muszą dać po kompilacji dokładnie to samo co plik JSON.
     /// </summary>
     public sealed class ImportedAssetsTests
@@ -56,7 +56,7 @@ namespace WFC.Tests
                 }
                 else if (tile.HasModel)
                 {
-                    // Brak modelu: zastępczy prefab kafelka o tych samych etykietach (arkusz, zakładka Zasady, wiersz 50).
+                    // Brak modelu: zastępczy prefab kafelka o tych samych etykietach (RulesImporter.FindPrefab).
                     Assert.IsNotNull(asset.Prefab, $"Kafelek {tile.Name} bez modelu powinien dostać prefab zastępczy.");
                     withPrefab++;
                 }
@@ -65,16 +65,16 @@ namespace WFC.Tests
                     Assert.IsNull(asset.Prefab, $"Kafelek niewidoczny {tile.Name} nie powinien mieć prefabu.");
                 }
             }
-            Assert.AreEqual("Dach_Szczyt", Load<TileDefinition>(WfcPaths.Tile("Dach_Szczyt_Choragiew")).Prefab.name);
+            Assert.AreEqual("Dach_Szczyt_Choragiew", Load<TileDefinition>(WfcPaths.Tile("Dach_Szczyt_Choragiew")).Prefab.name);
             // 3 kafelki bez prefabu: Powietrze, Powietrze_Nad_Schodami i Donzon_Wnetrze (niewidoczne).
             Assert.AreEqual(47, withPrefab);
         }
 
         [Test]
-        public void Prefaby_42_ModelObroconyO180Stopni()
+        public void Prefaby_43_ModelObroconyO180Stopni()
         {
             string[] prefabs = Find("t:Prefab", WfcPaths.TilePrefabs);
-            Assert.AreEqual(42, prefabs.Length, ImportHint);
+            Assert.AreEqual(43, prefabs.Length, ImportHint);
             foreach (string path in prefabs)
             {
                 var prefab = Load<GameObject>(path);
@@ -84,6 +84,39 @@ namespace WFC.Tests
                 Assert.IsNotNull(model, $"{path}: brak dziecka Model");
                 Assert.Less(Quaternion.Angle(Quaternion.Euler(0f, UnityGrid.ModelBaseYaw, 0f), model.localRotation), 0.01f, $"{path}: Model obrócony o 180° wokół Y");
                 Assert.IsEmpty(prefab.GetComponentsInChildren<Collider>(true), $"{path}: bez colliderów");
+            }
+        }
+
+        [Test]
+        public void DachSzczytChoragiew_WPoziomieWKostce_WGoreNajwyzej055MetraNadKostke()
+        {
+            // Nad szczytem dachu zawsze stoi Powietrze, ale na nim może stanąć most, którego łuk schodzi 2,4 m w dół,
+            // czyli do 0,6 m nad spód tej kostki. Maszt z chorągwią musi się zmieścić poniżej.
+            var prefab = Load<GameObject>(WfcPaths.TilePrefab("Dach_Szczyt_Choragiew"));
+            foreach (int rotation in new[] { 0, 1, 2, 3 })
+            {
+                var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                try
+                {
+                    instance.transform.rotation = UnityGrid.TileRotation(rotation);
+                    var bounds = new Bounds();
+                    bool first = true;
+                    foreach (Renderer renderer in instance.GetComponentsInChildren<Renderer>())
+                    {
+                        if (first)
+                            bounds = renderer.bounds;
+                        else
+                            bounds.Encapsulate(renderer.bounds);
+                        first = false;
+                    }
+                    Assert.LessOrEqual(Mathf.Max(-bounds.min.x, bounds.max.x, -bounds.min.z, bounds.max.z), 1.5f + 1e-3f, $"obrót {rotation}: wystaje w bok");
+                    Assert.LessOrEqual(bounds.max.y, 3.55f + 1e-3f, $"obrót {rotation}: za wysoko");
+                    Assert.Greater(bounds.max.y, 3.0f, "maszt powinien wystawać ponad kostkę");
+                }
+                finally
+                {
+                    Object.DestroyImmediate(instance);
+                }
             }
         }
 
@@ -120,6 +153,33 @@ namespace WFC.Tests
         public void Scena_TilesetPreview()
         {
             Assert.IsTrue(File.Exists(TestData.ProjectPath(WfcPaths.TilesetPreviewScene)), $"Brak sceny {WfcPaths.TilesetPreviewScene}. Uruchom WFC → Utwórz scenę TilesetPreview.");
+        }
+
+        [TestCase("E1", 1)]
+        [TestCase("E2", 4)]
+        [TestCase("E3", 4)]
+        [TestCase("E4", 4)]
+        [TestCase("E5", 4)]
+        [TestCase("E6", 1)]
+        public void Eksperyment_ZasobZWariantami(string experimentName, int variants)
+        {
+            BenchmarkConfig config = Load<BenchmarkConfig>(WfcPaths.Experiment(experimentName));
+            Assert.AreEqual(experimentName, config.ExperimentName);
+            Assert.AreEqual(variants, config.Variants().Count, config.Summary());
+            Assert.AreEqual(100, config.SeedCount);
+            Assert.AreEqual(5, config.WarmupRuns);
+            Assert.IsTrue(config.Variants().All(variant => variant.Tileset != null));
+        }
+
+        [Test]
+        public void Scena_Generator_OknoMaUstawieniaPanelu()
+        {
+            string scene = File.ReadAllText(TestData.ProjectPath(WfcPaths.GeneratorScene));
+            string guid = AssetDatabase.AssetPathToGUID(WfcPaths.UiSettings + "/PanelSettings.asset");
+            Assert.IsNotEmpty(guid, "Brak Assets/Settings/UI/PanelSettings.asset. Uruchom WFC → Utwórz scenę Generator.");
+            StringAssert.Contains($"m_PanelSettings: {{fileID: 11400000, guid: {guid}, type: 2}}", scene, "UIDocument w scenie Generator bez ustawień panelu: okno się nie narysuje.");
+            StringAssert.Contains("PanelGeneratora", scene);
+            StringAssert.Contains("BenchmarkRunner", scene);
         }
 
         [Test]

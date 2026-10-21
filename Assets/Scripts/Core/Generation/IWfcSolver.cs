@@ -68,5 +68,11 @@ namespace WFC.Core
 
         /// <summary>Komórka ostatniej sprzeczności albo −1.</summary>
         int LastContradictionCell { get; }
+
+        /// <summary>
+        /// Największy rozmiar struktur danych rozwiązywacza i selektora w bajtach (bez skompilowanych reguł), szacowany
+        /// z rozmiarów tablic. Porównuje sposób przechowywania możliwości niezależnie od środowiska uruchomienia.
+        /// </summary>
+        long PeakMemoryBytes { get; }
     }
 }

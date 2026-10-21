@@ -55,6 +55,9 @@ namespace WFC.Core
             return -1;
         }
 
+        /// <summary>Dodatek losowy (8 bajtów), liczba możliwości i numer wersji (po 4 bajty) na komórkę oraz kolejka.</summary>
+        public long MemoryBytes => (long)noise.Length * 16 + (long)queue.PeakCount * CellPriorityQueue.EntryBytes;
+
         /// <summary>Pierwsze kryterium porównania (mniejsze najpierw).</summary>
         protected abstract int Primary(int cell, int remaining);
 
@@ -116,6 +119,9 @@ namespace WFC.Core
         }
 
         public void OnCellChanged(int cell, int count, double entropy) => remaining[cell] = count;
+
+        /// <summary>Liczba możliwości (4 bajty) na komórkę.</summary>
+        public long MemoryBytes => (long)remaining.Length * 4;
 
         public int SelectNext()
         {

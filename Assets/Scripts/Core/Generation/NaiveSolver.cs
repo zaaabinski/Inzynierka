@@ -28,6 +28,8 @@ namespace WFC.Core
         bool[] queued;
         readonly List<int> changed = new List<int>();
         bool[] isChanged;
+        int peakQueue;
+        int peakChanged;
         int[] scratch = Array.Empty<int>();
 
         public string Name => "Naive";
@@ -44,6 +46,26 @@ namespace WFC.Core
 
         public int LastContradictionCell { get; private set; } = -1;
 
+        /// <summary>
+        /// Listy możliwości (obiekt listy 32 bajty, tablica 24 bajty nagłówka i 4 bajty na stan), tablica sąsiadów
+        /// (6 liczb int na komórkę), 2 tablice znaczników (po 1 bajcie na komórkę), kolejka i lista zmian w szczycie
+        /// oraz struktury selektora.
+        /// </summary>
+        public long PeakMemoryBytes
+        {
+            get
+            {
+                if (possibilities == null)
+                    return 0;
+                long cells = grid.CellCount;
+                long lists = cells * (32 + 24 + 4L * rules.StateCount);
+                long neighborTable = cells * DirectionExtensions.Count * 4;
+                long flags = cells * 2;
+                long work = 4L * (peakQueue + peakChanged + rules.StateCount);
+                return lists + neighborTable + flags + work + settings.Selector.MemoryBytes;
+            }
+        }
+
         public void Initialize(CompiledRules compiledRules, int3 size, uint mapSeed, SolverSettings solverSettings)
         {
             long start = Stopwatch.GetTimestamp();
@@ -58,6 +80,8 @@ namespace WFC.Core
             metrics = default;
             result = null;
             attempt = 0;
+            peakQueue = 0;
+            peakChanged = 0;
             LastDecisionCell = -1;
             LastContradictionCell = -1;
 
@@ -273,6 +297,8 @@ namespace WFC.Core
                 return;
             queued[cell] = true;
             queue.Enqueue(cell);
+            if (queue.Count > peakQueue)
+                peakQueue = queue.Count;
         }
 
         void MarkChanged(int cell)
@@ -281,6 +307,8 @@ namespace WFC.Core
                 return;
             isChanged[cell] = true;
             changed.Add(cell);
+            if (changed.Count > peakChanged)
+                peakChanged = changed.Count;
         }
 
         void NotifyChangedCells()

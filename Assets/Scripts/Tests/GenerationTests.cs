@@ -134,7 +134,7 @@ namespace WFC.Tests
             for (uint seed = 1; seed <= 3; seed++)
             {
                 GenerationResult result = Generate(setName, Small, seed);
-                Assert.IsTrue(result.Success, $"{setName}, ziarno {seed}: {result.Status} po {result.Metrics.Attempts} próbach");
+                Assert.IsTrue(result.Success, $"{setName}, ziarno {seed}: {result.Status}, próby: {result.Metrics.Attempts}");
                 RuleCheckReport check = RuleChecker.Check(TestData.Compile(setName), Small, result.States);
                 Assert.AreEqual(0, check.Total, $"{setName}, ziarno {seed}: {check}");
             }

@@ -7,35 +7,9 @@ using WFC.Core;
 
 namespace WFC.Runtime
 {
-    public enum SolverKind
-    {
-        Naive
-    }
-
-    /// <summary>Heurystyka wyboru komórki (kolejność decyzji).</summary>
-    public enum SelectorKind
-    {
-        [InspectorName("Piętrami, w piętrze najmniejsza entropia")]
-        LevelFirst,
-
-        [InspectorName("Scanline: po kolei")]
-        Scanline,
-
-        [InspectorName("MRV: najmniej możliwości")]
-        MinRemaining,
-
-        [InspectorName("Najmniejsza entropia")]
-        Entropy
-    }
-
-    public enum ContradictionKind
-    {
-        Restart
-    }
-
     /// <summary>
     /// Główny kontroler sceny Generator: ustawienia generacji, przyciski Generuj, Krok, Do końca, Wyczyść
-    /// (w inspektorze), uruchomienie rozwiązywacza, sprawdzenie mapy i postawienie jej przez MapBuilder.
+    /// (w inspektorze i w oknie ustawień), uruchomienie rozwiązywacza, sprawdzenie mapy i postawienie jej przez MapBuilder.
     /// W trybie Play klawisz G generuje mapę z następnym ziarnem.
     /// </summary>
     public sealed class GeneratorController : MonoBehaviour
@@ -73,10 +47,28 @@ namespace WFC.Runtime
             set => mapBuilder = value;
         }
 
+        public SolverKind Solver
+        {
+            get => solver;
+            set => solver = value;
+        }
+
         public SelectorKind Selector
         {
             get => selector;
             set => selector = value;
+        }
+
+        public ContradictionKind Contradiction
+        {
+            get => contradiction;
+            set => contradiction = value;
+        }
+
+        public int MaxAttempts
+        {
+            get => maxAttempts;
+            set => maxAttempts = Mathf.Max(1, value);
         }
 
         public uint Seed
@@ -106,13 +98,14 @@ namespace WFC.Runtime
 
         void Start()
         {
-            if (generateOnStart)
+            // Z argumentem -benchmark od razu startuje badanie (BenchmarkRunner), bez mapy na start.
+            if (generateOnStart && !CommandLine.IsBenchmark)
                 Generate();
         }
 
         void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame && !UiInput.IsTyping)
                 NextSeed();
         }
 
@@ -165,13 +158,8 @@ namespace WFC.Runtime
             if (tileset == null)
                 throw new InvalidOperationException("GeneratorController: wybierz zestaw kafelków.");
             rules = RuleCompiler.Compile(tileset.ToTilesetData());
-            activeSolver = CreateSolver();
-            activeSolver.Initialize(rules, GridSize, seed, new SolverSettings
-            {
-                Selector = CreateSelector(),
-                ContradictionHandler = CreateContradictionHandler(),
-                MaxAttempts = maxAttempts
-            });
+            activeSolver = WfcFactory.CreateSolver(solver);
+            activeSolver.Initialize(rules, GridSize, seed, WfcFactory.CreateSettings(selector, contradiction, maxAttempts));
             LastResult = null;
             LastCheck = null;
             LastStats = null;
@@ -214,36 +202,6 @@ namespace WFC.Runtime
                          $"; ustalone komórki {decided} z {grid.CellCount}.";
         }
 
-        IWfcSolver CreateSolver()
-        {
-            switch (solver)
-            {
-                case SolverKind.Naive: return new NaiveSolver();
-                default: throw new ArgumentOutOfRangeException(nameof(solver), solver, null);
-            }
-        }
-
-        ICellSelector CreateSelector()
-        {
-            switch (selector)
-            {
-                case SelectorKind.LevelFirst: return new LevelFirstSelector();
-                case SelectorKind.Scanline: return new ScanlineSelector();
-                case SelectorKind.MinRemaining: return new MinRemainingSelector();
-                case SelectorKind.Entropy: return new EntropySelector();
-                default: throw new ArgumentOutOfRangeException(nameof(selector), selector, null);
-            }
-        }
-
-        IContradictionHandler CreateContradictionHandler()
-        {
-            switch (contradiction)
-            {
-                case ContradictionKind.Restart: return new RestartHandler();
-                default: throw new ArgumentOutOfRangeException(nameof(contradiction), contradiction, null);
-            }
-        }
-
         /// <summary>Opis wyniku po polsku, do inspektora i konsoli.</summary>
         public static string Describe(GenerationResult result, RuleCheckReport check, StructureStats stats, double buildMs)
         {
@@ -256,7 +214,7 @@ namespace WFC.Runtime
                 _ => "nieudana (limit prób)"
             };
             text.Append($"Ziarno {result.Seed}, {result.SolverName} + {result.SelectorName} + {result.ContradictionHandlerName}, ")
-                .Append($"siatka {result.Grid}: {status} po {metrics.Attempts} próbach (sprzeczności: {metrics.Contradictions}).\n")
+                .Append($"siatka {result.Grid}: {status}, próby: {metrics.Attempts}, sprzeczności: {metrics.Contradictions}.\n")
                 .Append($"Czas generacji {metrics.TotalMs:0} ms (wybór komórek {metrics.SelectionMs:0} ms, propagacja {metrics.PropagationMs:0} ms), ")
                 .Append($"stawianie kostek {buildMs:0} ms.\n")
                 .Append($"Decyzje {metrics.Decisions}, kroki propagacji {metrics.PropagationSteps}, usunięte możliwości {metrics.RemovedPossibilities}.");

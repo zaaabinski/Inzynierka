@@ -35,13 +35,25 @@ namespace WFC.Core
 
         readonly List<Entry> heap = new List<Entry>();
 
+        /// <summary>Rozmiar jednego wpisu w bajtach: 3 liczby int i 1 double, z wyrównaniem do 8 bajtów.</summary>
+        public const int EntryBytes = 24;
+
         public int Count => heap.Count;
 
-        public void Clear() => heap.Clear();
+        /// <summary>Największa liczba wpisów od ostatniego Clear.</summary>
+        public int PeakCount { get; private set; }
+
+        public void Clear()
+        {
+            heap.Clear();
+            PeakCount = 0;
+        }
 
         public void Push(in Entry entry)
         {
             heap.Add(entry);
+            if (heap.Count > PeakCount)
+                PeakCount = heap.Count;
             int index = heap.Count - 1;
             while (index > 0)
             {

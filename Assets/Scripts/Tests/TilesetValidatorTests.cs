@@ -22,11 +22,10 @@ namespace WFC.Tests
         }
 
         [Test]
-        public void Pelny_JedyneOstrzezenie_BrakModeluDachSzczytChoragiew()
+        public void Pelny_BezOstrzezen_KazdyKafelekMaModel()
         {
             ValidationReport report = TilesetValidator.Validate(TestData.Compile("Pelny"), TestData.Floors);
-            Assert.AreEqual(1, report.Warnings.Count, report.ToString());
-            StringAssert.Contains("Dach_Szczyt_Choragiew", report.Warnings[0]);
+            Assert.IsEmpty(report.Warnings, report.ToString());
         }
 
         [TestCase("Teren_Trawa", 0, 0)]

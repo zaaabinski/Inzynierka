@@ -29,8 +29,8 @@ namespace WFC.Editor
             public readonly List<ValidationReport> Reports = new List<ValidationReport>();
 
             public string Summary =>
-                $"Import reguł {RulesVersion}: {Models} modeli, {Materials} materiałów, {Prefabs} prefabów, " +
-                $"{Tiles} kafelków, {Tilesets} zestawów; błędy: {Errors.Count}, ostrzeżenia: {Warnings.Count}.";
+                $"Import reguł {RulesVersion}: modele {Models}, materiały {Materials}, prefaby {Prefabs}, " +
+                $"kafelki {Tiles}, zestawy {Tilesets}; błędy: {Errors.Count}, ostrzeżenia: {Warnings.Count}.";
 
             public void Add(ValidationReport report)
             {

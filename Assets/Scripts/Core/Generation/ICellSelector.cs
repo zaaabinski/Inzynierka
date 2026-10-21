@@ -20,5 +20,8 @@ namespace WFC.Core
 
         /// <summary>Komórka do następnej decyzji (ma więcej niż 1 możliwość) albo −1, gdy takich nie ma.</summary>
         int SelectNext();
+
+        /// <summary>Największy rozmiar struktur danych selektora w bieżącej próbie, w bajtach (szacunek z rozmiarów tablic).</summary>
+        long MemoryBytes { get; }
     }
 }

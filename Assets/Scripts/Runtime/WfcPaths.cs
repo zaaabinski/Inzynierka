@@ -16,6 +16,18 @@ namespace WFC.Runtime
         public const string Tiles = "Assets/Data/Tiles";
         public const string Scenes = "Assets/Scenes";
         public const string TilesetPreviewScene = Scenes + "/TilesetPreview.unity";
+        public const string GeneratorScene = Scenes + "/Generator.unity";
+
+        /// <summary>Eksperymenty E1–E6 (BenchmarkConfig).</summary>
+        public const string Experiments = "Assets/Data/Experiments";
+
+        /// <summary>Ustawienia panelu UI Toolkit i jego motyw.</summary>
+        public const string UiSettings = "Assets/Settings/UI";
+
+        /// <summary>Zbudowana aplikacja, względem folderu projektu (folder Build jest w .gitignore).</summary>
+        public const string BuildExecutable = "Build/Zamek.exe";
+
+        public static string Experiment(string experimentName) => $"{Experiments}/{experimentName}.asset";
 
         public static string TilePrefab(string model) => $"{TilePrefabs}/{model}.prefab";
 

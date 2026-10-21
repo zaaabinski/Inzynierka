@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143ab5729739c974f8f5cdc283edef55, type: 3}
+  m_Name: E4
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
+  experimentName: E4
+  description: "Skalowanie (pytanie 4): czas i pami\u0119\u0107 dla siatek 10 \xD7 10 \xD7 8, 20 \xD7 20 \xD7 13, 40 \xD7 40 \xD7 13 i 80 \xD7 80 \xD7 13. Limit 600 s na map\u0119; przekroczenie zapisuje si\u0119 jako wynik."
+  solvers: 00000000i
+  selectors: 00000000i
+  contradictionHandlers: 00000000i
+  tilesets:
+  - {fileID: 11400000, guid: b1eba3fe7f014ea43beca3ecdcc05b8e, type: 2}
+  gridSizes:
+  - {x: 10, y: 8, z: 10}
+  - {x: 20, y: 13, z: 20}
+  - {x: 40, y: 13, z: 40}
+  - {x: 80, y: 13, z: 80}
+  firstSeed: 1
+  seedCount: 100
+  repetitions: 1
+  warmupRuns: 5
+  maxAttempts: 1000
+  timeLimitSeconds: 600
+  showEveryNth: 1

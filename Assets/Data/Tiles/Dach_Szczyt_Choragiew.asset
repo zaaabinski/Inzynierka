@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Dach_Szczyt_Choragiew
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TileDefinition
   tileName: Dach_Szczyt_Choragiew
-  prefab: {fileID: 1334943682632326768, guid: ddcd74c02d5a68f48a896c6481dd4a17, type: 3}
+  prefab: {fileID: 1050564443653624237, guid: a7b83e7eeb17b5e48a6ea361dd77d8b7, type: 3}
   model: Dach_Szczyt_Choragiew
-  modelAvailable: 0
+  modelAvailable: 1
   group: "Dach don\u017Conu"
   weight: 0.5
   symmetric: 1
