@@ -131,7 +131,7 @@ namespace WFC.Runtime
 
             scroll.Add(MakeTitle("Ustawienia", 14));
             tilesetField = MakeDropdown("zestaw", "Zestaw", tilesets.Select(t => t != null ? t.name : "(brak)").ToList(), Math.Max(0, tilesets.IndexOf(generator != null ? generator.Tileset : null)));
-            solverField = MakeDropdown("rozwiazywacz", "Rozwiązywacz", Solvers.Select(s => WfcFactory.Label(s)).ToList(), Array.IndexOf(Solvers, generator != null ? generator.Solver : SolverKind.Naive));
+            solverField = MakeDropdown("rozwiazywacz", "Rozwiązywacz", Solvers.Select(s => WfcFactory.Label(s)).ToList(), Array.IndexOf(Solvers, generator != null ? generator.Solver : SolverKind.Bitset));
             selectorField = MakeDropdown("heurystyka", "Heurystyka", Selectors.Select(s => WfcFactory.Label(s)).ToList(), Array.IndexOf(Selectors, generator != null ? generator.Selector : SelectorKind.LevelFirst));
             contradictionField = MakeDropdown("sprzecznosc", "Sprzeczność", Contradictions.Select(c => WfcFactory.Label(c)).ToList(), Array.IndexOf(Contradictions, generator != null ? generator.Contradiction : ContradictionKind.Restart));
             scroll.Add(tilesetField);
@@ -330,7 +330,7 @@ namespace WFC.Runtime
             config.name = "Wlasne";
             config.ExperimentName = "Wlasne";
             config.Solvers.Clear();
-            config.Solvers.Add(generator != null ? generator.Solver : SolverKind.Naive);
+            config.Solvers.Add(generator != null ? generator.Solver : SolverKind.Bitset);
             config.Selectors.Clear();
             config.Selectors.Add(generator != null ? generator.Selector : SelectorKind.LevelFirst);
             config.ContradictionHandlers.Clear();

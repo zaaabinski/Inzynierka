@@ -155,10 +155,10 @@ namespace WFC.Tests
             Assert.IsTrue(File.Exists(TestData.ProjectPath(WfcPaths.TilesetPreviewScene)), $"Brak sceny {WfcPaths.TilesetPreviewScene}. Uruchom WFC → Utwórz scenę TilesetPreview.");
         }
 
-        [TestCase("E1", 1)]
+        [TestCase("E1", 4)]
         [TestCase("E2", 4)]
         [TestCase("E3", 4)]
-        [TestCase("E4", 4)]
+        [TestCase("E4", 16)]
         [TestCase("E5", 4)]
         [TestCase("E6", 1)]
         public void Eksperyment_ZasobZWariantami(string experimentName, int variants)

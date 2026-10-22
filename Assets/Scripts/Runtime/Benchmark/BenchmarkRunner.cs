@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using WFC.Core;
 
 namespace WFC.Runtime
 {
@@ -112,6 +113,7 @@ namespace WFC.Runtime
             LastRun = null;
             Status = $"Start. {config.Summary()}";
             Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
+            WarnIfBurstDisabled(config);
         }
 
         public void TogglePause()
@@ -168,6 +170,7 @@ namespace WFC.Runtime
             {
                 OutputPath = batch.OutputPath;
                 Debug.Log($"[BenchmarkRunner] Start. {config.Summary()} Wyniki: {OutputPath}");
+                WarnIfBurstDisabled(config);
                 int lastVariant = -1;
                 while (!batch.IsFinished)
                 {
@@ -180,6 +183,13 @@ namespace WFC.Runtime
                 Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
                 return batch.Violations == 0 ? 0 : 1;
             }
+        }
+
+        /// <summary>Przy wyłączonym Burst wariant Burst liczyłby się jak zwykły C# (czyli jak Bitset).</summary>
+        static void WarnIfBurstDisabled(BenchmarkConfig config)
+        {
+            if (config.Solvers.Contains(SolverKind.Burst) && !BurstSolver.IsBurstCompiled)
+                Debug.LogWarning("[BenchmarkRunner] Burst jest wyłączony: wariant Burst wykonuje zwykły C#, tak jak Bitset.");
         }
 
         void OnDestroy()

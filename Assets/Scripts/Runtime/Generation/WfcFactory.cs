@@ -4,11 +4,20 @@ using WFC.Core;
 
 namespace WFC.Runtime
 {
-    /// <summary>Rozwiązywacz (sposób przechowywania możliwości i propagacji).</summary>
+    /// <summary>Rozwiązywacz (sposób przechowywania możliwości i propagacji). Wszystkie dają te same mapy.</summary>
     public enum SolverKind
     {
         [InspectorName("Naive: listy możliwości")]
-        Naive
+        Naive,
+
+        [InspectorName("SupportCount: liczniki wsparcia")]
+        SupportCount,
+
+        [InspectorName("Bitset: maski bitowe")]
+        Bitset,
+
+        [InspectorName("Burst: maski bitowe, kompilator Burst")]
+        Burst
     }
 
     /// <summary>Heurystyka wyboru komórki (kolejność decyzji).</summary>
@@ -42,6 +51,9 @@ namespace WFC.Runtime
             switch (kind)
             {
                 case SolverKind.Naive: return new NaiveSolver();
+                case SolverKind.SupportCount: return new SupportCountSolver();
+                case SolverKind.Bitset: return new BitsetSolver();
+                case SolverKind.Burst: return new BurstSolver();
                 default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }

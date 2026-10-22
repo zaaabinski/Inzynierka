@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
   experimentName: E2
   description: "Kolejno\u015B\u0107 wyboru kom\xF3rek (pytanie 2): pi\u0119trami, Scanline, MRV (najmniej mo\u017Cliwo\u015Bci) i entropia. MRV i entropia ko\u0144cz\u0105 si\u0119 sprzeczno\u015Bci\u0105 w oko\u0142o 97% pr\xF3b, wi\u0119c ta seria trwa najd\u0142u\u017Cej."
-  solvers: 00000000i
+  solvers: 02000000i
   selectors: 00000000010000000200000003000000i
   contradictionHandlers: 00000000i
   tilesets:

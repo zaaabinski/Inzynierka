@@ -9,8 +9,8 @@ namespace WFC.Editor
 {
     /// <summary>
     /// Eksperymenty E1–E6 z rozdziału 7 handoffu jako zasoby BenchmarkConfig w Assets/Data/Experiments. Bazą jest
-    /// siatka 20 × 20 × 13, zestaw Pelny, kolejność piętrami, start od nowa i ziarna 1–100. Warianty, których
-    /// jeszcze nie ma (szybsze rozwiązywacze, cofanie, warianty reguł), dojdą do tych samych zasobów w kolejnych etapach.
+    /// BitsetSolver, siatka 20 × 20 × 13, zestaw Pelny, kolejność piętrami, start od nowa i ziarna 1–100. Warianty, których
+    /// jeszcze nie ma (heurystyka losowa, cofanie, warianty reguł), dojdą do tych samych zasobów w kolejnych etapach.
     /// </summary>
     public static class ExperimentPresets
     {
@@ -40,9 +40,14 @@ namespace WFC.Editor
             TilesetDefinition full = Tileset("Pelny");
             var experiments = new List<BenchmarkConfig>
             {
-                Create("E1", "Rozwiązywacze: ten sam zestaw i kolejność, różny sposób przechowywania możliwości (pytania 1 i 7). " +
-                             "Na razie NaiveSolver; SupportCount, Bitset i Burst dojdą w kamieniu 6.",
-                    config => config.Tilesets.Add(full)),
+                Create("E1", "Rozwiązywacze: ten sam zestaw i kolejność, różny sposób przechowywania możliwości (pytania 1 i 7): " +
+                             "Naive (listy), SupportCount (liczniki wsparcia), Bitset (maski bitowe) i Burst (maski bitowe w Burst). " +
+                             "Wszystkie dają te same mapy, więc różnią się tylko czasem i pamięcią.",
+                    config =>
+                    {
+                        config.Tilesets.Add(full);
+                        UseAllSolvers(config);
+                    }),
                 Create("E2", "Kolejność wyboru komórek (pytanie 2): piętrami, Scanline, MRV (najmniej możliwości) i entropia. " +
                              "MRV i entropia kończą się sprzecznością w około 97% prób, więc ta seria trwa najdłużej.",
                     config =>
@@ -59,13 +64,14 @@ namespace WFC.Editor
                         config.GridSizes.Clear();
                         config.GridSizes.AddRange(ScalingSizes);
                     }),
-                Create("E4", "Skalowanie (pytanie 4): czas i pamięć dla siatek 10 × 10 × 8, 20 × 20 × 13, 40 × 40 × 13 i 80 × 80 × 13. " +
-                             "Limit 600 s na mapę; przekroczenie zapisuje się jako wynik.",
+                Create("E4", "Skalowanie (pytanie 4): czas i pamięć 4 rozwiązywaczy dla siatek 10 × 10 × 8, 20 × 20 × 13, " +
+                             "40 × 40 × 13 i 80 × 80 × 13. Limit 600 s na mapę; przekroczenie zapisuje się jako wynik.",
                     config =>
                     {
                         config.Tilesets.Add(full);
                         config.GridSizes.Clear();
                         config.GridSizes.AddRange(ScalingSizes);
+                        UseAllSolvers(config);
                         config.TimeLimitSeconds = 600f;
                     }),
                 Create("E5", "Liczba kafelków (pytanie 5): zestawy Prosty (26 stanów), Średni (79), PelnyBezDekoracji (146) i Pełny (170).",
@@ -84,7 +90,7 @@ namespace WFC.Editor
             config.ExperimentName = experimentName;
             config.Description = description;
             config.Solvers.Clear();
-            config.Solvers.Add(SolverKind.Naive);
+            config.Solvers.Add(SolverKind.Bitset);
             config.Selectors.Clear();
             config.Selectors.Add(SelectorKind.LevelFirst);
             config.ContradictionHandlers.Clear();
@@ -102,6 +108,12 @@ namespace WFC.Editor
             setup(config);
             EditorUtility.SetDirty(config);
             return config;
+        }
+
+        static void UseAllSolvers(BenchmarkConfig config)
+        {
+            config.Solvers.Clear();
+            config.Solvers.AddRange((SolverKind[])Enum.GetValues(typeof(SolverKind)));
         }
 
         static TilesetDefinition Tileset(string setName) =>

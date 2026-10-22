@@ -20,7 +20,7 @@ namespace WFC.Runtime
         [SerializeField] Vector3Int gridSize = new Vector3Int(20, 13, 20);
 
         [Header("Algorytm")]
-        [SerializeField] SolverKind solver = SolverKind.Naive;
+        [SerializeField] SolverKind solver = SolverKind.Bitset;
         [Tooltip("Piętrami: domyślna, jak w prototypie. Scanline: komórki po kolei od dołu. MRV: komórka z najmniejszą liczbą możliwości. Entropia: najmniejsza entropia Shannona w całej siatce.")]
         [SerializeField] SelectorKind selector = SelectorKind.LevelFirst;
         [SerializeField] ContradictionKind contradiction = ContradictionKind.Restart;

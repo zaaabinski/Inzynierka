@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 
 namespace WFC.Core
 {
@@ -22,7 +23,7 @@ namespace WFC.Core
         {
             int count = 0;
             foreach (ulong word in mask)
-                count += PopCount(word);
+                count += math.countbits(word);
             return count;
         }
 
@@ -34,23 +35,21 @@ namespace WFC.Core
             return false;
         }
 
+        /// <summary>Numer najniższego ustawionego bitu albo −1, gdy maska jest pusta.</summary>
+        public static int First(ReadOnlySpan<ulong> mask)
+        {
+            for (int word = 0; word < mask.Length; word++)
+                if (mask[word] != 0)
+                    return word * BitsPerWord + math.tzcnt(mask[word]);
+            return -1;
+        }
+
         /// <summary>Ustawia bity 0 … bitCount − 1, wyższe bity ostatniego słowa zostają zerami.</summary>
         public static void SetFirst(Span<ulong> mask, int bitCount)
         {
             mask.Clear();
             for (int i = 0; i < bitCount; i++)
                 Set(mask, i);
-        }
-
-        static int PopCount(ulong value)
-        {
-            int count = 0;
-            while (value != 0)
-            {
-                value &= value - 1;
-                count++;
-            }
-            return count;
         }
     }
 }

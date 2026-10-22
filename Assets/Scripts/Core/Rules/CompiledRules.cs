@@ -107,6 +107,9 @@ namespace WFC.Core
             return new ReadOnlySpan<int>(neighborStates, neighborStart[index], neighborStart[index + 1] - neighborStart[index]);
         }
 
+        /// <summary>Wszystkie maski sąsiedztwa w jednej tablicy: indeks (stan × 6 + kierunek) × WordCount, do propagacji na wskaźnikach.</summary>
+        internal ulong[] NeighborMaskArray => neighborMasks;
+
         /// <summary>Te same stany co GetNeighbors jako maska bitowa.</summary>
         public ReadOnlySpan<ulong> GetNeighborMask(int state, Direction direction) =>
             new ReadOnlySpan<ulong>(neighborMasks, (state * DirectionExtensions.Count + (int)direction) * WordCount, WordCount);
