@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
   experimentName: E5
   description: "Liczba kafelk\xF3w (pytanie 5): zestawy Prosty (26 stan\xF3w), \u015Aredni (79), PelnyBezDekoracji (146) i Pe\u0142ny (170)."
-  solvers: 00000000i
+  solvers: 02000000i
   selectors: 00000000i
   contradictionHandlers: 00000000i
   tilesets:

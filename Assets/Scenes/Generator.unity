@@ -210,7 +210,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.GeneratorController
   tileset: {fileID: 11400000, guid: b1eba3fe7f014ea43beca3ecdcc05b8e, type: 2}
   gridSize: {x: 20, y: 13, z: 20}
-  solver: 0
+  solver: 2
   selector: 0
   contradiction: 0
   seed: 1

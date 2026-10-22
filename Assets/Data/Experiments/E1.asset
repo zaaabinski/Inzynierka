@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: E1
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
   experimentName: E1
-  description: "Rozwi\u0105zywacze: ten sam zestaw i kolejno\u015B\u0107, r\xF3\u017Cny spos\xF3b przechowywania mo\u017Cliwo\u015Bci (pytania 1 i 7). Na razie NaiveSolver; SupportCount, Bitset i Burst dojd\u0105 w kamieniu 6."
-  solvers: 00000000i
+  description: "Rozwi\u0105zywacze: ten sam zestaw i kolejno\u015B\u0107, r\xF3\u017Cny spos\xF3b przechowywania mo\u017Cliwo\u015Bci (pytania 1 i 7): Naive (listy), SupportCount (liczniki wsparcia), Bitset (maski bitowe) i Burst (maski bitowe w Burst). Wszystkie daj\u0105 te same mapy, wi\u0119c r\xF3\u017Cni\u0105 si\u0119 tylko czasem i pami\u0119ci\u0105."
+  solvers: 00000000010000000200000003000000i
   selectors: 00000000i
   contradictionHandlers: 00000000i
   tilesets:

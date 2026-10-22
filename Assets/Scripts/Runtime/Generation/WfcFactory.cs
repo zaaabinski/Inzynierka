@@ -4,11 +4,20 @@ using WFC.Core;
 
 namespace WFC.Runtime
 {
-    /// <summary>Rozwiązywacz (sposób przechowywania możliwości i propagacji).</summary>
+    /// <summary>Rozwiązywacz (sposób przechowywania możliwości i propagacji). Wszystkie dają te same mapy.</summary>
     public enum SolverKind
     {
         [InspectorName("Naive: listy możliwości")]
-        Naive
+        Naive,
+
+        [InspectorName("SupportCount: liczniki wsparcia")]
+        SupportCount,
+
+        [InspectorName("Bitset: maski bitowe")]
+        Bitset,
+
+        [InspectorName("Burst: maski bitowe, kompilator Burst")]
+        Burst
     }
 
     /// <summary>Heurystyka wyboru komórki (kolejność decyzji).</summary>
@@ -24,14 +33,23 @@ namespace WFC.Runtime
         MinRemaining,
 
         [InspectorName("Najmniejsza entropia")]
-        Entropy
+        Entropy,
+
+        [InspectorName("Losowo")]
+        Random
     }
 
     /// <summary>Reakcja na sprzeczność.</summary>
     public enum ContradictionKind
     {
         [InspectorName("Start od nowa")]
-        Restart
+        Restart,
+
+        [InspectorName("Cofanie decyzji")]
+        Backtrack,
+
+        [InspectorName("Reset lokalny")]
+        LocalReset
     }
 
     /// <summary>Tworzy rozwiązywacz, heurystykę i reakcję na sprzeczność z ustawień; wspólne dla sceny, badań i okna.</summary>
@@ -42,6 +60,9 @@ namespace WFC.Runtime
             switch (kind)
             {
                 case SolverKind.Naive: return new NaiveSolver();
+                case SolverKind.SupportCount: return new SupportCountSolver();
+                case SolverKind.Bitset: return new BitsetSolver();
+                case SolverKind.Burst: return new BurstSolver();
                 default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }
@@ -54,6 +75,7 @@ namespace WFC.Runtime
                 case SelectorKind.Scanline: return new ScanlineSelector();
                 case SelectorKind.MinRemaining: return new MinRemainingSelector();
                 case SelectorKind.Entropy: return new EntropySelector();
+                case SelectorKind.Random: return new RandomSelector();
                 default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }
@@ -63,6 +85,8 @@ namespace WFC.Runtime
             switch (kind)
             {
                 case ContradictionKind.Restart: return new RestartHandler();
+                case ContradictionKind.Backtrack: return new BacktrackHandler();
+                case ContradictionKind.LocalReset: return new LocalResetHandler();
                 default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }
@@ -75,6 +99,10 @@ namespace WFC.Runtime
                 MaxAttempts = maxAttempts,
                 TimeLimitSeconds = timeLimitSeconds
             };
+
+        /// <summary>Czy rozwiązywacz umie wykonać tę reakcję na sprzeczność (SupportCount na razie tylko start od nowa).</summary>
+        public static bool IsSupported(SolverKind solver, ContradictionKind contradiction) =>
+            CreateSolver(solver).Supports(CreateContradictionHandler(contradiction));
 
         /// <summary>Polska nazwa wartości z atrybutu InspectorName, do list w oknie ustawień.</summary>
         public static string Label<T>(T value) where T : Enum

@@ -39,6 +39,9 @@ namespace WFC.Core
     {
         string Name { get; }
 
+        /// <summary>Czy rozwiązywacz umie wykonać tę reakcję na sprzeczność (cofanie i reset lokalny nie wszędzie).</summary>
+        bool Supports(IContradictionHandler handler);
+
         /// <summary>Przygotowuje siatkę (x = E, y = piętro, z = N) i wykonuje propagację ograniczeń krawędzi.</summary>
         void Initialize(CompiledRules rules, int3 size, uint seed, SolverSettings settings);
 

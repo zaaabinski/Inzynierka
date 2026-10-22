@@ -53,7 +53,9 @@ namespace WFC.Runtime
             Config = config ?? throw new ArgumentNullException(nameof(config));
             variants = config.Variants();
             if (variants.Count == 0)
-                throw new InvalidOperationException($"Eksperyment {config.ExperimentName} nie ma wariantów: dodaj co najmniej jeden zestaw kafelków i rozmiar siatki.");
+                throw new InvalidOperationException(config.SkippedVariants > 0
+                    ? $"Eksperyment {config.ExperimentName} nie ma wariantów: wybrany rozwiązywacz nie umie tej reakcji na sprzeczność (cofanie i reset lokalny działają z Naive, Bitset i Burst)."
+                    : $"Eksperyment {config.ExperimentName} nie ma wariantów: dodaj co najmniej jeden zestaw kafelków i rozmiar siatki.");
             if (variants.Any(variant => variant.Tileset == null))
                 throw new InvalidOperationException($"Eksperyment {config.ExperimentName} ma pusty wpis na liście zestawów.");
             this.machine = machine ?? MachineInfo.Current();

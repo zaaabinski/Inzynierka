@@ -55,6 +55,7 @@ namespace WFC.Editor
             var controller = new GameObject("GeneratorController").AddComponent<GeneratorController>();
             controller.transform.SetParent(systems.transform, false);
             controller.Tileset = tileset;
+            controller.Solver = SolverKind.Bitset;
 
             var builder = new GameObject("MapBuilder").AddComponent<MapBuilder>();
             builder.transform.SetParent(systems.transform, false);
