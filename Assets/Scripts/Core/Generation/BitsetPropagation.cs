@@ -33,6 +33,24 @@ namespace WFC.Core
         public int ChangedCount;
         public int ChangedPeak;
 
+        /// <summary>1, gdy zmiany trzeba zapisywać w dzienniku (cofanie decyzji).</summary>
+        public int RecordUndo;
+
+        /// <summary>Numer bieżącego poziomu; komórka z innym numerem w SavedAt jeszcze nie jest w dzienniku.</summary>
+        public int UndoLevel;
+
+        public int* SavedAt;
+        public int* TrailCells;
+
+        /// <summary>Maski sprzed zmiany: wpis × Words.</summary>
+        public ulong* TrailMasks;
+
+        public int TrailCount;
+        public int TrailCapacity;
+
+        /// <summary>1, gdy propagacja przerwała się przed zdjęciem komórki z kolejki, bo w dzienniku zabrakło miejsca.</summary>
+        public int NeedsTrailSpace;
+
         public long PropagationSteps;
         public long RemovedPossibilities;
 
@@ -44,6 +62,7 @@ namespace WFC.Core
     /// Propagacja na maskach bitowych: dla komórki zdjętej z kolejki suma (OR) masek sąsiedztwa jej stanów daje
     /// w każdym kierunku zbiór stanów dozwolonych u sąsiada, a iloczyn (AND) z maską sąsiada usuwa resztę naraz.
     /// Zamiast sprawdzać pary stanów jedna po drugiej, jak NaiveSolver, przetwarza 64 stany w jednej operacji.
+    /// Przy cofaniu decyzji zapisuje maskę sąsiada w dzienniku przed jego pierwszą zmianą na bieżącym poziomie.
     /// </summary>
     public static unsafe class BitsetPropagation
     {
@@ -58,9 +77,17 @@ namespace WFC.Core
             int span = Directions * words;
             ulong* allowed = stackalloc ulong[Directions * MaxWords];
             data.ContradictionCell = -1;
+            data.NeedsTrailSpace = 0;
 
             while (data.QueueCount > 0)
             {
+                // Jedna komórka zmienia najwyżej 6 sąsiadów, więc tyle wolnych wpisów w dzienniku wystarczy.
+                if (data.RecordUndo != 0 && data.TrailCapacity - data.TrailCount < Directions)
+                {
+                    data.NeedsTrailSpace = 1;
+                    return;
+                }
+
                 int cell = data.Queue[data.QueueHead];
                 data.QueueHead = data.QueueHead + 1 == data.CellCount ? 0 : data.QueueHead + 1;
                 data.QueueCount--;
@@ -92,11 +119,21 @@ namespace WFC.Core
                     {
                         ulong kept = target[word] & mask[word];
                         removed += math.countbits(target[word] ^ kept);
-                        target[word] = kept;
                         left |= kept;
                     }
                     if (removed == 0)
                         continue;
+                    if (data.RecordUndo != 0 && data.SavedAt[neighbor] != data.UndoLevel)
+                    {
+                        data.SavedAt[neighbor] = data.UndoLevel;
+                        data.TrailCells[data.TrailCount] = neighbor;
+                        ulong* saved = data.TrailMasks + data.TrailCount * words;
+                        for (int word = 0; word < words; word++)
+                            saved[word] = target[word];
+                        data.TrailCount++;
+                    }
+                    for (int word = 0; word < words; word++)
+                        target[word] &= mask[word];
                     data.RemovedPossibilities += removed;
                     if (left == 0)
                     {

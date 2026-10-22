@@ -223,7 +223,8 @@ namespace WFC.Tests
                 Assert.IsNotNull(root.Q<Button>(name), name);
             foreach (string name in new[] { "heurystyka", "rozwiazywacz", "sprzecznosc", "zestaw", "eksperyment" })
                 Assert.IsNotNull(root.Q<DropdownField>(name), name);
-            Assert.AreEqual(4, root.Q<DropdownField>("heurystyka").choices.Count, "4 heurystyki");
+            Assert.AreEqual(5, root.Q<DropdownField>("heurystyka").choices.Count, "5 heurystyk");
+            Assert.AreEqual(3, root.Q<DropdownField>("sprzecznosc").choices.Count, "3 reakcje na sprzeczność");
             Assert.IsNotNull(root.Q<ProgressBar>("postep"));
             Assert.AreEqual(DisplayStyle.Flex, root.Q("sekcja-jedna-mapa").style.display.value);
             Assert.AreEqual(DisplayStyle.None, root.Q("sekcja-badanie").style.display.value);

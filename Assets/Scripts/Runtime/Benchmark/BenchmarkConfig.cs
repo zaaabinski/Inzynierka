@@ -67,7 +67,10 @@ namespace WFC.Runtime
         public float TimeLimitSeconds { get => timeLimitSeconds; set => timeLimitSeconds = Mathf.Max(0f, value); }
         public int ShowEveryNth { get => showEveryNth; set => showEveryNth = Mathf.Max(1, value); }
 
-        /// <summary>Wszystkie kombinacje w kolejności: zestaw, rozmiar, rozwiązywacz, heurystyka, reakcja na sprzeczność.</summary>
+        /// <summary>
+        /// Wszystkie kombinacje w kolejności: zestaw, rozmiar, rozwiązywacz, heurystyka, reakcja na sprzeczność. Pomija
+        /// rozwiązywacze, które nie umieją danej reakcji (SupportCount z cofaniem albo resetem lokalnym).
+        /// </summary>
         public List<BenchmarkVariant> Variants()
         {
             var variants = new List<BenchmarkVariant>();
@@ -76,16 +79,21 @@ namespace WFC.Runtime
                     foreach (SolverKind solver in solvers)
                         foreach (SelectorKind selector in selectors)
                             foreach (ContradictionKind contradiction in contradictionHandlers)
-                                variants.Add(new BenchmarkVariant
-                                {
-                                    Tileset = tileset,
-                                    Size = size,
-                                    Solver = solver,
-                                    Selector = selector,
-                                    Contradiction = contradiction
-                                });
+                                if (WfcFactory.IsSupported(solver, contradiction))
+                                    variants.Add(new BenchmarkVariant
+                                    {
+                                        Tileset = tileset,
+                                        Size = size,
+                                        Solver = solver,
+                                        Selector = selector,
+                                        Contradiction = contradiction
+                                    });
             return variants;
         }
+
+        /// <summary>Kombinacje pominięte, bo rozwiązywacz nie umie danej reakcji na sprzeczność.</summary>
+        public int SkippedVariants =>
+            tilesets.Count * gridSizes.Count * solvers.Count * selectors.Count * contradictionHandlers.Count - Variants().Count;
 
         /// <summary>Uruchomienia zapisywane do pliku: warianty × ziarna × powtórzenia.</summary>
         public int MeasuredRuns => Variants().Count * seedCount * repetitions;
@@ -103,8 +111,10 @@ namespace WFC.Runtime
 
         public string Summary()
         {
+            int skipped = SkippedVariants;
             return $"{experimentName}: warianty {Variants().Count} × ziarna {seedCount} (od {firstSeed}) × powtórzenia {repetitions}, " +
-                   $"uruchomienia do zapisu: {MeasuredRuns}, rozgrzewka: {warmupRuns} na wariant.";
+                   $"uruchomienia do zapisu: {MeasuredRuns}, rozgrzewka: {warmupRuns} na wariant." +
+                   (skipped > 0 ? $" Pominięte warianty (rozwiązywacz nie umie tej reakcji na sprzeczność): {skipped}." : string.Empty);
         }
     }
 }

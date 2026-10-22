@@ -156,8 +156,8 @@ namespace WFC.Tests
         }
 
         [TestCase("E1", 4)]
-        [TestCase("E2", 4)]
-        [TestCase("E3", 4)]
+        [TestCase("E2", 5)]
+        [TestCase("E3", 12)]
         [TestCase("E4", 16)]
         [TestCase("E5", 4)]
         [TestCase("E6", 1)]

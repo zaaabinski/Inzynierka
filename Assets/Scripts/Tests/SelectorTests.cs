@@ -5,7 +5,7 @@ using WFC.Core;
 
 namespace WFC.Tests
 {
-    /// <summary>Heurystyki wyboru komórki: Scanline, MRV, entropia i piętrami.</summary>
+    /// <summary>Heurystyki wyboru komórki: Scanline, MRV, entropia, piętrami i losowo.</summary>
     public sealed class SelectorTests
     {
         static readonly GridShape Grid = new GridShape(new int3(2, 2, 2));
@@ -19,6 +19,7 @@ namespace WFC.Tests
                 case "Scanline": return new ScanlineSelector();
                 case "MinRemaining": return new MinRemainingSelector();
                 case "Entropy": return new EntropySelector();
+                case "Random": return new RandomSelector();
                 default: throw new System.ArgumentException(name);
             }
         }
@@ -80,10 +81,44 @@ namespace WFC.Tests
             Assert.AreEqual(Grid.Index(0, 1, 0), selector.SelectNext());
         }
 
+        [Test]
+        public void Scanline_KomorkaZNowuNieustalona_WracaDoNiej()
+        {
+            // Po cofnięciu decyzji albo resecie lokalnym komórka przed kursorem znowu ma kilka możliwości.
+            ICellSelector selector = Prepared("Scanline");
+            for (int cell = 0; cell < Grid.CellCount; cell++)
+                selector.OnCellChanged(cell, 1, 0.0);
+            selector.OnCellChanged(6, 2, 0.5);
+            Assert.AreEqual(6, selector.SelectNext());
+            selector.OnCellChanged(6, 1, 0.0);
+            Assert.AreEqual(-1, selector.SelectNext());
+            selector.OnCellChanged(2, 3, 1.0);
+            Assert.AreEqual(2, selector.SelectNext());
+        }
+
+        [Test]
+        public void Losowo_KolejnoscZLiczbLosowanychWReset_NieZEntropii()
+        {
+            ICellSelector selector = Prepared("Random");
+            for (int cell = 0; cell < Grid.CellCount; cell++)
+                selector.OnCellChanged(cell, 2 + cell, cell);
+            int[] order = Enumerable.Range(0, Grid.CellCount).Select(_ => selector.SelectNext()).ToArray();
+            CollectionAssert.AreEquivalent(Enumerable.Range(0, Grid.CellCount), order, "każda komórka raz");
+            CollectionAssert.AreNotEqual(Enumerable.Range(0, Grid.CellCount), order, "nie po kolei");
+            Assert.AreEqual(-1, selector.SelectNext());
+
+            ICellSelector again = Prepared("Random");
+            for (int cell = 0; cell < Grid.CellCount; cell++)
+                again.OnCellChanged(cell, 9, 3.0);
+            CollectionAssert.AreEqual(order, Enumerable.Range(0, Grid.CellCount).Select(_ => again.SelectNext()).ToArray(),
+                "ta sama kolejność przy innych liczbach możliwości i entropiach");
+        }
+
         [TestCase("LevelFirst")]
         [TestCase("Scanline")]
         [TestCase("MinRemaining")]
         [TestCase("Entropy")]
+        [TestCase("Random")]
         public void Heurystyka_Siatka10x10x8_Ziarna1do3_UdaneBezNaruszen(string name)
         {
             CompiledRules rules = TestData.Compile("Pelny");
@@ -102,6 +137,7 @@ namespace WFC.Tests
         [TestCase("Scanline")]
         [TestCase("MinRemaining")]
         [TestCase("Entropy")]
+        [TestCase("Random")]
         public void Heurystyka_TenSamoZiarno_TaSamaMapa(string name)
         {
             CompiledRules rules = TestData.Compile("Pelny");
@@ -118,7 +154,7 @@ namespace WFC.Tests
         public void RozneHeurystyki_RozneMapyZTegoSamegoZiarna()
         {
             CompiledRules rules = TestData.Compile("Pelny");
-            int[][] maps = new[] { "LevelFirst", "Scanline", "MinRemaining", "Entropy" }.Select(name =>
+            int[][] maps = new[] { "LevelFirst", "Scanline", "MinRemaining", "Entropy", "Random" }.Select(name =>
             {
                 var solver = new NaiveSolver();
                 solver.Initialize(rules, Small, 1, new SolverSettings { Selector = Create(name) });

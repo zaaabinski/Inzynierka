@@ -21,8 +21,9 @@ namespace WFC.Runtime
 
         [Header("Algorytm")]
         [SerializeField] SolverKind solver = SolverKind.Bitset;
-        [Tooltip("Piętrami: domyślna, jak w prototypie. Scanline: komórki po kolei od dołu. MRV: komórka z najmniejszą liczbą możliwości. Entropia: najmniejsza entropia Shannona w całej siatce.")]
+        [Tooltip("Piętrami: domyślna, jak w prototypie. Scanline: komórki po kolei od dołu. MRV: komórka z najmniejszą liczbą możliwości. Entropia: najmniejsza entropia Shannona w całej siatce. Losowo: losowa kolejność komórek.")]
         [SerializeField] SelectorKind selector = SelectorKind.LevelFirst;
+        [Tooltip("Start od nowa: nowa próba. Cofanie decyzji: powrót do stanu sprzed ostatniej decyzji (do 1000 razy na próbę). Reset lokalny: sześcian 5 × 5 × 5 komórek wokół sprzeczności od nowa (do 100 razy na próbę). Cofanie i reset działają z Naive, Bitset i Burst.")]
         [SerializeField] ContradictionKind contradiction = ContradictionKind.Restart;
         [SerializeField] uint seed = 1;
         [Tooltip("Limit prób jednej mapy przy starcie od nowa. MRV kończy się sprzecznością w około 97% prób.")]
@@ -198,7 +199,7 @@ namespace WFC.Runtime
                 mapBuilder.Show(tileset, rules, grid, states, seed);
             SolverMetrics metrics = activeSolver.Metrics;
             LastReport = $"Ziarno {seed}, próba {metrics.Attempts}: decyzja {metrics.Decisions}" +
-                         (status == StepStatus.Contradiction ? " – sprzeczność, start od nowa" : string.Empty) +
+                         (status == StepStatus.Contradiction ? $" – sprzeczność, {WfcFactory.Label(contradiction).ToLowerInvariant()}" : string.Empty) +
                          $"; ustalone komórki {decided} z {grid.CellCount}.";
         }
 
@@ -214,8 +215,8 @@ namespace WFC.Runtime
                 _ => "nieudana (limit prób)"
             };
             text.Append($"Ziarno {result.Seed}, {result.SolverName} + {result.SelectorName} + {result.ContradictionHandlerName}, ")
-                .Append($"siatka {result.Grid}: {status}, próby: {metrics.Attempts}, sprzeczności: {metrics.Contradictions}.\n")
-                .Append($"Czas generacji {metrics.TotalMs:0} ms (wybór komórek {metrics.SelectionMs:0} ms, propagacja {metrics.PropagationMs:0} ms), ")
+                .Append($"siatka {result.Grid}: {status}, próby: {metrics.Attempts}, sprzeczności: {metrics.Contradictions}, cofnięcia: {metrics.Backtracks}.\n")
+                .Append($"Czas generacji {metrics.TotalMs:0} ms (wybór komórek {metrics.SelectionMs:0} ms, propagacja {metrics.PropagationMs:0} ms, cofanie {metrics.BacktrackMs:0} ms), ")
                 .Append($"stawianie kostek {buildMs:0} ms.\n")
                 .Append($"Decyzje {metrics.Decisions}, kroki propagacji {metrics.PropagationSteps}, usunięte możliwości {metrics.RemovedPossibilities}.");
             if (check != null)

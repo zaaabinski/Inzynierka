@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: E6
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
   experimentName: E6
-  description: "Regu\u0142y i wagi (pytanie 6). Na razie obecne regu\u0142y; warianty bez wolnego pola przy \u015Bcianach, bez drzwi nad schodami i z wagami trawy \xD7 0,4 i \xD7 0,25 dojd\u0105 w etapie 5."
+  description: "Regu\u0142y i wagi (pytanie 6). Na razie obecne regu\u0142y; warianty bez wolnego pola przy \u015Bcianach, bez drzwi nad schodami i z wagami trawy \xD7 0,4 i \xD7 0,25 dojd\u0105 w kamieniu 8."
   solvers: 02000000i
   selectors: 00000000i
   contradictionHandlers: 00000000i

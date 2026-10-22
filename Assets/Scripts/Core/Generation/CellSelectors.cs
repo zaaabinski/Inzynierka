@@ -100,6 +100,20 @@ namespace WFC.Core
     }
 
     /// <summary>
+    /// Losowa kolejność: komórki według liczby losowej z przedziału [0; 0,000001), losowanej raz na komórkę na początku
+    /// próby (losowa permutacja komórek), bez patrzenia na liczbę możliwości i entropię. Generator liczb losowych
+    /// działa tylko w Reset, więc mapy dalej zależą tylko od ziarna.
+    /// </summary>
+    public sealed class RandomSelector : PriorityCellSelector
+    {
+        public override string Name => "Random";
+
+        protected override int Primary(int cell, int remaining) => 0;
+
+        protected override double Key(int remaining, double entropy) => 0;
+    }
+
+    /// <summary>
     /// Scanline: komórki po kolei według numeracji siatki, czyli piętrami od dołu, w piętrze rzędami od S do N,
     /// w rzędzie od W do E. Pomija komórki, które propagacja już ustaliła. Niczego nie losuje.
     /// </summary>
@@ -118,14 +132,20 @@ namespace WFC.Core
             cursor = 0;
         }
 
-        public void OnCellChanged(int cell, int count, double entropy) => remaining[cell] = count;
+        public void OnCellChanged(int cell, int count, double entropy)
+        {
+            remaining[cell] = count;
+            // Po cofnięciu decyzji albo resecie lokalnym komórka przed kursorem może znowu mieć kilka możliwości.
+            if (count > 1 && cell < cursor)
+                cursor = cell;
+        }
 
         /// <summary>Liczba możliwości (4 bajty) na komórkę.</summary>
         public long MemoryBytes => (long)remaining.Length * 4;
 
         public int SelectNext()
         {
-            // Możliwości tylko ubywają, więc komórka przed kursorem nie może znowu mieć więcej niż 1 możliwości.
+            // Komórki przed kursorem mają 1 możliwość (OnCellChanged cofa kursor, gdy któraś znowu ma ich więcej).
             while (cursor < remaining.Length && remaining[cursor] <= 1)
                 cursor++;
             return cursor < remaining.Length ? cursor : -1;
