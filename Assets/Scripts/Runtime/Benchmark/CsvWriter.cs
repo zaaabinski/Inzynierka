@@ -14,7 +14,10 @@ namespace WFC.Runtime
     /// </summary>
     public sealed class CsvWriter : IDisposable
     {
-        /// <summary>40 kolumn z rozdziału 7 handoffu i 2 dodatkowe: czas stawiania kostek oraz środowisko uruchomienia.</summary>
+        /// <summary>
+        /// 40 kolumn z rozdziału 7 handoffu i 5 dodatkowych: czas stawiania kostek, środowisko uruchomienia oraz różnica
+        /// od mapy poprzedniego ziarna w tym samym wariancie (wszystkie komórki, parter, zabudowa; DiversityAnalyzer).
+        /// </summary>
         public static readonly string[] Columns =
         {
             "data", "komputer", "procesor", "ram_gb", "wersja_unity", "wersja_programu", "eksperyment", "rozwiazywacz",
@@ -22,7 +25,8 @@ namespace WFC.Runtime
             "czas_wybor_ms", "czas_propagacja_ms", "czas_cofanie_ms", "decyzje", "kroki_propagacji", "usuniete_mozliwosci",
             "sprzecznosci", "cofniecia", "restarty", "pamiec_szczytowa_mb", "alokacje_gc_kb", "naruszenia", "wieze",
             "donzony", "mosty", "schody", "wys_wiez_sr", "wys_murow_sr", "wys_donzonow_sr", "trawa_dostepna_proc",
-            "dziedzince_zamkniete", "czas_stawiania_ms", "srodowisko"
+            "dziedzince_zamkniete", "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc",
+            "roznica_zabudowa_proc"
         };
 
         readonly StreamWriter writer;

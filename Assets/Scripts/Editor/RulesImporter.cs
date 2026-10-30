@@ -11,7 +11,8 @@ namespace WFC.Editor
 {
     /// <summary>
     /// Zamienia plik reguł w zasoby Unity: materiały wyciągnięte z modeli, prefab na każdy model, TileDefinition
-    /// na każdy kafelek i TilesetDefinition na każdy zestaw. Istniejące zasoby aktualizuje, nie usuwa żadnego.
+    /// na każdy kafelek i TilesetDefinition na każdy zestaw oraz na każdy wariant reguł do E6 (RuleVariants).
+    /// Istniejące zasoby aktualizuje, nie usuwa żadnego.
     /// Na końcu kompiluje i sprawdza zestawy już z zasobów, tak jak zobaczy je program.
     /// </summary>
     public static class RulesImporter
@@ -133,6 +134,14 @@ namespace WFC.Editor
                 TilesetData data = rules.CreateTileset(set.Name);
                 var asset = AssetFolders.LoadOrCreate<TilesetDefinition>(WfcPaths.Tileset(set.Name));
                 asset.CopyFrom(data, set.TileNames.Select(name => tileAssets[name]), rules.Version);
+                EditorUtility.SetDirty(asset);
+                tilesets.Add(asset);
+            }
+            foreach (RuleVariant variant in RuleVariants.All)
+            {
+                TilesetData data = rules.CreateTileset(variant.Name);
+                var asset = AssetFolders.LoadOrCreate<TilesetDefinition>(WfcPaths.Tileset(variant.Name));
+                asset.CopyVariantFrom(data, data.Tiles.Select(tile => tileAssets[tile.Name]), rules.Version, variant.Description);
                 EditorUtility.SetDirty(asset);
                 tilesets.Add(asset);
             }

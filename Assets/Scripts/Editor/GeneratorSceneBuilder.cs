@@ -46,6 +46,7 @@ namespace WFC.Editor
             if (experiments.Count == 0)
                 experiments = ExperimentPresets.CreateOrUpdate();
             PanelSettings panelSettings = UiAssets.EnsurePanelSettings();
+            UiAssets.EnsureStepMarkerMaterial();
             if (panelSettings == null || panelSettings.themeStyleSheet == null)
                 throw new InvalidOperationException($"Brak ustawień panelu albo motywu w {WfcPaths.UiSettings}.");
 

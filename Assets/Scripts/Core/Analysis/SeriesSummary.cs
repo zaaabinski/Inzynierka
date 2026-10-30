@@ -46,7 +46,8 @@ namespace WFC.Core
             SuccessfulMapsSolverMs += result.Metrics.TotalMs;
             Violations += check.Total;
             for (int type = 0; type < ViolationsByType.Length; type++)
-                ViolationsByType[type] += check[(ViolationType)type];
+                if (!check.IsDisabled((ViolationType)type))
+                    ViolationsByType[type] += check[(ViolationType)type];
             Towers += stats.Towers;
             Keeps += stats.Keeps;
             Bridges += stats.Bridges;

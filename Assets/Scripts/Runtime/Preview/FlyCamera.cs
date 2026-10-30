@@ -47,6 +47,9 @@ namespace WFC.Runtime
             PlaceAround(target);
         }
 
+        /// <summary>Ustawia kamerę w odległości distance od celu pod obecnymi kątami; cel staje się punktem obrotu.</summary>
+        public void Frame(Vector3 target, float distance) => LookAt(target, distance, yaw, pitch);
+
         void OnEnable()
         {
             Vector3 angles = transform.eulerAngles;

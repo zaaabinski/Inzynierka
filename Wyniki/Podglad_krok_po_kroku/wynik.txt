@@ -1,0 +1,7 @@
+koniec: Success, próby 2, decyzje 839, czas odtwarzania 7,0 s, sprzeczność widziana: True
+Ziarno 3, Bitset + LevelFirst + Restart, siatka 20 × 20 × 13: udana, próby: 2, sprzeczności: 1, cofnięcia: 0.
+Czas generacji 117 ms (wybór komórek 15 ms, propagacja 75 ms, cofanie 0 ms), stawianie kostek 0 ms.
+Decyzje 839, kroki propagacji 464891, usunięte możliwości 1653143.
+Naruszenia zasad: 0.
+Wieże 10, donżony 6, mosty 2, schody 1, zamknięte dziedzińce 5, teren dostępny z krawędzi 96%.
+Inna niż poprzednia mapa: 22,7% komórek, parter 77,5%, zabudowa 98,6%.

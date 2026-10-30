@@ -97,6 +97,9 @@ namespace WFC.Core
 
         public List<WeightMultiplier> WeightMultipliers { get; } = new List<WeightMultiplier>();
 
+        /// <summary>Sprawdzenia RuleChecker wyłączone w tym zestawie (warianty reguł E6); liczą się osobno, nie jako naruszenia.</summary>
+        public List<ViolationType> DisabledChecks { get; } = new List<ViolationType>();
+
         /// <summary>Oczekiwana liczba kafelków z sekcji kontrola; 0 = bez sprawdzania.</summary>
         public int ExpectedTileCount { get; set; }
 

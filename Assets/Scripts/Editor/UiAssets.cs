@@ -6,7 +6,7 @@ using WFC.Runtime;
 
 namespace WFC.Editor
 {
-    /// <summary>Ustawienia panelu UI Toolkit dla okna aplikacji i domyślny motyw kontrolek.</summary>
+    /// <summary>Ustawienia panelu UI Toolkit dla okna aplikacji, domyślny motyw kontrolek i materiał znaczników podglądu.</summary>
     static class UiAssets
     {
         public const string ThemePath = WfcPaths.UiSettings + "/WfcRuntimeTheme.tss";
@@ -31,6 +31,19 @@ namespace WFC.Editor
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
             return settings;
+        }
+
+        /// <summary>Materiał znaczników StepVisualizer: URP Unlit z instancjonowaniem (kolor ustawia podgląd).</summary>
+        public static Material EnsureStepMarkerMaterial()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(WfcPaths.StepMarkerMaterial);
+            if (material != null)
+                return material;
+            AssetFolders.Ensure(Path.GetDirectoryName(WfcPaths.StepMarkerMaterial)?.Replace('\\', '/'));
+            material = new Material(Shader.Find("Universal Render Pipeline/Unlit")) { enableInstancing = true };
+            AssetDatabase.CreateAsset(material, WfcPaths.StepMarkerMaterial);
+            AssetDatabase.SaveAssets();
+            return material;
         }
     }
 }

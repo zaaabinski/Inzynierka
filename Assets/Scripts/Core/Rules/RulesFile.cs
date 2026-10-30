@@ -109,12 +109,17 @@ namespace WFC.Core
             return tileset;
         }
 
-        /// <summary>Zestaw o nazwie z sekcji zestawy, z oczekiwanymi liczbami z sekcji kontrola.</summary>
+        /// <summary>
+        /// Zestaw o nazwie z sekcji zestawy, z oczekiwanymi liczbami z sekcji kontrola, albo wariant reguł z RuleVariants
+        /// (zestaw bazowy z dopisanymi parami i mnożnikami wag).
+        /// </summary>
         public TilesetData CreateTileset(string setName)
         {
             TileList set = FindSet(setName);
+            if (set == null && RuleVariants.Find(setName) is RuleVariant variant)
+                return variant.Apply(CreateTileset(variant.BaseSet));
             if (set == null)
-                throw new ArgumentException($"W pliku reguł nie ma zestawu „{setName}”.", nameof(setName));
+                throw new ArgumentException($"W pliku reguł nie ma zestawu ani wariantu reguł „{setName}”.", nameof(setName));
             TilesetData tileset = CreateTileset(setName, set.TileNames);
             if (Control.Sets.TryGetValue(setName, out ControlCounts counts))
             {

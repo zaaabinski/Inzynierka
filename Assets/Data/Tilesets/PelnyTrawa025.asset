@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 669a915d5c0886e4cadb06ad4736b2ff, type: 3}
+  m_Name: PelnyTrawa025
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.TilesetDefinition
+  tiles:
+  - {fileID: 11400000, guid: bc02270ca5bdb5a4db9c34fcf26412cb, type: 2}
+  - {fileID: 11400000, guid: 5bdd019a49860fc45b2dae4cfd008e4f, type: 2}
+  - {fileID: 11400000, guid: 059e8a740cc4b11479d71db9fefc7e85, type: 2}
+  - {fileID: 11400000, guid: 5f3ca28bbf6b2844eac009da9cbddb29, type: 2}
+  - {fileID: 11400000, guid: 0a6c3d79c3a5fc3439b4bc3375b1652f, type: 2}
+  - {fileID: 11400000, guid: d4ae1bcdc2408c04da0388bfeaac595d, type: 2}
+  - {fileID: 11400000, guid: fc9fcf13dbf393046a5218cfb9cdfbbf, type: 2}
+  - {fileID: 11400000, guid: 72b7962520a1be94e94c2c0d7df632fb, type: 2}
+  - {fileID: 11400000, guid: 75b12be412ef96d418a2e28883bb1531, type: 2}
+  - {fileID: 11400000, guid: dbdb4c43f6c6ea8418efb8094e22471d, type: 2}
+  - {fileID: 11400000, guid: 640b11f4824f5b14d8023dbe563d3533, type: 2}
+  - {fileID: 11400000, guid: 2f9df9bc1271b1f46a48b200d7690bb3, type: 2}
+  - {fileID: 11400000, guid: 7d512bac9b29ced419f030090d315010, type: 2}
+  - {fileID: 11400000, guid: 0426f0a0fe3ba6045800d57c68f7f87d, type: 2}
+  - {fileID: 11400000, guid: bfa1110310e76be448521f3d2d1914c6, type: 2}
+  - {fileID: 11400000, guid: 459492e33a691ec4b8efd21c98d3fbed, type: 2}
+  - {fileID: 11400000, guid: abf9dc8d4a39e374c8e4e1f54ccd6122, type: 2}
+  - {fileID: 11400000, guid: d171dc421c6583c46b696ea4c8ce39e7, type: 2}
+  - {fileID: 11400000, guid: c51eb40d22463fd40b3e4a5c6907ebb5, type: 2}
+  - {fileID: 11400000, guid: cf5ab6464bb82f84a9440b52f11ab2d0, type: 2}
+  - {fileID: 11400000, guid: e7ed0e77f5bf21c4c8483cbd6a3195cd, type: 2}
+  - {fileID: 11400000, guid: b624479f2613c1046b15761185706a44, type: 2}
+  - {fileID: 11400000, guid: ee629d91414a6f444b0d86938604f8d5, type: 2}
+  - {fileID: 11400000, guid: 589d8eac18d30c64f9b0f68f65d1b741, type: 2}
+  - {fileID: 11400000, guid: fbafbf952cef8fd4997b3aefe0f6c5d1, type: 2}
+  - {fileID: 11400000, guid: e041daae5f0c8e842b315bc6b2af82ae, type: 2}
+  - {fileID: 11400000, guid: 0d7f55e2c7858194b8a8b78ad252999b, type: 2}
+  - {fileID: 11400000, guid: 565adfbf01486014b8797b747e48dd64, type: 2}
+  - {fileID: 11400000, guid: dcdb8c01f87538241a2ee46bbe4c71b9, type: 2}
+  - {fileID: 11400000, guid: 1691db9938348bd4786bab3251f25009, type: 2}
+  - {fileID: 11400000, guid: 0b593d75805d3f34e84f8cedfb9162bb, type: 2}
+  - {fileID: 11400000, guid: b36df033de5d9794a8c96f83e51a46e6, type: 2}
+  - {fileID: 11400000, guid: 16f5cbf74cf09a946a2002d099812853, type: 2}
+  - {fileID: 11400000, guid: 90fc7403d70d3824caa9888398ef620a, type: 2}
+  - {fileID: 11400000, guid: 923708f32faa9294bbf43647df6cd1cd, type: 2}
+  - {fileID: 11400000, guid: 7b5d940249cc0d6469c07b8fea61dc94, type: 2}
+  - {fileID: 11400000, guid: 8037eeb0607dd5c4783a8e52ff3e77cb, type: 2}
+  - {fileID: 11400000, guid: 287861c0eaef9764ba2d3591ce0af36f, type: 2}
+  - {fileID: 11400000, guid: 4cb15c7007436ca4d963653f16cd9804, type: 2}
+  - {fileID: 11400000, guid: 1786fbc90a30fd940bfbdf095dfc42e7, type: 2}
+  - {fileID: 11400000, guid: 8fc365a3a63316a4bbe71ce25682215a, type: 2}
+  - {fileID: 11400000, guid: 1b6a1f59625ed3144a96e3dac091f115, type: 2}
+  - {fileID: 11400000, guid: 64533fe693a6634409b9c967a5674796, type: 2}
+  - {fileID: 11400000, guid: 18ba9485167c8144588151fed9be89c2, type: 2}
+  - {fileID: 11400000, guid: d727bebf3fcc3eb46bfffe81c24b29c2, type: 2}
+  - {fileID: 11400000, guid: a95b7aedb825ae94bb11c4d82afc5160, type: 2}
+  - {fileID: 11400000, guid: 49a260d85bb854b41b19ede87ce6c621, type: 2}
+  - {fileID: 11400000, guid: 38d2adb82fa57ff45a17bf1646a0541f, type: 2}
+  - {fileID: 11400000, guid: 66df63875dccf5b4f814ce23eed97391, type: 2}
+  - {fileID: 11400000, guid: 4c48e3a570235fa469346c75181b4aca, type: 2}
+  compatiblePairs:
+  - A: grunt
+    B: grunt
+  - A: grunt
+    B: mur_bok_parter
+  - A: grunt
+    B: wieza_sciana
+  - A: grunt
+    B: donzon_sciana
+  - A: powietrze
+    B: powietrze
+  - A: powietrze
+    B: mur_bok_wyzej
+  - A: powietrze
+    B: wieza_sciana
+  - A: powietrze
+    B: okap
+  - A: powietrze
+    B: donzon_sciana
+  - A: mur_parter
+    B: mur_parter_odbity
+  - A: mur_parter
+    B: wieza_sciana
+  - A: mur_parter_odbity
+    B: wieza_sciana
+  - A: mur_srodek
+    B: mur_srodek
+  - A: mur_srodek
+    B: wieza_sciana
+  - A: mur_gora
+    B: mur_gora_odbity
+  - A: mur_gora
+    B: wieza_sciana
+  - A: mur_gora_odbity
+    B: wieza_sciana
+  - A: drzwi
+    B: most_przyczolek
+  - A: drzwi
+    B: przed_drzwiami
+  - A: wieza_cwiartka
+    B: wieza_cwiartka_odbity
+  - A: wieza_blanki
+    B: wieza_blanki_odbity
+  - A: wieza_dach
+    B: wieza_dach_odbity
+  - A: wieza_iglica
+    B: wieza_iglica_odbity
+  - A: wieza_sciana
+    B: schody_szczyt
+  - A: donzon_ciag
+    B: donzon_ciag_odbity
+  - A: donzon_sciana
+    B: schody_szczyt
+  - A: donzon_wnetrze
+    B: donzon_wnetrze
+  - A: dach_dol
+    B: dach_dol_odbity
+  - A: dach_gora
+    B: dach_gora_odbity
+  - A: dach_szczyt
+    B: dach_szczyt
+  - A: most_poczatek
+    B: most_srodek_od_poczatku
+  - A: most_srodek_od_poczatku
+    B: most_srodek_do_konca
+  - A: most_srodek_do_konca
+    B: most_koniec
+  verticalExceptions:
+  - Below: puste
+    Above: powietrze
+  mapEdge:
+    SideAtGround: grunt
+    SideAbove: powietrze
+    GridBottom: podloze
+    GridTopAllowed:
+    - powietrze
+    - puste
+  weightMultipliers:
+  - Target: Teren
+    Factor: 0.25
+  disabledChecks: 
+  description: "Wagi wszystkich 5 kafelk\xF3w trawy \xD7 0,25, proporcje mi\u0119dzy nimi bez zmian. Prototyp: 60% sprzeczno\u015Bci, 16,8 wie\u017Cy na map\u0119."
+  expectedTileCount: 50
+  expectedStateCount: 170
+  rulesVersion: 2026-10-21

@@ -138,10 +138,20 @@ namespace WFC.Tests
         [TestCase("Sredni")]
         [TestCase("PelnyBezDekoracji")]
         [TestCase("Pelny")]
+        [TestCase("PelnyBezWolnegoPola")]
+        [TestCase("PelnyBezDrzwiNadSchodami")]
+        [TestCase("PelnyTrawa040")]
+        [TestCase("PelnyTrawa025")]
         public void Zestaw_ZZasobuTeSameRegulyCoZPlikuJson(string setName)
         {
             TilesetDefinition asset = Load<TilesetDefinition>(WfcPaths.Tileset(setName));
-            Assert.AreEqual(TestData.Rules.Control.Sets[setName].Tiles, asset.Tiles.Count, "kafelki");
+            RuleVariant variant = RuleVariants.Find(setName);
+            Assert.AreEqual(TestData.Rules.Control.Sets[variant?.BaseSet ?? setName].Tiles, asset.Tiles.Count, "kafelki");
+            if (variant != null)
+            {
+                Assert.AreEqual(variant.Description, asset.Description, "opis wariantu");
+                CollectionAssert.AreEqual(variant.DisabledChecks, asset.DisabledChecks, "wyłączone sprawdzenia");
+            }
             Assert.AreEqual(TestData.Rules.Version, asset.RulesVersion, "wersja pliku reguł");
 
             CompiledRules fromAsset = RuleCompiler.Compile(asset.ToTilesetData());
@@ -160,7 +170,7 @@ namespace WFC.Tests
         [TestCase("E3", 12)]
         [TestCase("E4", 16)]
         [TestCase("E5", 4)]
-        [TestCase("E6", 1)]
+        [TestCase("E6", 5)]
         public void Eksperyment_ZasobZWariantami(string experimentName, int variants)
         {
             BenchmarkConfig config = Load<BenchmarkConfig>(WfcPaths.Experiment(experimentName));

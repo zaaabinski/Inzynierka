@@ -17,8 +17,11 @@ namespace WFC.Runtime
     {
         [SerializeField] GeneratorController generator;
         [SerializeField] BenchmarkRunner runner;
-        [Tooltip("Zestawy kafelków do wyboru w oknie.")]
+        [Tooltip("Zestawy kafelków do wyboru w oknie; dochodzą do nich zestawy z eksperymentów (np. warianty reguł E6).")]
         [SerializeField] List<TilesetDefinition> tilesets = new List<TilesetDefinition>();
+
+        /// <summary>Zestawy na liście w oknie: z pola tilesets, potem z eksperymentów, bez powtórzeń.</summary>
+        readonly List<TilesetDefinition> tilesetChoices = new List<TilesetDefinition>();
 
         const string CustomExperiment = "Własne (z sekcji Ustawienia)";
         static readonly Color TextColor = new Color(0.93f, 0.94f, 0.96f);
@@ -47,6 +50,12 @@ namespace WFC.Runtime
         IntegerField maxAttemptsField;
         IntegerField seedField;
         Label reportLabel;
+        Button playButton;
+        Slider speedSlider;
+        Label speedLabel;
+        Toggle possibilitiesToggle;
+        Toggle currentFloorToggle;
+        Toggle floorShotsToggle;
         DropdownField experimentField;
         IntegerField firstSeedField;
         IntegerField seedCountField;
@@ -130,7 +139,10 @@ namespace WFC.Runtime
             scroll.Add(tabs);
 
             scroll.Add(MakeTitle("Ustawienia", 14));
-            tilesetField = MakeDropdown("zestaw", "Zestaw", tilesets.Select(t => t != null ? t.name : "(brak)").ToList(), Math.Max(0, tilesets.IndexOf(generator != null ? generator.Tileset : null)));
+            tilesetChoices.Clear();
+            IEnumerable<TilesetDefinition> fromExperiments = runner != null ? runner.Experiments.Where(e => e != null).SelectMany(e => e.Tilesets) : Enumerable.Empty<TilesetDefinition>();
+            tilesetChoices.AddRange(tilesets.Concat(fromExperiments).Where(t => t != null).Distinct());
+            tilesetField = MakeDropdown("zestaw", "Zestaw", tilesetChoices.Select(t => t.name).ToList(), Math.Max(0, tilesetChoices.IndexOf(generator != null ? generator.Tileset : null)));
             solverField = MakeDropdown("rozwiazywacz", "Rozwiązywacz", Solvers.Select(s => WfcFactory.Label(s)).ToList(), Array.IndexOf(Solvers, generator != null ? generator.Solver : SolverKind.Bitset));
             selectorField = MakeDropdown("heurystyka", "Heurystyka", Selectors.Select(s => WfcFactory.Label(s)).ToList(), Array.IndexOf(Selectors, generator != null ? generator.Selector : SelectorKind.LevelFirst));
             contradictionField = MakeDropdown("sprzecznosc", "Sprzeczność", Contradictions.Select(c => WfcFactory.Label(c)).ToList(), Array.IndexOf(Contradictions, generator != null ? generator.Contradiction : ContradictionKind.Restart));
@@ -164,6 +176,7 @@ namespace WFC.Runtime
             actions2.Add(SingleButton("przycisk-nastepne", "Następne ziarno", () => { Apply(); generator.NextSeed(); }));
             actions2.Add(SingleButton("przycisk-wyczysc", "Wyczyść", () => generator.Clear()));
             singleSection.Add(actions2);
+            BuildStepPreview(singleSection);
             reportLabel = MakeInfo("raport");
             singleSection.Add(reportLabel);
             scroll.Add(singleSection);
@@ -207,7 +220,7 @@ namespace WFC.Runtime
 
             var help = MakeInfo("pomoc");
             help.text = "Prawy przycisk myszy: obrót wokół zamku. Kółko: przybliżenie. Środkowy przycisk: przesuwanie widoku. " +
-                        "G: następne ziarno. F12: zrzut ekranu. H: schowaj okno.";
+                        "G: następne ziarno. P: odtwarzanie krok po kroku. F12: zrzut ekranu. H: schowaj okno.";
             help.style.color = Muted;
             scroll.Add(help);
 
@@ -264,6 +277,7 @@ namespace WFC.Runtime
 
             if (generator != null && reportLabel.text != generator.LastReport)
                 reportLabel.text = generator.LastReport;
+            RefreshStepPreview();
             if (runner == null)
                 return;
             if (runner.TotalRuns > 0)
@@ -291,8 +305,8 @@ namespace WFC.Runtime
         {
             if (generator == null)
                 return;
-            if (tilesetField.index >= 0 && tilesetField.index < tilesets.Count)
-                generator.Tileset = tilesets[tilesetField.index];
+            if (tilesetField.index >= 0 && tilesetField.index < tilesetChoices.Count)
+                generator.Tileset = tilesetChoices[tilesetField.index];
             generator.GridSize = new Unity.Mathematics.int3(Mathf.Max(1, sizeEastField.value), Mathf.Max(1, floorsField.value), Mathf.Max(1, sizeNorthField.value));
             generator.Solver = Solvers[Mathf.Max(0, solverField.index)];
             generator.Selector = Selectors[Mathf.Max(0, selectorField.index)];
@@ -425,6 +439,82 @@ namespace WFC.Runtime
             });
             singleButtons.Add(button);
             return button;
+        }
+
+        /// <summary>Odtwarzanie krok po kroku: przycisk, szybkość, opcje znaczników i legenda kolorów (StepVisualizer).</summary>
+        void BuildStepPreview(VisualElement section)
+        {
+            section.Add(MakeTitle("Krok po kroku", 13));
+            var row = MakeRow();
+            playButton = SingleButton("przycisk-odtwarzaj", "Odtwarzaj", () =>
+            {
+                if (generator.Visualizer != null && !generator.Visualizer.IsPlaying)
+                    Apply();
+                generator.Visualizer?.TogglePlay();
+            });
+            row.Add(playButton);
+            section.Add(row);
+
+            speedSlider = new Slider("Szybkość", 0f, 1f) { name = "szybkosc", value = SpeedToSlider(30f) };
+            speedSlider.labelElement.style.color = TextColor;
+            speedSlider.labelElement.style.minWidth = 96;
+            section.Add(speedSlider);
+            speedLabel = MakeInfo("szybkosc-opis");
+            section.Add(speedLabel);
+
+            possibilitiesToggle = MakeToggle("pokaz-mozliwosci", "Kolory możliwości", true);
+            currentFloorToggle = MakeToggle("biezace-pietro", "Tylko bieżące piętro", true);
+            floorShotsToggle = MakeToggle("zrzut-pietra", "Zrzut po każdym piętrze", false);
+            section.Add(possibilitiesToggle);
+            section.Add(currentFloorToggle);
+            section.Add(floorShotsToggle);
+
+            var legend = MakeInfo("legenda");
+            var text = new System.Text.StringBuilder("Możliwości w komórce: ");
+            for (int band = 0; band < StepVisualizer.BandStarts.Length; band++)
+            {
+                int from = StepVisualizer.BandStarts[band];
+                string range = band + 1 < StepVisualizer.BandStarts.Length ? $"{from}–{StepVisualizer.BandStarts[band + 1] - 1}" : $"{from}+";
+                text.Append($"<color=#{ColorUtility.ToHtmlStringRGB(StepVisualizer.BandColors[band])}>■</color> {range}  ");
+            }
+            text.Append($"\n<color=#{ColorUtility.ToHtmlStringRGB(StepVisualizer.DecisionColor)}>■</color> ostatnia decyzja  ");
+            text.Append($"<color=#{ColorUtility.ToHtmlStringRGB(StepVisualizer.ContradictionColor)}>■</color> sprzeczność");
+            legend.text = text.ToString();
+            legend.style.color = Muted;
+            section.Add(legend);
+        }
+
+        void RefreshStepPreview()
+        {
+            float speed = SliderToSpeed(speedSlider.value);
+            string speedText = $"{speed:0} kroków na sekundę";
+            if (speedLabel.text != speedText)
+                speedLabel.text = speedText;
+            StepVisualizer visualizer = generator != null ? generator.Visualizer : null;
+            if (visualizer == null)
+                return;
+            visualizer.StepsPerSecond = speed;
+            visualizer.ShowPossibilities = possibilitiesToggle.value;
+            visualizer.CurrentFloorOnly = currentFloorToggle.value;
+            visualizer.ScreenshotEachFloor = floorShotsToggle.value;
+            string playText = visualizer.IsPlaying ? "Pauza" : "Odtwarzaj";
+            if (playButton.text != playText)
+                playButton.text = playText;
+        }
+
+        /// <summary>Suwak 0–1 w skali logarytmicznej: 1–2000 kroków na sekundę.</summary>
+        static float SliderToSpeed(float value) =>
+            Mathf.Round(StepVisualizer.MinStepsPerSecond * Mathf.Pow(StepVisualizer.MaxStepsPerSecond / StepVisualizer.MinStepsPerSecond, value));
+
+        static float SpeedToSlider(float speed) =>
+            Mathf.Log(speed / StepVisualizer.MinStepsPerSecond) / Mathf.Log(StepVisualizer.MaxStepsPerSecond / StepVisualizer.MinStepsPerSecond);
+
+        static Toggle MakeToggle(string elementName, string label, bool value)
+        {
+            var toggle = new Toggle(label) { name = elementName, value = value };
+            toggle.labelElement.style.color = TextColor;
+            toggle.labelElement.style.minWidth = 160;
+            return toggle;
         }
 
         static Label MakeTitle(string text, int size)

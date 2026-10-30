@@ -23,16 +23,35 @@ namespace WFC.Core
         EmptyCell
     }
 
+    /// <summary>
+    /// Naruszenia jednej mapy według typu. Typy wyłączone w zestawie (wariant reguł bez danej zasady) liczą się osobno
+    /// w DisabledTotal: to skutek wyłączenia zasady, a nie błąd generatora.
+    /// </summary>
     public sealed class RuleCheckReport
     {
         public static readonly int TypeCount = Enum.GetValues(typeof(ViolationType)).Length;
         const int MaxExamples = 20;
 
         readonly int[] counts = new int[TypeCount];
+        readonly bool[] disabled = new bool[TypeCount];
 
+        public RuleCheckReport(IEnumerable<ViolationType> disabledChecks = null)
+        {
+            if (disabledChecks != null)
+                foreach (ViolationType type in disabledChecks)
+                    disabled[(int)type] = true;
+        }
+
+        /// <summary>Liczba przypadków danego typu, także wyłączonego.</summary>
         public int this[ViolationType type] => counts[(int)type];
 
+        /// <summary>Naruszenia zasad obowiązujących w zestawie; cel: 0.</summary>
         public int Total { get; private set; }
+
+        /// <summary>Przypadki zasad wyłączonych w zestawie, np. schody bez drzwi w wariancie PelnyBezDrzwiNadSchodami.</summary>
+        public int DisabledTotal { get; private set; }
+
+        public bool IsDisabled(ViolationType type) => disabled[(int)type];
 
         /// <summary>Do 20 przykładów z położeniem, do szukania błędu.</summary>
         public List<string> Examples { get; } = new List<string>();
@@ -40,6 +59,11 @@ namespace WFC.Core
         public void Add(ViolationType type, int3 cell, string detail)
         {
             counts[(int)type]++;
+            if (disabled[(int)type])
+            {
+                DisabledTotal++;
+                return;
+            }
             Total++;
             if (Examples.Count < MaxExamples)
                 Examples.Add($"{Describe(type)} w (x {cell.x}, piętro {cell.y}, z {cell.z}): {detail}");
@@ -70,8 +94,11 @@ namespace WFC.Core
         {
             var text = new StringBuilder($"Naruszenia zasad: {Total}");
             for (int type = 0; type < TypeCount; type++)
-                if (counts[type] > 0)
+                if (counts[type] > 0 && !disabled[type])
                     text.Append($"\n  {Describe((ViolationType)type)}: {counts[type]}");
+            for (int type = 0; type < TypeCount; type++)
+                if (counts[type] > 0 && disabled[type])
+                    text.Append($"\n  {Describe((ViolationType)type)}: {counts[type]} (zasada wyłączona w tym zestawie, nie liczy się)");
             foreach (string example in Examples)
                 text.Append("\n  przykład: ").Append(example);
             return text.ToString();
@@ -90,7 +117,7 @@ namespace WFC.Core
             var grid = new GridShape(size);
             if (states.Length != grid.CellCount)
                 throw new ArgumentException($"Mapa ma {states.Length} komórek, a siatka {grid} ma {grid.CellCount}.", nameof(states));
-            var report = new RuleCheckReport();
+            var report = new RuleCheckReport(rules.DisabledChecks);
             var map = new MapView(rules, grid, states);
 
             for (int cell = 0; cell < grid.CellCount; cell++)
@@ -252,8 +279,11 @@ namespace WFC.Core
             return height;
         }
 
-        /// <summary>Spójne obszary komórek parteru z podanych grup (sąsiedztwo przez boki).</summary>
-        public List<List<int>> GroundComponents(params string[] groups)
+        /// <summary>
+        /// Spójne obszary komórek parteru z podanych grup (sąsiedztwo przez boki). Bok z etykietą outerWall nie łączy
+        /// komórek: to zewnętrzna ściana budynku, więc za nią stoi już inny budynek (wariant reguł bez wolnego pola).
+        /// </summary>
+        public List<List<int>> GroundComponents(string outerWall, params string[] groups)
         {
             var components = new List<List<int>>();
             var visited = new bool[Grid.CellsPerFloor];
@@ -272,7 +302,7 @@ namespace WFC.Core
                     foreach (Direction side in DirectionExtensions.Sides)
                     {
                         int next = Grid.Neighbor(cell, side);
-                        if (next >= 0 && !visited[next] && Array.IndexOf(groups, Group(next)) >= 0)
+                        if (next >= 0 && !visited[next] && Array.IndexOf(groups, Group(next)) >= 0 && (outerWall == null || Label(cell, side) != outerWall))
                         {
                             visited[next] = true;
                             stack.Push(next);
@@ -285,7 +315,10 @@ namespace WFC.Core
             return components;
         }
 
-        /// <summary>Podstawy wież: spójne obszary ćwiartek wieży na parterze; poprawna wieża to 4 ćwiartki 2 × 2.</summary>
-        public List<List<int>> TowerFootprints() => GroundComponents(CastleVocabulary.GroupTower);
+        /// <summary>Podstawy wież: ćwiartki wieży na parterze połączone stykami ćwiartek; poprawna wieża to 4 ćwiartki 2 × 2.</summary>
+        public List<List<int>> TowerFootprints() => GroundComponents(CastleVocabulary.LabelTowerWall, CastleVocabulary.GroupTower);
+
+        /// <summary>Podstawy donżonów: kafelki donżonu na parterze połączone wewnętrznymi stykami pierścienia.</summary>
+        public List<List<int>> KeepFootprints() => GroundComponents(CastleVocabulary.LabelKeepWall, CastleVocabulary.GroupKeep);
     }
 }

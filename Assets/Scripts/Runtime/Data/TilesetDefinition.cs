@@ -6,7 +6,7 @@ namespace WFC.Runtime
 {
     /// <summary>
     /// Zestaw kafelków jako zasób Unity: Pelny, PelnyBezDekoracji, Sredni, Prosty. Warianty reguł do eksperymentu E6
-    /// to osobne zasoby z inną listą par zgodnych etykiet albo innymi mnożnikami wag.
+    /// (RuleVariants) to osobne zasoby z dopisanymi parami zgodnych etykiet albo innymi mnożnikami wag.
     /// </summary>
     [CreateAssetMenu(menuName = "WFC/Zestaw kafelków", fileName = "Zestaw")]
     public sealed class TilesetDefinition : ScriptableObject
@@ -19,6 +19,9 @@ namespace WFC.Runtime
         [SerializeField] MapEdgeRules mapEdge = new MapEdgeRules();
         [Tooltip("Mnożnik wagi dla nazwy kafelka albo grupy, np. Teren × 0,4.")]
         [SerializeField] List<WeightMultiplier> weightMultipliers = new List<WeightMultiplier>();
+        [Tooltip("Sprawdzenia RuleChecker wyłączone w tym zestawie (wariant reguł bez danej zasady); liczą się osobno, nie jako naruszenia.")]
+        [SerializeField] List<ViolationType> disabledChecks = new List<ViolationType>();
+        [SerializeField, TextArea] string description;
 
         [Header("Kontrola (0 = bez sprawdzania)")]
         [SerializeField, Min(0)] int expectedTileCount;
@@ -31,6 +34,8 @@ namespace WFC.Runtime
         public IReadOnlyList<VerticalException> VerticalExceptions => verticalExceptions;
         public MapEdgeRules MapEdge => mapEdge;
         public IReadOnlyList<WeightMultiplier> WeightMultipliers => weightMultipliers;
+        public IReadOnlyList<ViolationType> DisabledChecks => disabledChecks;
+        public string Description => description;
         public int ExpectedTileCount => expectedTileCount;
         public int ExpectedStateCount => expectedStateCount;
         public string RulesVersion => rulesVersion;
@@ -53,6 +58,7 @@ namespace WFC.Runtime
             data.CompatiblePairs.AddRange(compatiblePairs);
             data.VerticalExceptions.AddRange(verticalExceptions);
             data.WeightMultipliers.AddRange(weightMultipliers);
+            data.DisabledChecks.AddRange(disabledChecks);
             return data;
         }
 
@@ -66,6 +72,15 @@ namespace WFC.Runtime
             expectedTileCount = data.ExpectedTileCount;
             expectedStateCount = data.ExpectedStateCount;
             rulesVersion = version;
+        }
+
+        /// <summary>Nadpisuje zestaw wariantem reguł (RuleVariants): także mnożniki wag, wyłączone sprawdzenia i opis.</summary>
+        public void CopyVariantFrom(TilesetData data, IEnumerable<TileDefinition> tileAssets, string version, string variantDescription)
+        {
+            CopyFrom(data, tileAssets, version);
+            weightMultipliers = new List<WeightMultiplier>(data.WeightMultipliers);
+            disabledChecks = new List<ViolationType>(data.DisabledChecks);
+            description = variantDescription;
         }
     }
 }
