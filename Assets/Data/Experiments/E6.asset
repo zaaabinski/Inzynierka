@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: E6
   m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
   experimentName: E6
-  description: "Regu\u0142y i wagi (pytanie 6). Na razie obecne regu\u0142y; warianty bez wolnego pola przy \u015Bcianach, bez drzwi nad schodami i z wagami trawy \xD7 0,4 i \xD7 0,25 dojd\u0105 w kamieniu 8."
+  description: "Regu\u0142y i wagi (pytanie 6): obecne regu\u0142y, bez wolnego pola przy \u015Bcianach, bez drzwi nad schodami oraz wagi trawy \xD7 0,4 i \xD7 0,25. Mierzymy g\u0119sto\u015B\u0107 zabudowy i odsetek sprzeczno\u015Bci."
   solvers: 02000000i
   selectors: 00000000i
   contradictionHandlers: 00000000i
   tilesets:
   - {fileID: 11400000, guid: b1eba3fe7f014ea43beca3ecdcc05b8e, type: 2}
+  - {fileID: 11400000, guid: 256c37133ceba7a4cb2078f439752a50, type: 2}
+  - {fileID: 11400000, guid: e50a6048bb8288d4da8410c867f64f24, type: 2}
+  - {fileID: 11400000, guid: 0d504ad75446e7d4190d00886c2fdcab, type: 2}
+  - {fileID: 11400000, guid: e4d291ac8875f8d43945739e6b4a728a, type: 2}
   gridSizes:
   - {x: 20, y: 13, z: 20}
   firstSeed: 1

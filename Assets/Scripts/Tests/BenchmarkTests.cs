@@ -84,11 +84,12 @@ namespace WFC.Tests
         }
 
         [Test]
-        public void Csv_42Kolumny_Pierwsze40JakWRozdziale7()
+        public void Csv_45Kolumn_Pierwsze40JakWRozdziale7()
         {
-            Assert.AreEqual(42, CsvWriter.Columns.Length);
+            Assert.AreEqual(45, CsvWriter.Columns.Length);
             Assert.AreEqual(HandoffColumns, string.Join(",", CsvWriter.Columns.Take(40)));
-            CollectionAssert.AreEqual(new[] { "czas_stawiania_ms", "srodowisko" }, CsvWriter.Columns.Skip(40).ToArray());
+            CollectionAssert.AreEqual(new[] { "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc", "roznica_zabudowa_proc" },
+                CsvWriter.Columns.Skip(40).ToArray());
         }
 
         [Test]
@@ -169,6 +170,19 @@ namespace WFC.Tests
                 Assert.AreEqual(rows[i][Column("decyzje")], rows[i + 1][Column("decyzje")], "to samo ziarno = ta sama mapa");
                 Assert.AreEqual(rows[i][Column("usuniete_mozliwosci")], rows[i + 1][Column("usuniete_mozliwosci")]);
             }
+
+            // Różnica od poprzedniego ziarna: pierwsze ziarno bez porównania, powtórzenia porównują się z ziarnem wcześniejszym.
+            string[] differences = rows.Select(row => row[Column("roznica_mapy_proc")]).ToArray();
+            Assert.AreEqual("", differences[0]);
+            Assert.AreEqual("", differences[1]);
+            for (int i = 2; i < rows.Count; i++)
+            {
+                double all = double.Parse(differences[i], CultureInfo.InvariantCulture);
+                Assert.Greater(all, 0, $"wiersz {i}: ziarno {rows[i][Column("ziarno")]} inne niż poprzednie");
+                Assert.LessOrEqual(all, 100);
+                Assert.IsNotEmpty(rows[i][Column("roznica_zabudowa_proc")]);
+            }
+            Assert.AreEqual(differences[2], differences[3], "oba powtórzenia ziarna 2 porównane z ziarnem 1");
         }
 
         [Test]
@@ -219,8 +233,12 @@ namespace WFC.Tests
             var root = new VisualElement();
             panel.Build(root);
 
-            foreach (string name in new[] { "zakladka-jedna-mapa", "zakladka-badanie", "przycisk-generuj", "przycisk-krok", "przycisk-start", "przycisk-pauza", "przycisk-stop" })
+            foreach (string name in new[] { "zakladka-jedna-mapa", "zakladka-badanie", "przycisk-generuj", "przycisk-krok", "przycisk-odtwarzaj", "przycisk-start", "przycisk-pauza", "przycisk-stop" })
                 Assert.IsNotNull(root.Q<Button>(name), name);
+            Assert.IsNotNull(root.Q<Slider>("szybkosc"));
+            foreach (string name in new[] { "pokaz-mozliwosci", "biezace-pietro", "zrzut-pietra" })
+                Assert.IsNotNull(root.Q<Toggle>(name), name);
+            StringAssert.Contains("ostatnia decyzja", root.Q<Label>("legenda").text);
             foreach (string name in new[] { "heurystyka", "rozwiazywacz", "sprzecznosc", "zestaw", "eksperyment" })
                 Assert.IsNotNull(root.Q<DropdownField>(name), name);
             Assert.AreEqual(5, root.Q<DropdownField>("heurystyka").choices.Count, "5 heurystyk");

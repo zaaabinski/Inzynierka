@@ -1,0 +1,6 @@
+20 x 13 x 20 GameObjects: kostki 921, stawianie 3,8 ms, klatka średnio 0,76 ms (najdłuższa 1,5 ms), wywołania instancji 0, MeshRenderer w scenie 921, generacja 34 ms
+20 x 13 x 20 Instanced: kostki 921, stawianie 6,2 ms, klatka średnio 1,40 ms (najdłuższa 2,4 ms), wywołania instancji 86, MeshRenderer w scenie 0, generacja 32 ms
+40 x 13 x 40 GameObjects: kostki 3606, stawianie 14,4 ms, klatka średnio 0,81 ms (najdłuższa 2,1 ms), wywołania instancji 0, MeshRenderer w scenie 3606, generacja 151 ms
+40 x 13 x 40 Instanced: kostki 3606, stawianie 1,7 ms, klatka średnio 1,20 ms (najdłuższa 2,1 ms), wywołania instancji 97, MeshRenderer w scenie 0, generacja 147 ms
+80 x 13 x 80 GameObjects: kostki 14652, stawianie 69,1 ms, klatka średnio 0,85 ms (najdłuższa 1,9 ms), wywołania instancji 0, MeshRenderer w scenie 14652, generacja 689 ms
+80 x 13 x 80 Instanced: kostki 14652, stawianie 9,3 ms, klatka średnio 2,96 ms (najdłuższa 4,2 ms), wywołania instancji 102, MeshRenderer w scenie 0, generacja 670 ms

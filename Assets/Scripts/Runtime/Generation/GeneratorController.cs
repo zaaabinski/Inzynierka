@@ -10,7 +10,7 @@ namespace WFC.Runtime
     /// <summary>
     /// Główny kontroler sceny Generator: ustawienia generacji, przyciski Generuj, Krok, Do końca, Wyczyść
     /// (w inspektorze i w oknie ustawień), uruchomienie rozwiązywacza, sprawdzenie mapy i postawienie jej przez MapBuilder.
-    /// W trybie Play klawisz G generuje mapę z następnym ziarnem.
+    /// W trybie Play klawisz G generuje mapę z następnym ziarnem, a podgląd krok po kroku (StepVisualizer) dodaje się sam.
     /// </summary>
     public sealed class GeneratorController : MonoBehaviour
     {
@@ -35,6 +35,12 @@ namespace WFC.Runtime
 
         IWfcSolver activeSolver;
         CompiledRules rules;
+        StepVisualizer visualizer;
+
+        // Poprzednia udana mapa, do porównania z następną (różnorodność między ziarnami).
+        int[] previousMap;
+        int3 previousSize;
+        TilesetDefinition previousTileset;
 
         public TilesetDefinition Tileset
         {
@@ -86,6 +92,20 @@ namespace WFC.Runtime
 
         public IWfcSolver ActiveSolver => activeSolver;
 
+        /// <summary>Podgląd krok po kroku; w trybie Play tworzony przy pierwszym użyciu, poza nim null.</summary>
+        public StepVisualizer Visualizer
+        {
+            get
+            {
+                if (visualizer == null && Application.isPlaying && !TryGetComponent(out visualizer))
+                {
+                    visualizer = gameObject.AddComponent<StepVisualizer>();
+                    visualizer.Generator = this;
+                }
+                return visualizer;
+            }
+        }
+
         public CompiledRules Rules => rules;
 
         public GenerationResult LastResult { get; private set; }
@@ -96,6 +116,8 @@ namespace WFC.Runtime
 
         /// <summary>Podsumowanie ostatniej generacji albo postęp w trybie krok po kroku.</summary>
         public string LastReport { get; private set; } = string.Empty;
+
+        void Awake() => _ = Visualizer;
 
         void Start()
         {
@@ -123,16 +145,22 @@ namespace WFC.Runtime
             Generate();
         }
 
-        /// <summary>Jedna decyzja z propagacją; pierwsze wywołanie zaczyna nową generację.</summary>
-        public void Step()
+        /// <summary>
+        /// Jedna decyzja z propagacją albo count decyzji naraz (odtwarzanie w StepVisualizer); mapa i raport odświeżają się
+        /// raz, po ostatniej. Wywołanie po zakończonej generacji zaczyna nową.
+        /// </summary>
+        public StepStatus Step(int count = 1)
         {
             if (activeSolver == null || activeSolver.IsFinished)
                 Begin();
-            StepStatus status = activeSolver.Step();
+            StepStatus status = StepStatus.Decided;
+            for (int step = 0; step < count && !activeSolver.IsFinished; step++)
+                status = activeSolver.Step();
             if (activeSolver.IsFinished)
                 Complete();
             else
                 ShowProgress(status);
+            return status;
         }
 
         public void RunToEnd()
@@ -145,6 +173,8 @@ namespace WFC.Runtime
 
         public void Clear()
         {
+            if (visualizer != null)
+                visualizer.Pause();
             activeSolver = null;
             LastResult = null;
             LastCheck = null;
@@ -179,6 +209,19 @@ namespace WFC.Runtime
             if (mapBuilder != null)
                 mapBuilder.Show(tileset, rules, activeSolver.Grid, LastResult.States, seed);
             LastReport = Describe(LastResult, LastCheck, LastStats, mapBuilder != null ? mapBuilder.LastBuildMs : 0);
+            if (LastResult.Success)
+            {
+                if (previousMap != null && previousTileset == tileset && math.all(previousSize == LastResult.Size))
+                {
+                    MapDifference difference = DiversityAnalyzer.Compare(rules, LastResult.Size, previousMap, LastResult.States);
+                    LastReport += $"\nInna niż poprzednia mapa: {difference}.";
+                }
+                previousMap = LastResult.States;
+                previousSize = LastResult.Size;
+                previousTileset = tileset;
+            }
+            if (mapBuilder != null && mapBuilder.IsInstanced)
+                LastReport += $"\nMapa rysowana instancjami: kostki {mapBuilder.InstanceCount}, wywołania rysowania na klatkę {mapBuilder.InstancedDrawCalls}.";
             if (LastResult.Success && LastCheck.Total == 0)
                 Debug.Log(LastReport, this);
             else
@@ -198,7 +241,8 @@ namespace WFC.Runtime
             if (mapBuilder != null)
                 mapBuilder.Show(tileset, rules, grid, states, seed);
             SolverMetrics metrics = activeSolver.Metrics;
-            LastReport = $"Ziarno {seed}, próba {metrics.Attempts}: decyzja {metrics.Decisions}" +
+            int floor = activeSolver.LastDecisionCell >= 0 ? grid.Floor(activeSolver.LastDecisionCell) : 0;
+            LastReport = $"Ziarno {seed}, próba {metrics.Attempts}: decyzja {metrics.Decisions}, piętro {floor} (0 = parter)" +
                          (status == StepStatus.Contradiction ? $" – sprzeczność, {WfcFactory.Label(contradiction).ToLowerInvariant()}" : string.Empty) +
                          $"; ustalone komórki {decided} z {grid.CellCount}.";
         }
@@ -220,7 +264,8 @@ namespace WFC.Runtime
                 .Append($"stawianie kostek {buildMs:0} ms.\n")
                 .Append($"Decyzje {metrics.Decisions}, kroki propagacji {metrics.PropagationSteps}, usunięte możliwości {metrics.RemovedPossibilities}.");
             if (check != null)
-                text.Append($"\nNaruszenia zasad: {check.Total}.");
+                text.Append($"\nNaruszenia zasad: {check.Total}.")
+                    .Append(check.DisabledTotal > 0 ? $" Przypadki zasad wyłączonych w tym zestawie: {check.DisabledTotal}." : string.Empty);
             if (stats != null)
                 text.Append($"\nWieże {stats.Towers}, donżony {stats.Keeps}, mosty {stats.Bridges}, schody {stats.Stairs}, ")
                     .Append($"zamknięte dziedzińce {stats.EnclosedCourtyards}, teren dostępny z krawędzi {stats.ReachableTerrainPercent:0}%.");

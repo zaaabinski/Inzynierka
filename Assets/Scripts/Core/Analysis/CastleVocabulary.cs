@@ -20,6 +20,8 @@ namespace WFC.Core
         public const string TileAirAboveStairs = "Powietrze_Nad_Schodami";
 
         public const string LabelStairsTop = "schody_szczyt";
+        public const string LabelTowerWall = "wieza_sciana";
+        public const string LabelKeepWall = "donzon_sciana";
         public const string LabelDoor = "drzwi";
         public const string LabelBeforeDoor = "przed_drzwiami";
         public const string LabelEmpty = "puste";

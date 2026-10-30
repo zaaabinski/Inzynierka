@@ -155,7 +155,8 @@ namespace WFC.Runtime
 
         void Finish()
         {
-            Status = $"Gotowe. Zapisane uruchomienia: {session.CompletedMeasuredRuns}, bez mapy: {session.FailedRuns}, naruszenia zasad: {session.Violations}.";
+            Status = $"Gotowe. Zapisane uruchomienia: {session.CompletedMeasuredRuns}, bez mapy: {session.FailedRuns}, naruszenia zasad: {session.Violations}." +
+                     DescribeDifference(session);
             Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
             session.Dispose();
             session = null;
@@ -179,11 +180,17 @@ namespace WFC.Runtime
                         Debug.Log($"[BenchmarkRunner] {batch.Describe(run)}");
                     lastVariant = run.VariantIndex;
                 }
-                Status = $"Gotowe. Zapisane uruchomienia: {batch.CompletedMeasuredRuns}, bez mapy: {batch.FailedRuns}, naruszenia zasad: {batch.Violations}.";
+                Status = $"Gotowe. Zapisane uruchomienia: {batch.CompletedMeasuredRuns}, bez mapy: {batch.FailedRuns}, naruszenia zasad: {batch.Violations}." +
+                         DescribeDifference(batch);
                 Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
                 return batch.Violations == 0 ? 0 : 1;
             }
         }
+
+        static string DescribeDifference(BenchmarkSession finished) =>
+            finished.AverageDifference is double all
+                ? $" Mapy kolejnych ziaren różnią się średnio w {all:0}% komórek, w zabudowie w {finished.AverageBuiltDifference:0}%."
+                : string.Empty;
 
         /// <summary>Przy wyłączonym Burst wariant Burst liczyłby się jak zwykły C# (czyli jak Bitset).</summary>
         static void WarnIfBurstDisabled(BenchmarkConfig config)

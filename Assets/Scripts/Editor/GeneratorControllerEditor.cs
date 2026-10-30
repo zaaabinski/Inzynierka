@@ -20,7 +20,7 @@ namespace WFC.Editor
                 if (GUILayout.Button("Generuj"))
                     Run(controller, controller.Generate);
                 if (GUILayout.Button("Krok"))
-                    Run(controller, controller.Step);
+                    Run(controller, () => controller.Step());
                 if (GUILayout.Button("Do końca"))
                     Run(controller, controller.RunToEnd);
                 if (GUILayout.Button("Wyczyść"))

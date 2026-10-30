@@ -40,6 +40,7 @@ namespace WFC.Core
             VerticalExceptions = tileset.VerticalExceptions.ToArray();
             ExpectedTileCount = tileset.ExpectedTileCount;
             ExpectedStateCount = tileset.ExpectedStateCount;
+            DisabledChecks = tileset.DisabledChecks.ToArray();
             StateCount = stateTile.Length;
             WordCount = BitMask.WordCount(StateCount);
             this.stateTile = stateTile;
@@ -71,6 +72,9 @@ namespace WFC.Core
 
         /// <summary>Liczba stanów z sekcji kontrola; 0 = bez sprawdzania.</summary>
         public int ExpectedStateCount { get; }
+
+        /// <summary>Sprawdzenia RuleChecker wyłączone w tym zestawie (warianty reguł E6).</summary>
+        public IReadOnlyList<ViolationType> DisabledChecks { get; }
 
         public int TileCount => Tiles.Count;
 

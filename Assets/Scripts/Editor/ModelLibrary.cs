@@ -31,8 +31,8 @@ namespace WFC.Editor
 
         /// <summary>
         /// Wyciąga materiały osadzone w modelach do Materials/CastlePieces, po jednym pliku na nazwę (M_Kamien, M_Bruk, …),
-        /// i podpina je we wszystkich modelach, żeby 42 modele używały tych samych 12 materiałów.
-        /// Zwraca liczbę materiałów w folderze.
+        /// i podpina je we wszystkich modelach, żeby 42 modele używały tych samych 12 materiałów. Włącza w nich
+        /// instancjonowanie. Zwraca liczbę materiałów w folderze.
         /// </summary>
         public static int ExtractAndRemapMaterials(IReadOnlyCollection<string> modelPaths)
         {
@@ -76,7 +76,19 @@ namespace WFC.Editor
                     importer.SaveAndReimport();
             }
 
-            return AssetDatabase.FindAssets("t:Material", new[] { WfcPaths.Materials }).Length;
+            // Krok 3: instancjonowanie włączone w zasobie, żeby build zachował warianty shadera do rysowania dużych map
+            // instancjami (MapBuilder); przy zwykłych obiektach i tak rysuje SRP Batcher, więc wygląd się nie zmienia.
+            string[] materialGuids = AssetDatabase.FindAssets("t:Material", new[] { WfcPaths.Materials });
+            foreach (string guid in materialGuids)
+            {
+                var material = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));
+                if (material == null || material.enableInstancing)
+                    continue;
+                material.enableInstancing = true;
+                EditorUtility.SetDirty(material);
+            }
+
+            return materialGuids.Length;
         }
 
         static IEnumerable<Material> EmbeddedMaterials(string modelPath) =>

@@ -24,6 +24,9 @@ namespace WFC.Runtime
         /// <summary>Ustawienia panelu UI Toolkit i jego motyw.</summary>
         public const string UiSettings = "Assets/Settings/UI";
 
+        /// <summary>Materiał znaczników podglądu krok po kroku; w Resources, żeby trafił do buildu bez odwołania ze sceny.</summary>
+        public const string StepMarkerMaterial = "Assets/Resources/Materials/M_PodgladKrokow.mat";
+
         /// <summary>Zbudowana aplikacja, względem folderu projektu (folder Build jest w .gitignore).</summary>
         public const string BuildExecutable = "Build/Zamek.exe";
 

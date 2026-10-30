@@ -113,6 +113,8 @@ MonoBehaviour:
     - powietrze
     - puste
   weightMultipliers: []
+  disabledChecks: 
+  description: 
   expectedTileCount: 22
   expectedStateCount: 79
   rulesVersion: 2026-10-21

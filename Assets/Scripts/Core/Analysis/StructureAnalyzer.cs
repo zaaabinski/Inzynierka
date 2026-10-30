@@ -39,8 +39,8 @@ namespace WFC.Core
     }
 
     /// <summary>
-    /// Liczy budowle na gotowej mapie. Wieża = spójny obszar ćwiartek wieży na parterze (poprawna ma 2 × 2),
-    /// donżon = spójny obszar kafelków donżonu na parterze, most = kafelek z początkiem mostu,
+    /// Liczy budowle na gotowej mapie. Wieża = ćwiartki wieży na parterze połączone stykami ćwiartek (poprawna ma 2 × 2),
+    /// donżon = kafelki donżonu na parterze połączone wewnętrznymi stykami (nie zewnętrzną ścianą), most = kafelek z początkiem mostu,
     /// dziedziniec zamknięty = obszar terenu na parterze bez dojścia od krawędzi mapy.
     /// </summary>
     public static class StructureAnalyzer
@@ -73,7 +73,7 @@ namespace WFC.Core
                 stats.TowerHeights.Add(tower.Max(cell => map.ColumnHeight(cell, CastleVocabulary.GroupTower)));
             }
 
-            foreach (List<int> keep in map.GroundComponents(CastleVocabulary.GroupKeep))
+            foreach (List<int> keep in map.KeepFootprints())
             {
                 stats.Keeps++;
                 stats.KeepHeights.Add(keep.Max(cell => map.ColumnHeight(cell, CastleVocabulary.GroupKeep, CastleVocabulary.GroupKeepRoof)));
@@ -86,7 +86,7 @@ namespace WFC.Core
                     stats.WallHeights.Add(map.ColumnHeight(cell, CastleVocabulary.GroupWall, CastleVocabulary.GroupWallCorner));
             }
 
-            foreach (List<int> area in map.GroundComponents(CastleVocabulary.GroupTerrain))
+            foreach (List<int> area in map.GroundComponents(null, CastleVocabulary.GroupTerrain))
             {
                 stats.GroundTerrainCells += area.Count;
                 if (area.Any(cell => TouchesMapEdge(grid, cell)))

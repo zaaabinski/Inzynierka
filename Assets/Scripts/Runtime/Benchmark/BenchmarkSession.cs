@@ -33,6 +33,12 @@ namespace WFC.Runtime
 
         /// <summary>Czas stawiania kostek w oknie albo null, gdy mapy nie pokazano.</summary>
         public double? BuildMs;
+
+        /// <summary>
+        /// Różnica od mapy poprzedniego ziarna w tym samym wariancie albo null (pierwsze ziarno wariantu, rozgrzewka,
+        /// brak mapy). Powtórzenia tego samego ziarna też porównują się z poprzednim ziarnem, nie ze sobą.
+        /// </summary>
+        public MapDifference? Difference;
     }
 
     /// <summary>
@@ -47,6 +53,13 @@ namespace WFC.Runtime
         readonly MachineInfo machine;
         readonly Dictionary<TilesetDefinition, CompiledRules> rulesCache = new Dictionary<TilesetDefinition, CompiledRules>();
         int stepInVariant;
+
+        // Do różnicy między ziarnami: pierwsza udana mapa bieżącego ziarna i ostatnia udana mapa wcześniejszego ziarna.
+        uint? currentSeed;
+        int[] currentSeedMap;
+        int[] previousSeedMap;
+        double differenceSum;
+        double builtDifferenceSum;
 
         public BenchmarkSession(BenchmarkConfig config, string outputPath, MachineInfo machine)
         {
@@ -86,6 +99,15 @@ namespace WFC.Runtime
 
         public int Violations { get; private set; }
 
+        /// <summary>Uruchomienia z policzoną różnicą od poprzedniego ziarna.</summary>
+        public int ComparedRuns { get; private set; }
+
+        /// <summary>Średni odsetek komórek z innym kafelkiem niż w mapie poprzedniego ziarna; null, gdy nic nie porównano.</summary>
+        public double? AverageDifference => ComparedRuns == 0 ? (double?)null : differenceSum / ComparedRuns;
+
+        /// <summary>To samo dla komórek zabudowy.</summary>
+        public double? AverageBuiltDifference => ComparedRuns == 0 ? (double?)null : builtDifferenceSum / ComparedRuns;
+
         /// <summary>Folder Wyniki obok aplikacji (w edytorze obok folderu Assets).</summary>
         public static string ResultsFolder => Path.Combine(Path.GetDirectoryName(Application.dataPath) ?? ".", "Wyniki");
 
@@ -123,6 +145,7 @@ namespace WFC.Runtime
             if (!warmup)
             {
                 run.BuildMs = buildMs;
+                CompareWithPreviousSeed(run);
                 Write(run);
                 CompletedMeasuredRuns++;
                 FailedRuns += run.Result.Success ? 0 : 1;
@@ -135,8 +158,34 @@ namespace WFC.Runtime
             {
                 VariantIndex++;
                 stepInVariant = 0;
+                currentSeed = null;
+                currentSeedMap = null;
+                previousSeedMap = null;
             }
             return run;
+        }
+
+        /// <summary>Różnorodność: każda udana mapa z ostatnią udaną mapą wcześniejszego ziarna w tym samym wariancie.</summary>
+        void CompareWithPreviousSeed(BenchmarkRunResult run)
+        {
+            if (currentSeed != run.Seed)
+            {
+                if (currentSeedMap != null)
+                    previousSeedMap = currentSeedMap;
+                currentSeed = run.Seed;
+                currentSeedMap = null;
+            }
+            if (!run.Result.Success)
+                return;
+            currentSeedMap ??= run.Result.States;
+            if (previousSeedMap == null)
+                return;
+            Vector3Int size = run.Variant.Size;
+            MapDifference difference = DiversityAnalyzer.Compare(run.Rules, new int3(size.x, size.y, size.z), previousSeedMap, run.Result.States);
+            run.Difference = difference;
+            ComparedRuns++;
+            differenceSum += difference.AllPercent;
+            builtDifferenceSum += difference.BuiltPercent;
         }
 
         /// <summary>Opis postępu po polsku, do okna i konsoli.</summary>
@@ -147,6 +196,8 @@ namespace WFC.Runtime
             string outcome = run.Result.Success
                 ? $"{metrics.TotalMs:0} ms, próby: {metrics.Attempts}, naruszenia: {run.Check?.Total ?? 0}"
                 : $"bez mapy ({run.Result.Status}), próby: {metrics.Attempts}";
+            if (run.Difference is MapDifference difference)
+                outcome += $", inna niż poprzednie ziarno: {difference.AllPercent:0}% komórek, zabudowa {difference.BuiltPercent:0}%";
             return $"Wariant {run.VariantIndex + 1} z {variants.Count}: {run.Variant}\n" +
                    $"Uruchomienie {CompletedRuns} z {TotalRuns} ({what}): {outcome}.";
         }
@@ -226,7 +277,8 @@ namespace WFC.Runtime
                 run.Check?.Total, s?.Towers, s?.Keeps, s?.Bridges, s?.Stairs,
                 Average(s?.TowerHeights), Average(s?.WallHeights), Average(s?.KeepHeights),
                 s?.ReachableTerrainPercent, s?.EnclosedCourtyards,
-                run.BuildMs, machine.Environment
+                run.BuildMs, machine.Environment,
+                run.Difference?.AllPercent, run.Difference?.GroundPercent, run.Difference?.BuiltPercent
             });
         }
 

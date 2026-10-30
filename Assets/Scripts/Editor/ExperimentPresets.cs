@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using WFC.Core;
 using WFC.Runtime;
 
 namespace WFC.Editor
@@ -10,7 +11,7 @@ namespace WFC.Editor
     /// <summary>
     /// Eksperymenty E1–E6 z rozdziału 7 handoffu jako zasoby BenchmarkConfig w Assets/Data/Experiments. Bazą jest
     /// BitsetSolver, siatka 20 × 20 × 13, zestaw Pelny, kolejność piętrami, start od nowa i ziarna 1–100. Warianty, których
-    /// jeszcze nie ma (warianty reguł do E6), dojdą do tych samych zasobów w kolejnych etapach.
+    /// jeszcze nie ma, dojdą do tych samych zasobów w kolejnych etapach.
     /// </summary>
     public static class ExperimentPresets
     {
@@ -80,9 +81,13 @@ namespace WFC.Editor
                     }),
                 Create("E5", "Liczba kafelków (pytanie 5): zestawy Prosty (26 stanów), Średni (79), PelnyBezDekoracji (146) i Pełny (170).",
                     config => config.Tilesets.AddRange(new[] { Tileset("Prosty"), Tileset("Sredni"), Tileset("PelnyBezDekoracji"), full })),
-                Create("E6", "Reguły i wagi (pytanie 6). Na razie obecne reguły; warianty bez wolnego pola przy ścianach, " +
-                             "bez drzwi nad schodami i z wagami trawy × 0,4 i × 0,25 dojdą w kamieniu 8.",
-                    config => config.Tilesets.Add(full))
+                Create("E6", "Reguły i wagi (pytanie 6): obecne reguły, bez wolnego pola przy ścianach, bez drzwi nad schodami " +
+                             "oraz wagi trawy × 0,4 i × 0,25. Mierzymy gęstość zabudowy i odsetek sprzeczności.",
+                    config =>
+                    {
+                        config.Tilesets.Add(full);
+                        config.Tilesets.AddRange(RuleVariants.All.Select(variant => Tileset(variant.Name)));
+                    })
             };
             AssetDatabase.SaveAssets();
             return experiments;
