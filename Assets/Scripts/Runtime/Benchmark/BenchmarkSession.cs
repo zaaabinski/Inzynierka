@@ -39,6 +39,12 @@ namespace WFC.Runtime
         /// brak mapy). Powtórzenia tego samego ziarna też porównują się z poprzednim ziarnem, nie ze sobą.
         /// </summary>
         public MapDifference? Difference;
+
+        /// <summary>Sposób pokazania mapy (MapDisplay) albo null, gdy mapy nie pokazano.</summary>
+        public string Display;
+
+        /// <summary>Koszt rysowania mapy w oknie albo null, gdy mapy nie pokazano.</summary>
+        public RenderStats? RenderStats;
     }
 
     /// <summary>
@@ -118,6 +124,18 @@ namespace WFC.Runtime
         /// <param name="show">Wywoływane po generacji, przed zapisem; zwraca czas stawiania kostek albo null.</param>
         public BenchmarkRunResult RunNext(Func<BenchmarkRunResult, double?> show = null)
         {
+            BenchmarkRunResult run = StartNext(show);
+            CompleteRun(run);
+            return run;
+        }
+
+        /// <summary>
+        /// Generacja i pokazanie mapy, bez zapisu. W oknie między StartNext a CompleteRun mija kilka klatek na pomiar
+        /// rysowania tej mapy; bez okna od razu RunNext.
+        /// </summary>
+        /// <param name="show">Wywoływane po generacji; zwraca czas stawiania kostek albo null.</param>
+        public BenchmarkRunResult StartNext(Func<BenchmarkRunResult, double?> show = null)
+        {
             if (IsFinished)
                 throw new InvalidOperationException("Seria jest już zakończona.");
 
@@ -143,8 +161,17 @@ namespace WFC.Runtime
             run.Warmup = warmup;
             double? buildMs = show?.Invoke(run);
             if (!warmup)
-            {
                 run.BuildMs = buildMs;
+            return run;
+        }
+
+        /// <summary>Kończy uruchomienie ze StartNext: mierzone trafia do pliku, seria przechodzi dalej.</summary>
+        /// <param name="renderStats">Koszt rysowania tej mapy albo null, gdy nie mierzono.</param>
+        public void CompleteRun(BenchmarkRunResult run, RenderStats? renderStats = null)
+        {
+            if (!run.Warmup)
+            {
+                run.RenderStats = renderStats;
                 CompareWithPreviousSeed(run);
                 Write(run);
                 CompletedMeasuredRuns++;
@@ -162,7 +189,6 @@ namespace WFC.Runtime
                 currentSeedMap = null;
                 previousSeedMap = null;
             }
-            return run;
         }
 
         /// <summary>Różnorodność: każda udana mapa z ostatnią udaną mapą wcześniejszego ziarna w tym samym wariancie.</summary>
@@ -265,6 +291,7 @@ namespace WFC.Runtime
         {
             SolverMetrics m = run.Result.Metrics;
             StructureStats s = run.Stats;
+            RenderStats? r = run.RenderStats;
             Vector3Int size = run.Variant.Size;
             writer.Write(new object[]
             {
@@ -278,7 +305,8 @@ namespace WFC.Runtime
                 Average(s?.TowerHeights), Average(s?.WallHeights), Average(s?.KeepHeights),
                 s?.ReachableTerrainPercent, s?.EnclosedCourtyards,
                 run.BuildMs, machine.Environment,
-                run.Difference?.AllPercent, run.Difference?.GroundPercent, run.Difference?.BuiltPercent
+                run.Difference?.AllPercent, run.Difference?.GroundPercent, run.Difference?.BuiltPercent,
+                run.Display, r?.DrawCalls, r?.DrawnInstances, r?.SetPassCalls, r?.Triangles, r?.Vertices, r?.FrameMs, r?.CpuMs, r?.GpuMs
             });
         }
 

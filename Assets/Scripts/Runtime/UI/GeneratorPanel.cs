@@ -33,6 +33,7 @@ namespace WFC.Runtime
         static readonly SolverKind[] Solvers = (SolverKind[])Enum.GetValues(typeof(SolverKind));
         static readonly SelectorKind[] Selectors = (SelectorKind[])Enum.GetValues(typeof(SelectorKind));
         static readonly ContradictionKind[] Contradictions = (ContradictionKind[])Enum.GetValues(typeof(ContradictionKind));
+        static readonly MapDisplay[] Displays = (MapDisplay[])Enum.GetValues(typeof(MapDisplay));
 
         VisualElement root;
         VisualElement panel;
@@ -44,6 +45,8 @@ namespace WFC.Runtime
         DropdownField solverField;
         DropdownField selectorField;
         DropdownField contradictionField;
+        DropdownField displayField;
+        Label liveStatsLabel;
         IntegerField sizeEastField;
         IntegerField sizeNorthField;
         IntegerField floorsField;
@@ -161,6 +164,13 @@ namespace WFC.Runtime
             scroll.Add(sizeRow);
             maxAttemptsField = MakeInteger("limit-prob", "Limit prób", generator != null ? generator.MaxAttempts : 1000);
             scroll.Add(maxAttemptsField);
+            MapBuilder builder = generator != null ? generator.MapBuilder : null;
+            displayField = MakeDropdown("rysowanie", "Rysowanie", Displays.Select(d => WfcFactory.Label(d)).ToList(), Array.IndexOf(Displays, builder != null ? builder.Display : MapDisplay.GameObjects));
+            displayField.RegisterValueChangedCallback(_ => ApplyDisplay());
+            scroll.Add(displayField);
+            liveStatsLabel = MakeInfo("rysowanie-na-zywo");
+            liveStatsLabel.style.color = Muted;
+            scroll.Add(liveStatsLabel);
 
             singleSection = new VisualElement { name = "sekcja-jedna-mapa" };
             singleSection.Add(MakeTitle("Jedna mapa", 14));
@@ -278,6 +288,9 @@ namespace WFC.Runtime
             if (generator != null && reportLabel.text != generator.LastReport)
                 reportLabel.text = generator.LastReport;
             RefreshStepPreview();
+            string liveStats = runner != null && runner.LiveRenderStats is RenderStats stats ? stats.ToString() : string.Empty;
+            if (liveStatsLabel.text != liveStats)
+                liveStatsLabel.text = liveStats;
             if (runner == null)
                 return;
             if (runner.TotalRuns > 0)
@@ -313,12 +326,21 @@ namespace WFC.Runtime
             generator.Contradiction = Contradictions[Mathf.Max(0, contradictionField.index)];
             generator.MaxAttempts = maxAttemptsField.value;
             generator.Seed = (uint)Mathf.Max(0, seedField.value);
+            ApplyDisplay();
+        }
+
+        /// <summary>Sposób rysowania działa od razu na następną mapę, także w serii.</summary>
+        void ApplyDisplay()
+        {
+            if (generator != null && generator.MapBuilder != null)
+                generator.MapBuilder.Display = Displays[Mathf.Max(0, displayField.index)];
         }
 
         void StartSeries()
         {
             if (runner == null)
                 return;
+            ApplyDisplay();
             BenchmarkConfig config = SelectedPreset() is BenchmarkConfig preset ? preset.Clone() : CustomConfig();
             config.FirstSeed = (uint)Mathf.Max(0, firstSeedField.value);
             config.SeedCount = seedCountField.value;

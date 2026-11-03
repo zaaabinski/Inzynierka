@@ -84,12 +84,71 @@ namespace WFC.Tests
         }
 
         [Test]
-        public void Csv_45Kolumn_Pierwsze40JakWRozdziale7()
+        public void Csv_54Kolumny_Pierwsze40JakWRozdziale7()
         {
-            Assert.AreEqual(45, CsvWriter.Columns.Length);
+            Assert.AreEqual(54, CsvWriter.Columns.Length);
             Assert.AreEqual(HandoffColumns, string.Join(",", CsvWriter.Columns.Take(40)));
-            CollectionAssert.AreEqual(new[] { "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc", "roznica_zabudowa_proc" },
-                CsvWriter.Columns.Skip(40).ToArray());
+            CollectionAssert.AreEqual(new[]
+            {
+                "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc", "roznica_zabudowa_proc", "rysowanie",
+                "wywolania_rysowania", "narysowane_obiekty", "setpass", "trojkaty", "wierzcholki", "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms"
+            }, CsvWriter.Columns.Skip(40).ToArray());
+        }
+
+        [Test]
+        public void Seria_KosztRysowania_TrafiaDoWierszaAlboZostajePusty()
+        {
+            string path = Path.Combine(folder, "rysowanie.csv");
+            BenchmarkConfig config = SmallConfig();
+            config.SeedCount = 2;
+            config.Repetitions = 1;
+            config.WarmupRuns = 0;
+            using (var session = new BenchmarkSession(config, path, MachineInfo.Current()))
+            {
+                BenchmarkRunResult shown = session.StartNext(run =>
+                {
+                    run.Display = MapDisplay.GameObjects.ToString();
+                    return 7.5;
+                });
+                Assert.AreEqual(0, session.CompletedMeasuredRuns, "przed pomiarem rysowania nic nie ma w pliku");
+                session.CompleteRun(shown, new RenderStats(1200, 300, 25, 400000, 900000, 1.5, 0.75, null));
+                session.RunNext();
+                Assert.IsTrue(session.IsFinished);
+            }
+
+            string[] lines = File.ReadAllLines(path);
+            Assert.AreEqual(3, lines.Length);
+            string[] first = ParseLine(lines[1]);
+            string[] second = ParseLine(lines[2]);
+            int Column(string name) => Array.IndexOf(CsvWriter.Columns, name);
+            Assert.AreEqual("GameObjects", first[Column("rysowanie")]);
+            Assert.AreEqual("1200", first[Column("wywolania_rysowania")]);
+            Assert.AreEqual("300", first[Column("narysowane_obiekty")]);
+            Assert.AreEqual("25", first[Column("setpass")]);
+            Assert.AreEqual("400000", first[Column("trojkaty")]);
+            Assert.AreEqual("900000", first[Column("wierzcholki")]);
+            Assert.AreEqual("1.5", first[Column("czas_klatki_ms")]);
+            Assert.AreEqual("0.75", first[Column("czas_klatki_cpu_ms")]);
+            Assert.AreEqual("", first[Column("czas_klatki_gpu_ms")], "licznik niedostępny");
+            Assert.AreEqual("", second[Column("rysowanie")], "bez okna mapy nie ma");
+            Assert.AreEqual("", second[Column("wywolania_rysowania")]);
+            Assert.AreEqual("", second[Column("czas_klatki_ms")]);
+        }
+
+        [Test]
+        public void LicznikiRysowania_ZbieraSrednieISieZamykaja()
+        {
+            using (var recorder = new RenderStatsRecorder())
+            {
+                recorder.Sample();
+                recorder.Sample();
+                Assert.AreEqual(2, recorder.Frames);
+                Assert.GreaterOrEqual(recorder.Result().FrameMs, 0);
+                Assert.IsNotNull(recorder.Result().DrawCalls, "liczniki wywołań rysowania muszą istnieć");
+                Assert.IsNotNull(recorder.Result().DrawnInstances, "liczniki narysowanych obiektów muszą istnieć");
+                recorder.Reset();
+                Assert.AreEqual(0, recorder.Frames);
+            }
         }
 
         [Test]
@@ -239,8 +298,9 @@ namespace WFC.Tests
             foreach (string name in new[] { "pokaz-mozliwosci", "biezace-pietro", "zrzut-pietra" })
                 Assert.IsNotNull(root.Q<Toggle>(name), name);
             StringAssert.Contains("ostatnia decyzja", root.Q<Label>("legenda").text);
-            foreach (string name in new[] { "heurystyka", "rozwiazywacz", "sprzecznosc", "zestaw", "eksperyment" })
+            foreach (string name in new[] { "heurystyka", "rozwiazywacz", "sprzecznosc", "zestaw", "eksperyment", "rysowanie" })
                 Assert.IsNotNull(root.Q<DropdownField>(name), name);
+            Assert.AreEqual(4, root.Q<DropdownField>("rysowanie").choices.Count, "4 sposoby rysowania");
             Assert.AreEqual(5, root.Q<DropdownField>("heurystyka").choices.Count, "5 heurystyk");
             Assert.AreEqual(3, root.Q<DropdownField>("sprzecznosc").choices.Count, "3 reakcje na sprzeczność");
             Assert.IsNotNull(root.Q<ProgressBar>("postep"));

@@ -6,6 +6,7 @@
         "UnityEditor.TestRunner",
         "WFC.Core",
         "WFC.Runtime",
+        "WFC.Editor",
         "Unity.Mathematics"
     ],
     "includePlatforms": [

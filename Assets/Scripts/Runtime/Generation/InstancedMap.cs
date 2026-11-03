@@ -11,8 +11,9 @@ namespace WFC.Runtime
     /// Kostki mapy rysowane instancjami (Graphics.RenderMeshInstanced), bez obiektów w scenie. Każdy prefab kafelka
     /// rozkłada się na części (siatka, podsiatka, materiał, położenie w prefabie); części o tej samej siatce i materiale
     /// z całej mapy trafiają na jedną listę macierzy, rysowaną co klatkę po 1023 instancje. Mapa 80 × 80 × 13
-    /// (14 652 kostki) to 102 wywołania rysowania zamiast 14 652 obiektów z MeshRenderer; stawia się szybciej (9 zamiast
-    /// 69 ms), ale klatka trwa dłużej (2,96 zamiast 0,85 ms), więc MapBuilder domyślnie używa obiektów.
+    /// (14 652 kostki) stawia się najszybciej (7,9 ms wobec 75,6 ms dla obiektów), ale co klatkę wysyła macierze do karty
+    /// graficznej, więc klatka trwa 3,60 ms (obiekty z GPU Resident Drawer 1,07 ms, scalone siatki z atlasem 0,57 ms;
+    /// pomiar z 3.11.2026). Zostaje do porównania sposobów rysowania.
     /// </summary>
     public sealed class InstancedMap
     {
@@ -38,22 +39,9 @@ namespace WFC.Runtime
             }
         }
 
-        readonly struct Part
-        {
-            public Part(Batch batch, Matrix4x4 local)
-            {
-                Batch = batch;
-                Local = local;
-            }
-
-            public Batch Batch { get; }
-
-            /// <summary>Położenie części względem roota prefabu.</summary>
-            public Matrix4x4 Local { get; }
-        }
-
         readonly Dictionary<(Mesh, int, Material, ShadowCastingMode, bool, int), Batch> batches = new Dictionary<(Mesh, int, Material, ShadowCastingMode, bool, int), Batch>();
-        readonly Dictionary<GameObject, Part[]> parts = new Dictionary<GameObject, Part[]>();
+        readonly Dictionary<GameObject, Batch[]> partBatches = new Dictionary<GameObject, Batch[]>();
+        readonly TilePartLibrary library = new TilePartLibrary();
         readonly Dictionary<Material, Material> instancedMaterials = new Dictionary<Material, Material>();
 
         /// <summary>Komórki z modelem w ostatnio zbudowanej mapie.</summary>
@@ -88,8 +76,10 @@ namespace WFC.Runtime
                 int3 position = grid.Coordinates(cell);
                 Matrix4x4 root = mapToWorld * Matrix4x4.TRS(UnityGrid.CellPosition(position.x, position.y, position.z),
                     UnityGrid.TileRotation(MapBuilder.ModelRotation(tile, rules, state, seed, cell)), Vector3.one);
-                foreach (Part part in PartsOf(tile.Prefab))
-                    part.Batch.Add(root * part.Local);
+                TilePart[] parts = library.PartsOf(tile.Prefab);
+                Batch[] partsBatches = BatchesOf(tile.Prefab, parts);
+                for (int part = 0; part < parts.Length; part++)
+                    partsBatches[part].Add(root * parts[part].Local);
                 InstanceCount++;
             }
 
@@ -115,44 +105,31 @@ namespace WFC.Runtime
                     Graphics.RenderMeshInstanced(batch.Params, batch.Mesh, batch.Submesh, batch.Matrices, Math.Min(MaxPerDraw, batch.Count - start), start);
         }
 
-        Part[] PartsOf(GameObject prefab)
+        Batch[] BatchesOf(GameObject prefab, TilePart[] parts)
         {
-            if (parts.TryGetValue(prefab, out Part[] cached))
+            if (partBatches.TryGetValue(prefab, out Batch[] cached))
                 return cached;
-            var list = new List<Part>();
-            Matrix4x4 toRoot = prefab.transform.worldToLocalMatrix;
-            foreach (MeshRenderer renderer in prefab.GetComponentsInChildren<MeshRenderer>())
-            {
-                var filter = renderer.GetComponent<MeshFilter>();
-                if (!renderer.enabled || filter == null || filter.sharedMesh == null)
-                    continue;
-                Mesh mesh = filter.sharedMesh;
-                Material[] materials = renderer.sharedMaterials;
-                Matrix4x4 local = toRoot * renderer.transform.localToWorldMatrix;
-                for (int submesh = 0; submesh < mesh.subMeshCount && materials.Length > 0; submesh++)
-                {
-                    Material material = materials[Math.Min(submesh, materials.Length - 1)];
-                    if (material != null)
-                        list.Add(new Part(BatchFor(mesh, submesh, Instanced(material), renderer), local));
-                }
-            }
-            return parts[prefab] = list.ToArray();
+            var result = new Batch[parts.Length];
+            for (int part = 0; part < parts.Length; part++)
+                result[part] = BatchFor(parts[part]);
+            return partBatches[prefab] = result;
         }
 
-        Batch BatchFor(Mesh mesh, int submesh, Material material, MeshRenderer renderer)
+        Batch BatchFor(in TilePart part)
         {
-            var key = (mesh, submesh, material, renderer.shadowCastingMode, renderer.receiveShadows, renderer.gameObject.layer);
+            Material material = Instanced(part.Material);
+            var key = (part.Mesh, part.Submesh, material, part.ShadowCasting, part.ReceiveShadows, part.Layer);
             if (batches.TryGetValue(key, out Batch batch))
                 return batch;
             batch = new Batch
             {
-                Mesh = mesh,
-                Submesh = submesh,
+                Mesh = part.Mesh,
+                Submesh = part.Submesh,
                 Params = new RenderParams(material)
                 {
-                    shadowCastingMode = renderer.shadowCastingMode,
-                    receiveShadows = renderer.receiveShadows,
-                    layer = renderer.gameObject.layer
+                    shadowCastingMode = part.ShadowCasting,
+                    receiveShadows = part.ReceiveShadows,
+                    layer = part.Layer
                 }
             };
             return batches[key] = batch;

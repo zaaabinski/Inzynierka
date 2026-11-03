@@ -6,6 +6,10 @@ namespace WFC.Runtime
         public const string Models = "Assets/Resources/Models/CastlePieces";
         public const string Materials = "Assets/Materials/CastlePieces";
         public const string TilePrefabs = "Assets/Prefabs/CastlePieces";
+
+        /// <summary>Zamki zapisane z okna Generator zamków jako prefaby.</summary>
+        public const string GeneratedCastles = "Assets/Prefabs/Zamki";
+
         public const string Rules = "Assets/Data/Rules";
         public const string RulesJson = Rules + "/wfc_rules_zamek.json";
 

@@ -45,6 +45,8 @@ namespace WFC.Editor
             PlayerSettings.productName = "Zamek";
             // Seria w oknie trwa czasem godzinami; bez tego aplikacja staje, gdy przełączysz się na inny program.
             PlayerSettings.runInBackground = true;
+            // Czasy procesora i karty graficznej w pliku wyników (FrameTimingManager) działają w wersji Release tylko z tym.
+            PlayerSettings.enableFrameTimingStats = true;
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, il2cpp ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
             if (il2cpp)
                 PlayerSettings.SetIl2CppCompilerConfiguration(NamedBuildTarget.Standalone, Il2CppCompilerConfiguration.Release);
