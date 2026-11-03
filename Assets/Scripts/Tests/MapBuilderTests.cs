@@ -24,12 +24,12 @@ namespace WFC.Tests
         }
 
         [Test]
-        public void Domyslnie_ObiektyWScenie_InstancjeTylkoWTrybiePlay()
+        public void Domyslnie_ScaloneZAtlasem_InstancjeTylkoWTrybiePlay()
         {
             var root = new GameObject("Mapa testowa");
             created.Add(root);
             var builder = root.AddComponent<MapBuilder>();
-            Assert.AreEqual(MapDisplay.GameObjects, builder.Display);
+            Assert.AreEqual(MapDisplay.CombinedAtlas, builder.Display);
             builder.Display = MapDisplay.Instanced;
             Assert.IsFalse(builder.UsesInstancing, "poza trybem Play nikt nie wywoła rysowania instancji co klatkę");
         }
@@ -50,8 +50,9 @@ namespace WFC.Tests
             root.transform.position = new Vector3(5f, 0f, -3f);
             var builder = root.AddComponent<MapBuilder>();
             builder.MapRoot = root.transform;
+            builder.Display = MapDisplay.Instanced;
             builder.Show(tileset, rules, result.Grid, result.States, 7);
-            Assert.IsFalse(builder.IsInstanced, "poza trybem Play zawsze obiekty");
+            Assert.IsFalse(builder.IsInstanced, "poza trybem Play instancje zastępują obiekty");
 
             var fromObjects = new List<string>();
             foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>())

@@ -6,10 +6,11 @@ using WFC.Core;
 namespace WFC.Runtime
 {
     /// <summary>
-    /// Prowadzi badanie w scenie Generator. W oknie: jedno uruchomienie na klatkę, mapy widoczne (co N-ta),
-    /// Pauza i Stop działają po bieżącym uruchomieniu. Z argumentem -benchmark badanie startuje samo:
-    /// z oknem pokazuje mapy i zamyka aplikację na końcu, a z -batchmode -nographics liczy wszystko bez okna.
-    /// Argumenty: -config E1, -out plik.csv, opcjonalnie -seeds, -firstSeed, -repetitions, -warmup, -showEvery.
+    /// Prowadzi badanie w scenie Generator. W oknie: jedno uruchomienie na klatkę, mapy widoczne (co N-ta), a po każdej
+    /// pokazanej mapie pomiar kosztu jej rysowania z kilku klatek (RenderStats). Pauza i Stop działają po bieżącym
+    /// uruchomieniu. Z argumentem -benchmark badanie startuje samo: z oknem pokazuje mapy i zamyka aplikację na końcu,
+    /// a z -batchmode -nographics liczy wszystko bez okna i bez pomiaru rysowania.
+    /// Argumenty: -config E1, -out plik.csv, opcjonalnie -seeds, -firstSeed, -repetitions, -warmup, -showEvery, -display.
     /// </summary>
     public sealed class BenchmarkRunner : MonoBehaviour
     {
@@ -18,8 +19,20 @@ namespace WFC.Runtime
         [SerializeField] MapBuilder mapBuilder;
         [SerializeField] GeneratorController generator;
 
+        /// <summary>Klatki po postawieniu mapy, zanim liczniki i czasy pokażą ją bez kosztu stawiania.</summary>
+        const int SettleFrames = 5;
+
+        /// <summary>Klatki, z których powstaje średnia w pliku wyników.</summary>
+        const int MeasuredFrames = 10;
+
+        /// <summary>Klatki na jedną wartość na żywo w oknie.</summary>
+        const int LiveFrames = 30;
+
         BenchmarkSession session;
         bool quitWhenDone;
+        RenderStatsRecorder renderStats;
+        BenchmarkRunResult pendingRun;
+        int settleLeft;
 
         public List<BenchmarkConfig> Experiments => experiments;
 
@@ -58,6 +71,21 @@ namespace WFC.Runtime
         /// <summary>Ustawienia bieżącej albo ostatniej serii.</summary>
         public BenchmarkConfig CurrentConfig { get; private set; }
 
+        /// <summary>Koszt rysowania na żywo, odświeżany co pół sekundy przy 60 klatkach; null bez okna.</summary>
+        public RenderStats? LiveRenderStats { get; private set; }
+
+        void OnEnable()
+        {
+            if (!Application.isBatchMode)
+                renderStats = new RenderStatsRecorder();
+        }
+
+        void OnDisable()
+        {
+            renderStats?.Dispose();
+            renderStats = null;
+        }
+
         void Start()
         {
             if (!CommandLine.IsBenchmark)
@@ -69,6 +97,8 @@ namespace WFC.Runtime
                 Application.Quit(2);
                 return;
             }
+            if (mapBuilder != null && Enum.TryParse(CommandLine.Get("-display"), true, out MapDisplay display))
+                mapBuilder.Display = display;
             string output = CommandLine.Get("-out") ?? BenchmarkSession.DefaultOutputPath(config.ExperimentName);
             if (Application.isBatchMode)
             {
@@ -126,6 +156,11 @@ namespace WFC.Runtime
         {
             if (session == null)
                 return;
+            if (pendingRun != null)
+            {
+                session.CompleteRun(pendingRun);
+                pendingRun = null;
+            }
             Status = $"Przerwano. Zapisane uruchomienia: {session.CompletedMeasuredRuns} z {session.MeasuredRuns}.";
             session.Dispose();
             session = null;
@@ -134,22 +169,78 @@ namespace WFC.Runtime
 
         void Update()
         {
+            SampleRenderStats();
             if (!IsRunning || IsPaused)
                 return;
-            LastRun = session.RunNext(Show);
+            if (pendingRun != null)
+            {
+                MeasurePendingRun();
+                return;
+            }
+            BenchmarkRunResult run = session.StartNext(Show);
+            if (run.BuildMs != null && renderStats != null)
+            {
+                pendingRun = run;
+                settleLeft = SettleFrames;
+            }
+            else
+            {
+                CompleteRun(run, null);
+            }
+        }
+
+        void SampleRenderStats()
+        {
+            if (renderStats == null)
+                return;
+            renderStats.Sample();
+            if (pendingRun == null && renderStats.Frames >= LiveFrames)
+            {
+                LiveRenderStats = renderStats.Result();
+                renderStats.Reset();
+            }
+        }
+
+        /// <summary>Mapa stoi: najpierw klatki na ustabilizowanie, potem pomiar, a na końcu zapis wiersza.</summary>
+        void MeasurePendingRun()
+        {
+            if (settleLeft > 0)
+            {
+                if (--settleLeft == 0)
+                    renderStats.Reset();
+                return;
+            }
+            if (renderStats.Frames < MeasuredFrames)
+                return;
+            BenchmarkRunResult run = pendingRun;
+            pendingRun = null;
+            RenderStats stats = renderStats.Result();
+            LiveRenderStats = stats;
+            renderStats.Reset();
+            CompleteRun(run, stats);
+        }
+
+        void CompleteRun(BenchmarkRunResult run, RenderStats? stats)
+        {
+            session.CompleteRun(run, stats);
+            LastRun = run;
             CompletedRuns = session.CompletedRuns;
-            Status = session.Describe(LastRun);
+            Status = session.Describe(run);
             if (session.IsFinished)
                 Finish();
         }
 
         double? Show(BenchmarkRunResult run)
         {
-            if (mapBuilder == null || Application.isBatchMode || run.Warmup)
+            if (mapBuilder == null || Application.isBatchMode)
                 return null;
-            if (session.CompletedMeasuredRuns % session.Config.ShowEveryNth != 0)
+            // Rozgrzewka też stawia mapę, żeby koszt pierwszego użycia (odczyt modeli, kompilacja zadania Burst) nie trafił do pierwszego wiersza wyników.
+            if (!run.Warmup && session.CompletedMeasuredRuns % session.Config.ShowEveryNth != 0)
                 return null;
+            // Od zera, jak przycisk Generuj: inaczej powtórzone ziarno nie stawiałoby nic, a inne ziarno tylko różnicę między mapami.
+            mapBuilder.Clear();
             mapBuilder.Show(run.Variant.Tileset, run.Rules, run.Result.Grid, run.Result.States, run.Seed);
+            run.Display = mapBuilder.Display.ToString();
             return mapBuilder.LastBuildMs;
         }
 

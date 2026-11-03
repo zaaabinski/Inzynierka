@@ -15,8 +15,9 @@ namespace WFC.Runtime
     public sealed class CsvWriter : IDisposable
     {
         /// <summary>
-        /// 40 kolumn z rozdziału 7 handoffu i 5 dodatkowych: czas stawiania kostek, środowisko uruchomienia oraz różnica
-        /// od mapy poprzedniego ziarna w tym samym wariancie (wszystkie komórki, parter, zabudowa; DiversityAnalyzer).
+        /// 40 kolumn z rozdziału 7 handoffu i 14 dodatkowych: czas stawiania kostek, środowisko uruchomienia, różnica od mapy
+        /// poprzedniego ziarna w tym samym wariancie (wszystkie komórki, parter, zabudowa; DiversityAnalyzer) oraz koszt
+        /// rysowania mapy w oknie (sposób rysowania, liczniki Unity i czasy klatki; RenderStats), puste bez okna.
         /// </summary>
         public static readonly string[] Columns =
         {
@@ -26,7 +27,8 @@ namespace WFC.Runtime
             "sprzecznosci", "cofniecia", "restarty", "pamiec_szczytowa_mb", "alokacje_gc_kb", "naruszenia", "wieze",
             "donzony", "mosty", "schody", "wys_wiez_sr", "wys_murow_sr", "wys_donzonow_sr", "trawa_dostepna_proc",
             "dziedzince_zamkniete", "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc",
-            "roznica_zabudowa_proc"
+            "roznica_zabudowa_proc", "rysowanie", "wywolania_rysowania", "narysowane_obiekty", "setpass", "trojkaty", "wierzcholki",
+            "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms"
         };
 
         readonly StreamWriter writer;

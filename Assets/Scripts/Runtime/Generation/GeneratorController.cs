@@ -222,6 +222,8 @@ namespace WFC.Runtime
             }
             if (mapBuilder != null && mapBuilder.IsInstanced)
                 LastReport += $"\nMapa rysowana instancjami: kostki {mapBuilder.InstanceCount}, wywołania rysowania na klatkę {mapBuilder.InstancedDrawCalls}.";
+            if (mapBuilder != null && mapBuilder.Combined is CombinedMap map)
+                LastReport += $"\n{map.Describe()}";
             if (LastResult.Success && LastCheck.Total == 0)
                 Debug.Log(LastReport, this);
             else

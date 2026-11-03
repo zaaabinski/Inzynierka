@@ -6,12 +6,13 @@ namespace WFC.Editor
 {
     /// <summary>
     /// Ustawienia importu modeli z folderu Resources/Models/CastlePieces: skala z pliku (eksport „FBX All”), bez animacji,
-    /// kamer, świateł i colliderów. Obrót bazowy 180° jest w prefabie, nie w imporcie.
+    /// kamer, świateł i colliderów. Obrót bazowy 180° jest w prefabie, nie w imporcie. Odczyt siatek włączony, bo scalanie
+    /// mapy (CombinedMap) czyta ich wierzchołki także w zbudowanej aplikacji.
     /// </summary>
     sealed class TileModelPostprocessor : AssetPostprocessor
     {
         // Zmiana numeru wymusza ponowny import modeli po zmianie ustawień poniżej.
-        public override uint GetVersion() => 1;
+        public override uint GetVersion() => 2;
 
         void OnPreprocessModel()
         {
@@ -29,7 +30,7 @@ namespace WFC.Editor
             importer.importVisibility = false;
             importer.importBlendShapes = false;
             importer.addCollider = false;
-            importer.isReadable = false;
+            importer.isReadable = true;
             importer.materialImportMode = ModelImporterMaterialImportMode.ImportViaMaterialDescription;
             importer.materialLocation = ModelImporterMaterialLocation.InPrefab;
         }

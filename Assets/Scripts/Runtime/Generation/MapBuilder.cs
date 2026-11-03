@@ -13,7 +13,13 @@ namespace WFC.Runtime
         GameObjects,
 
         [InspectorName("Instancje na karcie graficznej")]
-        Instanced
+        Instanced,
+
+        [InspectorName("Scalone siatki")]
+        Combined,
+
+        [InspectorName("Scalone siatki z atlasem")]
+        CombinedAtlas
     }
 
     /// <summary>
@@ -21,18 +27,23 @@ namespace WFC.Runtime
     /// Zmienia tylko komórki, których stan się zmienił, więc w trybie krok po kroku dokłada pojedyncze kostki.
     /// Czas stawiania mierzymy osobno, żeby nie fałszował czasu generacji.
     /// <para>
-    /// Drugi sposób, instancje na karcie graficznej bez obiektów w scenie (InstancedMap), działa w trybie Play i w zbudowanej
-    /// aplikacji. Pomiar z 30.10.2026 (build Mono, okno 1600 × 900, mapa 80 × 80 × 13 z 14 652 kostkami): obiekty – stawianie
-    /// 69 ms, klatka 0,85 ms; instancje – stawianie 9 ms, klatka 2,96 ms, bo co klatkę wysyłają około 30 tysięcy macierzy,
-    /// a obiekty z SRP Batcher mają dane na karcie na stałe. Dlatego domyślnie obiekty.
+    /// Inne sposoby: instancje na karcie graficznej bez obiektów w scenie (InstancedMap, tylko w trybie Play i w zbudowanej
+    /// aplikacji) oraz mapa scalona w statyczne siatki, z podsiatką na materiał albo z atlasem i jednym materiałem (CombinedMap).
+    /// Domyślny jest atlas. Pomiar z 3.11.2026 (build Mono, okno 1600 × 900, mapa 80 × 80 × 13, SRP Batcher i GPU Resident
+    /// Drawer włączone): obiekty – stawianie 75,6 ms, klatka 1,07 ms; atlas – stawianie 20,6 ms, klatka 0,57 ms.
     /// </para>
     /// </summary>
     public sealed class MapBuilder : MonoBehaviour
     {
+        // Bez DontUnloadUnusedAsset: siatki osierocone po przeładowaniu kodu w edytorze sprząta Unity przy wczytaniu sceny.
+        const HideFlags EditModeCombinedFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+
         [Tooltip("Rodzic kostek, w scenie Generator obiekt [Mapa].")]
         [SerializeField] Transform mapRoot;
-        [Tooltip("Obiekty w scenie (domyślnie) albo instancje na karcie graficznej; instancje działają tylko w trybie Play i w zbudowanej aplikacji.")]
-        [SerializeField] MapDisplay display = MapDisplay.GameObjects;
+        [Tooltip("Obiekty w scenie, instancje na karcie graficznej (tylko w trybie Play i w zbudowanej aplikacji) albo mapa scalona w statyczne siatki, bez atlasu lub z atlasem (domyślnie). Poza trybem Play scalona mapa to podgląd, który nie zapisuje się ze sceną.")]
+        [SerializeField] MapDisplay display = MapDisplay.CombinedAtlas;
+        [Tooltip("Scalanie: bok fragmentu mapy w kolumnach siatki. Każdy fragment to osobna siatka, którą kamera może pominąć.")]
+        [SerializeField, Min(1)] int combineChunkSize = 16;
         [Tooltip("Po zmianie rozmiaru siatki ustaw kamerę (FlyCamera) tak, żeby widać było całą mapę.")]
         [SerializeField] bool frameCameraOnResize = true;
 
@@ -42,6 +53,7 @@ namespace WFC.Runtime
         GridShape grid;
         TilesetDefinition shownTileset;
         InstancedMap instanced;
+        CombinedMap combined;
         int3 framedSize;
 
         public Transform MapRoot
@@ -56,6 +68,12 @@ namespace WFC.Runtime
             set => display = value;
         }
 
+        public int CombineChunkSize
+        {
+            get => combineChunkSize;
+            set => combineChunkSize = Mathf.Max(1, value);
+        }
+
         /// <summary>Czas ostatniego stawiania kostek w milisekundach.</summary>
         public double LastBuildMs { get; private set; }
 
@@ -67,6 +85,9 @@ namespace WFC.Runtime
 
         /// <summary>Wywołania rysowania na klatkę w trybie instancji, inaczej 0.</summary>
         public int InstancedDrawCalls => instanced?.DrawCalls ?? 0;
+
+        /// <summary>Scalona mapa i jej statystyki albo null w innych trybach.</summary>
+        public CombinedMap Combined => combined;
 
         /// <summary>Czy następna mapa będzie rysowana instancjami (tylko w trybie Play, bo rysuje je LateUpdate).</summary>
         public bool UsesInstancing => Application.isPlaying && display == MapDisplay.Instanced;
@@ -83,7 +104,9 @@ namespace WFC.Runtime
         public void Show(TilesetDefinition tileset, CompiledRules rules, GridShape newGrid, int[] states, uint seed)
         {
             var watch = Stopwatch.StartNew();
-            if (UsesInstancing)
+            if (display == MapDisplay.Combined || display == MapDisplay.CombinedAtlas)
+                ShowCombined(tileset, rules, newGrid, states, seed);
+            else if (UsesInstancing)
                 ShowInstanced(tileset, rules, newGrid, states, seed);
             else
                 ShowObjects(tileset, rules, newGrid, states, seed);
@@ -94,6 +117,8 @@ namespace WFC.Runtime
         [ContextMenu("Wyczyść mapę")]
         public void Clear()
         {
+            combined?.Dispose();
+            combined = null;
             Transform root = MapRoot;
             for (int child = root.childCount - 1; child >= 0; child--)
                 DestroyObject(root.GetChild(child).gameObject);
@@ -106,6 +131,26 @@ namespace WFC.Runtime
         }
 
         void LateUpdate() => instanced?.Draw();
+
+        void OnDestroy()
+        {
+            combined?.Dispose();
+            combined = null;
+        }
+
+        void ShowCombined(TilesetDefinition tileset, CompiledRules rules, GridShape newGrid, int[] states, uint seed)
+        {
+            bool atlas = display == MapDisplay.CombinedAtlas;
+            if (combined == null || combined.UsesAtlas != atlas || combined.ChunkSize != combineChunkSize)
+            {
+                Clear();
+                combined = new CombinedMap(MapRoot, combineChunkSize, atlas, false, Application.isPlaying ? HideFlags.None : EditModeCombinedFlags);
+            }
+            combined.Build(tileset, rules, newGrid, states, seed);
+            grid = newGrid;
+            shownTileset = tileset;
+            InstanceCount = combined.InstanceCount;
+        }
 
         void ShowInstanced(TilesetDefinition tileset, CompiledRules rules, GridShape newGrid, int[] states, uint seed)
         {
@@ -122,7 +167,7 @@ namespace WFC.Runtime
 
         void ShowObjects(TilesetDefinition tileset, CompiledRules rules, GridShape newGrid, int[] states, uint seed)
         {
-            if (instanced != null || tileset != shownTileset || !grid.Equals(newGrid) || instances.Length != newGrid.CellCount || Array.Exists(floors, floor => floor == null))
+            if (instanced != null || combined != null || tileset != shownTileset || !grid.Equals(newGrid) || instances.Length != newGrid.CellCount || Array.Exists(floors, floor => floor == null))
                 Prepare(tileset, newGrid);
 
             for (int cell = 0; cell < grid.CellCount; cell++)

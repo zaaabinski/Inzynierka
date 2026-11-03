@@ -4,6 +4,7 @@
     "references": [
         "WFC.Core",
         "Unity.Mathematics",
+        "Unity.Burst",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
