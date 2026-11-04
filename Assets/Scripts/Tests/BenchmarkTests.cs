@@ -84,14 +84,17 @@ namespace WFC.Tests
         }
 
         [Test]
-        public void Csv_54Kolumny_Pierwsze40JakWRozdziale7()
+        public void Csv_71Kolumn_Pierwsze40JakWRozdziale7()
         {
-            Assert.AreEqual(54, CsvWriter.Columns.Length);
+            Assert.AreEqual(71, CsvWriter.Columns.Length);
             Assert.AreEqual(HandoffColumns, string.Join(",", CsvWriter.Columns.Take(40)));
             CollectionAssert.AreEqual(new[]
             {
                 "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc", "roznica_zabudowa_proc", "rysowanie",
-                "wywolania_rysowania", "narysowane_obiekty", "setpass", "trojkaty", "wierzcholki", "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms"
+                "wywolania_rysowania", "narysowane_obiekty", "setpass", "trojkaty", "wierzcholki", "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms",
+                "usuniete_propagacja", "usuniete_decyzje", "pamiec_rzeczywista_mb", "zabudowa_proc", "gestosc_regul_proc", "gestosc_wazona_proc", "kappa",
+                "zaostrzenie_proc", "losowanie_zaostrzenia", "laczenie_rysowania", "bok_fragmentu", "pamiec_siatek_mb", "pamiec_unity_mb", "pamiec_gc_mb",
+                "pamiec_procesu_mb", "najdluzsza_klatka_ms", "pierwsza_klatka_ms"
             }, CsvWriter.Columns.Skip(40).ToArray());
         }
 
@@ -111,7 +114,11 @@ namespace WFC.Tests
                     return 7.5;
                 });
                 Assert.AreEqual(0, session.CompletedMeasuredRuns, "przed pomiarem rysowania nic nie ma w pliku");
-                session.CompleteRun(shown, new RenderStats(1200, 300, 25, 400000, 900000, 1.5, 0.75, null));
+                shown.Batching = RenderBatching.SrpBatcher.ToString();
+                shown.ChunkSize = 16;
+                shown.MeshBytes = 3 * 1024 * 1024;
+                shown.FirstFrameMs = 4.5;
+                session.CompleteRun(shown, new RenderStats(1200, 300, 25, 400000, 900000, 1.5, 0.75, null, 2.25, 512L * 1024 * 1024));
                 session.RunNext();
                 Assert.IsTrue(session.IsFinished);
             }
@@ -130,6 +137,12 @@ namespace WFC.Tests
             Assert.AreEqual("1.5", first[Column("czas_klatki_ms")]);
             Assert.AreEqual("0.75", first[Column("czas_klatki_cpu_ms")]);
             Assert.AreEqual("", first[Column("czas_klatki_gpu_ms")], "licznik niedostępny");
+            Assert.AreEqual("SrpBatcher", first[Column("laczenie_rysowania")]);
+            Assert.AreEqual("16", first[Column("bok_fragmentu")]);
+            Assert.AreEqual("3", first[Column("pamiec_siatek_mb")]);
+            Assert.AreEqual("512", first[Column("pamiec_procesu_mb")]);
+            Assert.AreEqual("2.25", first[Column("najdluzsza_klatka_ms")]);
+            Assert.AreEqual("4.5", first[Column("pierwsza_klatka_ms")]);
             Assert.AreEqual("", second[Column("rysowanie")], "bez okna mapy nie ma");
             Assert.AreEqual("", second[Column("wywolania_rysowania")]);
             Assert.AreEqual("", second[Column("czas_klatki_ms")]);
@@ -146,6 +159,7 @@ namespace WFC.Tests
                 Assert.GreaterOrEqual(recorder.Result().FrameMs, 0);
                 Assert.IsNotNull(recorder.Result().DrawCalls, "liczniki wywołań rysowania muszą istnieć");
                 Assert.IsNotNull(recorder.Result().DrawnInstances, "liczniki narysowanych obiektów muszą istnieć");
+                Assert.GreaterOrEqual(recorder.Result().LongestFrameMs, recorder.Result().FrameMs, "najdłuższa klatka nie krótsza od średniej");
                 recorder.Reset();
                 Assert.AreEqual(0, recorder.Frames);
             }
@@ -255,7 +269,7 @@ namespace WFC.Tests
             var runner = new GameObject("Runner testowy").AddComponent<BenchmarkRunner>();
             created.Add(runner.gameObject);
             var preset = AssetDatabase.LoadAssetAtPath<BenchmarkConfig>(WfcPaths.Experiment("E2"));
-            Assert.IsNotNull(preset, "Brak eksperymentu E2. Uruchom WFC → Utwórz eksperymenty E1–E6.");
+            Assert.IsNotNull(preset, "Brak eksperymentu E2. Uruchom WFC → Utwórz eksperymenty E1–E9.");
             runner.Experiments.Add(preset);
 
             BenchmarkConfig config = runner.ConfigFromCommandLine();

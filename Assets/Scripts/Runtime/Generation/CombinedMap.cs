@@ -273,7 +273,8 @@ namespace WFC.Runtime
                     dirty.Add(chunk);
             RebuiltChunks = dirty.Count;
             if (dirty.Count > 0)
-                Rebuild(tileset, rules, states, seed);
+                using (WfcMarkers.MeshCombine.Auto())
+                    Rebuild(tileset, rules, states, seed);
 
             Array.Copy(states, shownStates, states.Length);
             shownSeed = seed;

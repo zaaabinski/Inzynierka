@@ -25,6 +25,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e4d291ac8875f8d43945739e6b4a728a, type: 2}
   gridSizes:
   - {x: 20, y: 13, z: 20}
+  displays: 
+  batchings: 
+  tighteningPercents: []
+  tighteningDraws: 1
   firstSeed: 1
   seedCount: 100
   repetitions: 1
@@ -32,3 +36,4 @@ MonoBehaviour:
   maxAttempts: 1000
   timeLimitSeconds: 0
   showEveryNth: 1
+  measuredFrames: 10

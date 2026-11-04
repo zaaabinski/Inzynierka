@@ -104,12 +104,15 @@ namespace WFC.Runtime
         public void Show(TilesetDefinition tileset, CompiledRules rules, GridShape newGrid, int[] states, uint seed)
         {
             var watch = Stopwatch.StartNew();
-            if (display == MapDisplay.Combined || display == MapDisplay.CombinedAtlas)
-                ShowCombined(tileset, rules, newGrid, states, seed);
-            else if (UsesInstancing)
-                ShowInstanced(tileset, rules, newGrid, states, seed);
-            else
-                ShowObjects(tileset, rules, newGrid, states, seed);
+            using (WfcMarkers.MapShow.Auto())
+            {
+                if (display == MapDisplay.Combined || display == MapDisplay.CombinedAtlas)
+                    ShowCombined(tileset, rules, newGrid, states, seed);
+                else if (UsesInstancing)
+                    ShowInstanced(tileset, rules, newGrid, states, seed);
+                else
+                    ShowObjects(tileset, rules, newGrid, states, seed);
+            }
             LastBuildMs = watch.Elapsed.TotalMilliseconds;
             FrameCameraIfResized(newGrid);
         }

@@ -10,8 +10,11 @@ namespace WFC.Runtime
     /// </summary>
     public readonly struct RenderStats
     {
-        public RenderStats(long? drawCalls, long? drawnInstances, long? setPassCalls, long? triangles, long? vertices, double frameMs, double? cpuMs, double? gpuMs)
+        public RenderStats(long? drawCalls, long? drawnInstances, long? setPassCalls, long? triangles, long? vertices, double frameMs, double? cpuMs, double? gpuMs,
+            double? longestFrameMs = null, long? processMemoryBytes = null)
         {
+            LongestFrameMs = longestFrameMs;
+            ProcessMemoryBytes = processMemoryBytes;
             DrawCalls = drawCalls;
             DrawnInstances = drawnInstances;
             SetPassCalls = setPassCalls;
@@ -35,8 +38,14 @@ namespace WFC.Runtime
 
         public long? Vertices { get; }
 
-        /// <summary>Czas między klatkami w milisekundach.</summary>
+        /// <summary>Średni czas między klatkami w milisekundach.</summary>
         public double FrameMs { get; }
+
+        /// <summary>Najdłuższa klatka z pomiaru: spadek płynności, którego średnia nie pokaże.</summary>
+        public double? LongestFrameMs { get; }
+
+        /// <summary>Pamięć procesu w systemie (licznik System Used Memory).</summary>
+        public long? ProcessMemoryBytes { get; }
 
         /// <summary>Czas pracy procesora nad klatką (FrameTimingManager).</summary>
         public double? CpuMs { get; }
@@ -45,7 +54,7 @@ namespace WFC.Runtime
         public double? GpuMs { get; }
 
         public override string ToString() =>
-            $"klatka {FrameMs:0.00} ms (procesor {CpuMs:0.00} ms, karta graficzna {GpuMs:0.00} ms), wywołania rysowania {DrawCalls}, narysowane obiekty {DrawnInstances}, " +
+            $"klatka {FrameMs:0.00} ms, najdłuższa {LongestFrameMs:0.00} ms (procesor {CpuMs:0.00} ms, karta graficzna {GpuMs:0.00} ms), wywołania rysowania {DrawCalls}, narysowane obiekty {DrawnInstances}, " +
             $"SetPass {SetPassCalls}, trójkąty {Triangles}";
     }
 
@@ -67,6 +76,7 @@ namespace WFC.Runtime
         ProfilerRecorder setPassCalls = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
         ProfilerRecorder triangles = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
         ProfilerRecorder vertices = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
+        ProfilerRecorder processMemory = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
         readonly FrameTiming[] timing = new FrameTiming[1];
         long drawCallSum;
         long instanceSum;
@@ -74,6 +84,7 @@ namespace WFC.Runtime
         long triangleSum;
         long vertexSum;
         double frameSum;
+        double longestFrame;
         double cpuSum;
         double gpuSum;
         int timedFrames;
@@ -84,7 +95,7 @@ namespace WFC.Runtime
         public void Reset()
         {
             drawCallSum = instanceSum = setPassSum = triangleSum = vertexSum = 0;
-            frameSum = cpuSum = gpuSum = 0;
+            frameSum = longestFrame = cpuSum = gpuSum = 0;
             timedFrames = 0;
             Frames = 0;
         }
@@ -98,7 +109,9 @@ namespace WFC.Runtime
             setPassSum += setPassCalls.LastValue;
             triangleSum += triangles.LastValue;
             vertexSum += vertices.LastValue;
-            frameSum += Time.unscaledDeltaTime * 1000.0;
+            double frameMs = Time.unscaledDeltaTime * 1000.0;
+            frameSum += frameMs;
+            longestFrame = Math.Max(longestFrame, frameMs);
             Frames++;
             FrameTimingManager.CaptureFrameTimings();
             if (FrameTimingManager.GetLatestTimings(1, timing) > 0)
@@ -117,7 +130,9 @@ namespace WFC.Runtime
                 Average(triangles, triangleSum, frames), Average(vertices, vertexSum, frames),
                 frameSum / frames,
                 timedFrames > 0 ? cpuSum / timedFrames : (double?)null,
-                timedFrames > 0 && gpuSum > 0 ? gpuSum / timedFrames : (double?)null);
+                timedFrames > 0 && gpuSum > 0 ? gpuSum / timedFrames : (double?)null,
+                longestFrame,
+                processMemory.Valid ? processMemory.LastValue : (long?)null);
         }
 
         public void Dispose()
@@ -129,6 +144,7 @@ namespace WFC.Runtime
             setPassCalls.Dispose();
             triangles.Dispose();
             vertices.Dispose();
+            processMemory.Dispose();
         }
 
         static ProfilerRecorder[] StartPerPath(string counter) =>

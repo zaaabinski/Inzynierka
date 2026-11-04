@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 
 namespace WFC.Core
 {
@@ -87,7 +88,7 @@ namespace WFC.Core
                     neighborStart[index] = neighborStates.Count;
                     Span<ulong> mask = neighborMasks.AsSpan(index * words, words);
                     for (int neighbor = 0; neighbor < stateCount; neighbor++)
-                        if (Fits(state, direction, neighbor))
+                        if (Fits(state, direction, neighbor) && !RemovedByTightening(state, direction, neighbor, tileset))
                         {
                             neighborStates.Add(neighbor);
                             BitMask.Set(mask, neighbor);
@@ -141,6 +142,22 @@ namespace WFC.Core
             if (label.Length > 0 && label[label.Length - 1] == RotationDependentMark)
                 return $"{label.Substring(0, label.Length - 1)}{RotationSeparator}{(((rotation % 4) + 4) % 4) * 90}";
             return label;
+        }
+
+        /// <summary>
+        /// Czy zaostrzenie reguł usuwa tę parę sąsiadów. Skrót pary jest taki sam z obu jej stron, więc zgodność zostaje
+        /// symetryczna, a para usunięta przy mniejszym ułamku wypada też przy każdym większym: wyższe zaostrzenie to te same
+        /// reguły minus kolejne pary.
+        /// </summary>
+        static bool RemovedByTightening(int state, Direction direction, int neighbor, TilesetData tileset)
+        {
+            if (tileset.TighteningFraction <= 0)
+                return false;
+            Direction opposite = direction.Opposite();
+            uint4 pair = (int)direction < (int)opposite
+                ? new uint4((uint)state, (uint)direction, (uint)neighbor, tileset.TighteningDraw)
+                : new uint4((uint)neighbor, (uint)opposite, (uint)state, tileset.TighteningDraw);
+            return math.hash(pair) / 4294967296.0 < tileset.TighteningFraction;
         }
 
         static void CheckTile(TileData tile)

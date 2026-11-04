@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143ab5729739c974f8f5cdc283edef55, type: 3}
+  m_Name: E7
+  m_EditorClassIdentifier: WFC.Runtime::WFC.Runtime.BenchmarkConfig
+  experimentName: E7
+  description: "Rysowanie mapy: 4 sposoby rysowania \xD7 3 ustawienia \u0142\u0105czenia w URP \xD7 4 rozmiary siatki. Ta sama mapa dla ka\u017Cdego ziarna, 120 klatek pomiaru na map\u0119; opis pracy: wp\u0142yw konsolidacji geometrii na potok graficzny. Dzia\u0142a tylko w oknie."
+  solvers: 03000000i
+  selectors: 00000000i
+  contradictionHandlers: 01000000i
+  tilesets:
+  - {fileID: 11400000, guid: b1eba3fe7f014ea43beca3ecdcc05b8e, type: 2}
+  gridSizes:
+  - {x: 10, y: 8, z: 10}
+  - {x: 20, y: 13, z: 20}
+  - {x: 40, y: 13, z: 40}
+  - {x: 80, y: 13, z: 80}
+  displays: 00000000010000000200000003000000i
+  batchings: 000000000100000002000000i
+  tighteningPercents: []
+  tighteningDraws: 1
+  firstSeed: 1
+  seedCount: 30
+  repetitions: 1
+  warmupRuns: 3
+  maxAttempts: 1000
+  timeLimitSeconds: 0
+  showEveryNth: 1
+  measuredFrames: 120

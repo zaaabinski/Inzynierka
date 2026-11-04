@@ -9,9 +9,9 @@ using WFC.Runtime;
 namespace WFC.Editor
 {
     /// <summary>
-    /// Eksperymenty E1–E6 z rozdziału 7 handoffu jako zasoby BenchmarkConfig w Assets/Data/Experiments. Bazą jest
-    /// BitsetSolver, siatka 20 × 20 × 13, zestaw Pelny, kolejność piętrami, start od nowa i ziarna 1–100. Warianty, których
-    /// jeszcze nie ma, dojdą do tych samych zasobów w kolejnych etapach.
+    /// Eksperymenty E1–E6 z rozdziału 7 handoffu oraz E7–E9 z opisu pracy (rysowanie, restrykcyjność reguł) jako zasoby
+    /// BenchmarkConfig w Assets/Data/Experiments. Bazą E1–E6 jest BitsetSolver, siatka 20 × 20 × 13, zestaw Pelny, kolejność
+    /// piętrami, start od nowa i ziarna 1–100.
     /// </summary>
     public static class ExperimentPresets
     {
@@ -22,7 +22,7 @@ namespace WFC.Editor
             new Vector3Int(10, 8, 10), new Vector3Int(20, 13, 20), new Vector3Int(40, 13, 40), new Vector3Int(80, 13, 80)
         };
 
-        [MenuItem("WFC/Utwórz eksperymenty E1–E6", priority = 30)]
+        [MenuItem("WFC/Utwórz eksperymenty E1–E9", priority = 30)]
         static void CreateFromMenu()
         {
             List<BenchmarkConfig> experiments = CreateOrUpdate();
@@ -35,7 +35,7 @@ namespace WFC.Editor
                 .OrderBy(config => config.ExperimentName, StringComparer.Ordinal)
                 .ToList();
 
-        /// <summary>Tworzy albo nadpisuje zasoby E1–E6 (zmiany ręczne w tych zasobach zostaną zastąpione).</summary>
+        /// <summary>Tworzy albo nadpisuje zasoby E1–E9 (zmiany ręczne w tych zasobach zostaną zastąpione).</summary>
         public static List<BenchmarkConfig> CreateOrUpdate()
         {
             TilesetDefinition full = Tileset("Pelny");
@@ -87,6 +87,45 @@ namespace WFC.Editor
                     {
                         config.Tilesets.Add(full);
                         config.Tilesets.AddRange(RuleVariants.All.Select(variant => Tileset(variant.Name)));
+                    }),
+                Create("E7", "Rysowanie mapy: 4 sposoby rysowania × 3 ustawienia łączenia w URP × 4 rozmiary siatki. Ta sama mapa dla każdego " +
+                             "ziarna, 120 klatek pomiaru na mapę; opis pracy: wpływ konsolidacji geometrii na potok graficzny. Działa tylko w oknie.",
+                    config =>
+                    {
+                        config.Tilesets.Add(full);
+                        config.GridSizes.Clear();
+                        config.GridSizes.AddRange(ScalingSizes);
+                        config.Solvers.Clear();
+                        config.Solvers.Add(SolverKind.Burst);
+                        config.ContradictionHandlers.Clear();
+                        config.ContradictionHandlers.Add(ContradictionKind.Backtrack);
+                        config.Displays.AddRange((MapDisplay[])Enum.GetValues(typeof(MapDisplay)));
+                        config.Batchings.AddRange((RenderBatching[])Enum.GetValues(typeof(RenderBatching)));
+                        config.SeedCount = 30;
+                        config.WarmupRuns = 3;
+                        config.MeasuredFrames = 120;
+                    }),
+                Create("E8", "Restrykcyjność reguł, zestawy: 4 zestawy i 4 warianty reguł. Po serii program liczy korelację Spearmana " +
+                             "restrykcyjności z odsetkiem udanych prób (plik _korelacje.csv); opis pracy: korelacja z powodzeniem generacji.",
+                    config =>
+                    {
+                        config.Tilesets.AddRange(new[] { Tileset("Prosty"), Tileset("Sredni"), Tileset("PelnyBezDekoracji"), full });
+                        config.Tilesets.AddRange(RuleVariants.All.Select(variant => Tileset(variant.Name)));
+                        config.Solvers.Clear();
+                        config.Solvers.Add(SolverKind.Burst);
+                    }),
+                Create("E9", "Restrykcyjność reguł, zaostrzanie: z reguł zestawu Pełny wypada losowo od 0 do 12% dozwolonych par sąsiadów, 10 losowań na poziom. " +
+                             "Limit 30 prób na mapę. Reguły tak ostre, że znikają budynki albo teren, dają łatwe mapy bez zamku, więc korelacja jest też liczona bez nich.",
+                    config =>
+                    {
+                        config.Tilesets.Add(full);
+                        config.Solvers.Clear();
+                        config.Solvers.Add(SolverKind.Burst);
+                        config.TighteningPercents.AddRange(new[] { 0f, 0.2f, 0.5f, 1f, 2f, 3f, 5f, 8f, 12f });
+                        config.TighteningDraws = 10;
+                        config.SeedCount = 20;
+                        config.WarmupRuns = 1;
+                        config.MaxAttempts = 30;
                     })
             };
             AssetDatabase.SaveAssets();
@@ -114,6 +153,11 @@ namespace WFC.Editor
             config.MaxAttempts = 1000;
             config.TimeLimitSeconds = 0f;
             config.ShowEveryNth = 1;
+            config.Displays.Clear();
+            config.Batchings.Clear();
+            config.TighteningPercents.Clear();
+            config.TighteningDraws = 1;
+            config.MeasuredFrames = 10;
             setup(config);
             EditorUtility.SetDirty(config);
             return config;

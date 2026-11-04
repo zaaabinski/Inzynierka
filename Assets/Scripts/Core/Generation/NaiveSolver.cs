@@ -122,7 +122,7 @@ namespace WFC.Core
                         if (removed == 0)
                             continue;
                         target.RemoveRange(kept, removed);
-                        CountRemoved(removed);
+                        CountRemovedByPropagation(removed);
                         if (kept == 0)
                         {
                             LastContradictionCell = neighbor;

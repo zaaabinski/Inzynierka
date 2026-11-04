@@ -316,6 +316,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 822c1d6091e3b7d49aaba5fba4ae6349, type: 2}
   - {fileID: 11400000, guid: 53c4573b521ab0f418ae789126ed0925, type: 2}
   - {fileID: 11400000, guid: 4c2d07c3c35a89c4082765fe36518dd6, type: 2}
+  - {fileID: 11400000, guid: d474ace96c145fa459956715c6f26c91, type: 2}
+  - {fileID: 11400000, guid: 3806d7ccdb8d55b4ebe347e27f93cfc7, type: 2}
+  - {fileID: 11400000, guid: 33d27784f332a32448e430935f7cfad0, type: 2}
   mapBuilder: {fileID: 76507543}
   generator: {fileID: 516401352}
 --- !u!4 &1102662363

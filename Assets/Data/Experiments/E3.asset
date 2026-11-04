@@ -24,6 +24,10 @@ MonoBehaviour:
   - {x: 20, y: 13, z: 20}
   - {x: 40, y: 13, z: 40}
   - {x: 80, y: 13, z: 80}
+  displays: 
+  batchings: 
+  tighteningPercents: []
+  tighteningDraws: 1
   firstSeed: 1
   seedCount: 100
   repetitions: 1
@@ -31,3 +35,4 @@ MonoBehaviour:
   maxAttempts: 1000
   timeLimitSeconds: 600
   showEveryNth: 1
+  measuredFrames: 10

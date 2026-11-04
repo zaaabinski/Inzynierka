@@ -28,6 +28,14 @@ namespace WFC.Core
         /// <summary>Liczba komórek każdego kafelka (indeks kafelka w zestawie).</summary>
         public int[] TileCounts = Array.Empty<int>();
 
+        /// <summary>Komórki parteru z budynkiem, czyli z czymś innym niż teren i powietrze.</summary>
+        public int BuiltGroundCells;
+
+        public int CellsPerFloor;
+
+        /// <summary>Gęstość zabudowy: odsetek parteru zajęty przez budynki.</summary>
+        public double BuiltPercent => CellsPerFloor == 0 ? 0 : 100.0 * BuiltGroundCells / CellsPerFloor;
+
         /// <summary>Komórki terenu na parterze i ile z nich da się dojść od krawędzi mapy po terenie.</summary>
         public int GroundTerrainCells;
         public int ReachableTerrainCells;
@@ -49,7 +57,7 @@ namespace WFC.Core
         {
             var grid = new GridShape(size);
             var map = new MapView(rules, grid, states);
-            var stats = new StructureStats { TileCounts = new int[rules.TileCount] };
+            var stats = new StructureStats { TileCounts = new int[rules.TileCount], CellsPerFloor = grid.CellsPerFloor };
 
             for (int cell = 0; cell < grid.CellCount; cell++)
             {
@@ -58,6 +66,8 @@ namespace WFC.Core
                     continue;
                 stats.TileCounts[rules.GetTileIndex(state)]++;
                 string group = map.Group(cell);
+                if (cell < grid.CellsPerFloor && group != CastleVocabulary.GroupTerrain && group != CastleVocabulary.GroupAir)
+                    stats.BuiltGroundCells++;
                 if (group == CastleVocabulary.GroupStairs)
                     stats.Stairs++;
                 if (group == CastleVocabulary.GroupBridge && map.SideWithLabel(cell, CastleVocabulary.LabelBridgeStart) is Direction direction)

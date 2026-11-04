@@ -41,6 +41,7 @@ namespace WFC.Runtime
         int[] previousMap;
         int3 previousSize;
         TilesetDefinition previousTileset;
+        string differenceReport = string.Empty;
 
         public TilesetDefinition Tileset
         {
@@ -171,6 +172,16 @@ namespace WFC.Runtime
             Complete();
         }
 
+        /// <summary>Stawia ostatnią gotową mapę od nowa, bez generacji: porównanie sposobów rysowania na tej samej mapie.</summary>
+        public void RedrawLastMap()
+        {
+            if (LastResult == null || mapBuilder == null || activeSolver == null || !activeSolver.IsFinished)
+                return;
+            mapBuilder.Clear();
+            mapBuilder.Show(tileset, rules, activeSolver.Grid, LastResult.States, LastResult.Seed);
+            LastReport = ComposeReport();
+        }
+
         public void Clear()
         {
             if (visualizer != null)
@@ -203,31 +214,41 @@ namespace WFC.Runtime
             LastResult = activeSolver.Result;
             if (LastResult.Success)
             {
-                LastCheck = RuleChecker.Check(rules, LastResult.Size, LastResult.States);
-                LastStats = StructureAnalyzer.Analyze(rules, LastResult.Size, LastResult.States);
+                using (WfcMarkers.MapCheck.Auto())
+                {
+                    LastCheck = RuleChecker.Check(rules, LastResult.Size, LastResult.States);
+                    LastStats = StructureAnalyzer.Analyze(rules, LastResult.Size, LastResult.States);
+                }
             }
             if (mapBuilder != null)
                 mapBuilder.Show(tileset, rules, activeSolver.Grid, LastResult.States, seed);
-            LastReport = Describe(LastResult, LastCheck, LastStats, mapBuilder != null ? mapBuilder.LastBuildMs : 0);
+            differenceReport = string.Empty;
             if (LastResult.Success)
             {
                 if (previousMap != null && previousTileset == tileset && math.all(previousSize == LastResult.Size))
                 {
                     MapDifference difference = DiversityAnalyzer.Compare(rules, LastResult.Size, previousMap, LastResult.States);
-                    LastReport += $"\nInna niż poprzednia mapa: {difference}.";
+                    differenceReport = $"\nInna niż poprzednia mapa: {difference}.";
                 }
                 previousMap = LastResult.States;
                 previousSize = LastResult.Size;
                 previousTileset = tileset;
             }
-            if (mapBuilder != null && mapBuilder.IsInstanced)
-                LastReport += $"\nMapa rysowana instancjami: kostki {mapBuilder.InstanceCount}, wywołania rysowania na klatkę {mapBuilder.InstancedDrawCalls}.";
-            if (mapBuilder != null && mapBuilder.Combined is CombinedMap map)
-                LastReport += $"\n{map.Describe()}";
+            LastReport = ComposeReport();
             if (LastResult.Success && LastCheck.Total == 0)
                 Debug.Log(LastReport, this);
             else
                 Debug.LogWarning(LastReport, this);
+        }
+
+        string ComposeReport()
+        {
+            string report = Describe(LastResult, LastCheck, LastStats, mapBuilder != null ? mapBuilder.LastBuildMs : 0) + differenceReport;
+            if (mapBuilder != null && mapBuilder.IsInstanced)
+                report += $"\nMapa rysowana instancjami: kostki {mapBuilder.InstanceCount}, wywołania rysowania na klatkę {mapBuilder.InstancedDrawCalls}.";
+            if (mapBuilder != null && mapBuilder.Combined is CombinedMap map)
+                report += $"\n{map.Describe()}";
+            return report;
         }
 
         void ShowProgress(StepStatus status)
@@ -270,7 +291,7 @@ namespace WFC.Runtime
                     .Append(check.DisabledTotal > 0 ? $" Przypadki zasad wyłączonych w tym zestawie: {check.DisabledTotal}." : string.Empty);
             if (stats != null)
                 text.Append($"\nWieże {stats.Towers}, donżony {stats.Keeps}, mosty {stats.Bridges}, schody {stats.Stairs}, ")
-                    .Append($"zamknięte dziedzińce {stats.EnclosedCourtyards}, teren dostępny z krawędzi {stats.ReachableTerrainPercent:0}%.");
+                    .Append($"zamknięte dziedzińce {stats.EnclosedCourtyards}, teren dostępny z krawędzi {stats.ReachableTerrainPercent:0}%, zabudowa parteru {stats.BuiltPercent:0}%.");
             return text.ToString();
         }
 
