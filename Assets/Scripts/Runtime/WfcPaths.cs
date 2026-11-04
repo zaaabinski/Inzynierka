@@ -34,6 +34,9 @@ namespace WFC.Runtime
         /// <summary>Zbudowana aplikacja, względem folderu projektu (folder Build jest w .gitignore).</summary>
         public const string BuildExecutable = "Build/Zamek.exe";
 
+        /// <summary>Wersja Development do oglądania znaczników w Unity Profiler.</summary>
+        public const string ProfilerBuildExecutable = "Build/Profiler/Zamek.exe";
+
         public static string Experiment(string experimentName) => $"{Experiments}/{experimentName}.asset";
 
         public static string TilePrefab(string model) => $"{TilePrefabs}/{model}.prefab";

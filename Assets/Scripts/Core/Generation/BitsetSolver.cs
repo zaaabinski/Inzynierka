@@ -134,7 +134,7 @@ namespace WFC.Core
                     changed.Peak = data.ChangedPeak;
                     trailCount = data.TrailCount;
                     CountPropagationSteps(data.PropagationSteps);
-                    CountRemoved(data.RemovedPossibilities);
+                    CountRemovedByPropagation(data.RemovedPossibilities);
                     if (data.NeedsTrailSpace == 0)
                     {
                         if (data.ContradictionCell < 0)

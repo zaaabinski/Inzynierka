@@ -15,9 +15,10 @@ namespace WFC.Runtime
     public sealed class CsvWriter : IDisposable
     {
         /// <summary>
-        /// 40 kolumn z rozdziału 7 handoffu i 14 dodatkowych: czas stawiania kostek, środowisko uruchomienia, różnica od mapy
-        /// poprzedniego ziarna w tym samym wariancie (wszystkie komórki, parter, zabudowa; DiversityAnalyzer) oraz koszt
-        /// rysowania mapy w oknie (sposób rysowania, liczniki Unity i czasy klatki; RenderStats), puste bez okna.
+        /// 40 kolumn z rozdziału 7 handoffu i 31 dodatkowych: czas stawiania kostek, środowisko uruchomienia, różnica od mapy
+        /// poprzedniego ziarna w tym samym wariancie (wszystkie komórki, parter, zabudowa; DiversityAnalyzer), koszt rysowania
+        /// mapy w oknie (sposób rysowania, liczniki Unity i czasy klatki; RenderStats), skuteczność propagacji, rzeczywista
+        /// pamięć, gęstość zabudowy, restrykcyjność reguł i ich zaostrzenie. Pola związane z rysowaniem są puste bez okna.
         /// </summary>
         public static readonly string[] Columns =
         {
@@ -28,19 +29,27 @@ namespace WFC.Runtime
             "donzony", "mosty", "schody", "wys_wiez_sr", "wys_murow_sr", "wys_donzonow_sr", "trawa_dostepna_proc",
             "dziedzince_zamkniete", "czas_stawiania_ms", "srodowisko", "roznica_mapy_proc", "roznica_parter_proc",
             "roznica_zabudowa_proc", "rysowanie", "wywolania_rysowania", "narysowane_obiekty", "setpass", "trojkaty", "wierzcholki",
-            "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms"
+            "czas_klatki_ms", "czas_klatki_cpu_ms", "czas_klatki_gpu_ms",
+            "usuniete_propagacja", "usuniete_decyzje", "pamiec_rzeczywista_mb", "zabudowa_proc",
+            "gestosc_regul_proc", "gestosc_wazona_proc", "kappa", "zaostrzenie_proc", "losowanie_zaostrzenia",
+            "laczenie_rysowania", "bok_fragmentu", "pamiec_siatek_mb", "pamiec_unity_mb", "pamiec_gc_mb", "pamiec_procesu_mb",
+            "najdluzsza_klatka_ms", "pierwsza_klatka_ms"
         };
 
         readonly StreamWriter writer;
+        readonly int columnCount;
 
-        public CsvWriter(string path)
+        /// <param name="columns">Nagłówek pliku; domyślnie kolumny pliku wyników serii.</param>
+        public CsvWriter(string path, IReadOnlyList<string> columns = null)
         {
+            columns ??= Columns;
+            columnCount = columns.Count;
             Path = System.IO.Path.GetFullPath(path);
             string folder = System.IO.Path.GetDirectoryName(Path);
             if (!string.IsNullOrEmpty(folder))
                 Directory.CreateDirectory(folder);
             writer = new StreamWriter(Path, false, new UTF8Encoding(false));
-            WriteRow(Columns);
+            WriteRow(columns);
         }
 
         public string Path { get; }
@@ -50,8 +59,8 @@ namespace WFC.Runtime
         /// <summary>Wiersz z wartościami w kolejności Columns; liczby zamienia na tekst niezależnie od języka systemu.</summary>
         public void Write(IReadOnlyList<object> values)
         {
-            if (values.Count != Columns.Length)
-                throw new ArgumentException($"Wiersz ma {values.Count} wartości, a plik {Columns.Length} kolumn.", nameof(values));
+            if (values.Count != columnCount)
+                throw new ArgumentException($"Wiersz ma {values.Count} wartości, a plik {columnCount} kolumn.", nameof(values));
             WriteRow(values.Select(Format));
             RowsWritten++;
         }

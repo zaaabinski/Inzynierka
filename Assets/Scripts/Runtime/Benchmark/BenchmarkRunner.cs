@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using WFC.Core;
 
@@ -10,7 +12,8 @@ namespace WFC.Runtime
     /// pokazanej mapie pomiar kosztu jej rysowania z kilku klatek (RenderStats). Pauza i Stop działają po bieżącym
     /// uruchomieniu. Z argumentem -benchmark badanie startuje samo: z oknem pokazuje mapy i zamyka aplikację na końcu,
     /// a z -batchmode -nographics liczy wszystko bez okna i bez pomiaru rysowania.
-    /// Argumenty: -config E1, -out plik.csv, opcjonalnie -seeds, -firstSeed, -repetitions, -warmup, -showEvery, -display.
+    /// Argumenty: -config E1 albo -config wszystkie, -out plik.csv, opcjonalnie -seeds, -firstSeed, -repetitions, -warmup,
+    /// -showEvery, -display, -batching.
     /// </summary>
     public sealed class BenchmarkRunner : MonoBehaviour
     {
@@ -19,11 +22,11 @@ namespace WFC.Runtime
         [SerializeField] MapBuilder mapBuilder;
         [SerializeField] GeneratorController generator;
 
+        /// <summary>Wartość -config: wszystkie eksperymenty po kolei.</summary>
+        public const string AllExperimentsKey = "wszystkie";
+
         /// <summary>Klatki po postawieniu mapy, zanim liczniki i czasy pokażą ją bez kosztu stawiania.</summary>
         const int SettleFrames = 5;
-
-        /// <summary>Klatki, z których powstaje średnia w pliku wyników.</summary>
-        const int MeasuredFrames = 10;
 
         /// <summary>Klatki na jedną wartość na żywo w oknie.</summary>
         const int LiveFrames = 30;
@@ -33,6 +36,14 @@ namespace WFC.Runtime
         RenderStatsRecorder renderStats;
         BenchmarkRunResult pendingRun;
         int settleLeft;
+        double shownAt;
+        readonly Queue<BenchmarkConfig> queuedSeries = new Queue<BenchmarkConfig>();
+        readonly List<string> finishedSeries = new List<string>();
+        string queueFolder;
+        int queueTotal;
+        bool renderingSaved;
+        MapDisplay displayBeforeSeries;
+        RenderBatching batchingBeforeSeries;
 
         public List<BenchmarkConfig> Experiments => experiments;
 
@@ -74,6 +85,9 @@ namespace WFC.Runtime
         /// <summary>Koszt rysowania na żywo, odświeżany co pół sekundy przy 60 klatkach; null bez okna.</summary>
         public RenderStats? LiveRenderStats { get; private set; }
 
+        /// <summary>Przy wszystkich eksperymentach po kolei: który teraz trwa; inaczej pusty tekst.</summary>
+        public string QueueLabel => queueTotal > 0 ? $"Eksperyment {queueTotal - queuedSeries.Count} z {queueTotal}: " : string.Empty;
+
         void OnEnable()
         {
             if (!Application.isBatchMode)
@@ -84,12 +98,30 @@ namespace WFC.Runtime
         {
             renderStats?.Dispose();
             renderStats = null;
+            RestoreRendering();
+            RenderBatchingSwitch.RestoreProjectSetting();
         }
 
         void Start()
         {
             if (!CommandLine.IsBenchmark)
                 return;
+            if (mapBuilder != null && Enum.TryParse(CommandLine.Get("-display"), true, out MapDisplay display))
+                mapBuilder.Display = display;
+            if (Enum.TryParse(CommandLine.Get("-batching"), true, out RenderBatching batching))
+                RenderBatchingSwitch.Apply(batching);
+            if (string.Equals(CommandLine.Get("-config"), AllExperimentsKey, StringComparison.OrdinalIgnoreCase))
+            {
+                List<BenchmarkConfig> all = experiments.Where(experiment => experiment != null).Select(WithCommandLine).ToList();
+                if (Application.isBatchMode)
+                {
+                    Application.Quit(RunAllNow(all));
+                    return;
+                }
+                quitWhenDone = true;
+                StartAllSeries(all);
+                return;
+            }
             BenchmarkConfig config = ConfigFromCommandLine();
             if (config == null)
             {
@@ -97,8 +129,6 @@ namespace WFC.Runtime
                 Application.Quit(2);
                 return;
             }
-            if (mapBuilder != null && Enum.TryParse(CommandLine.Get("-display"), true, out MapDisplay display))
-                mapBuilder.Display = display;
             string output = CommandLine.Get("-out") ?? BenchmarkSession.DefaultOutputPath(config.ExperimentName);
             if (Application.isBatchMode)
             {
@@ -118,8 +148,11 @@ namespace WFC.Runtime
         public BenchmarkConfig ConfigFromCommandLine()
         {
             BenchmarkConfig preset = FindExperiment(CommandLine.Get("-config") ?? "E1");
-            if (preset == null)
-                return null;
+            return preset != null ? WithCommandLine(preset) : null;
+        }
+
+        static BenchmarkConfig WithCommandLine(BenchmarkConfig preset)
+        {
             BenchmarkConfig config = preset.Clone();
             config.SeedCount = CommandLine.GetInt("-seeds", config.SeedCount);
             config.FirstSeed = (uint)CommandLine.GetInt("-firstSeed", (int)config.FirstSeed);
@@ -132,9 +165,54 @@ namespace WFC.Runtime
         public void StartSeries(BenchmarkConfig config, string outputPath = null)
         {
             Stop();
+            BeginSeries(config, outputPath);
+        }
+
+        /// <summary>
+        /// Eksperymenty jeden po drugim, każdy z własnym plikiem wyników. Te z limitem czasu na mapę (najdłuższe) idą na końcu,
+        /// a błąd w jednym nie zatrzymuje pozostałych.
+        /// </summary>
+        /// <param name="folder">Folder wyników; domyślnie BenchmarkSession.ResultsFolder.</param>
+        public void StartAllSeries(IEnumerable<BenchmarkConfig> configs, string folder = null)
+        {
+            Stop();
+            finishedSeries.Clear();
+            queueFolder = folder;
+            foreach (BenchmarkConfig config in configs.OrderBy(config => config.TimeLimitSeconds > 0 ? 1 : 0))
+                queuedSeries.Enqueue(config);
+            queueTotal = queuedSeries.Count;
+            StartNextQueued();
+        }
+
+        void StartNextQueued()
+        {
+            while (queuedSeries.Count > 0)
+            {
+                BenchmarkConfig next = queuedSeries.Dequeue();
+                try
+                {
+                    BeginSeries(next, queueFolder != null ? Path.Combine(queueFolder, $"{next.ExperimentName}.csv") : null);
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception, this);
+                    finishedSeries.Add($"{next.ExperimentName}: błąd, {exception.Message}");
+                }
+            }
+            Status = "Wszystkie eksperymenty zakończone.\n" + string.Join("\n", finishedSeries);
+            Debug.Log($"[BenchmarkRunner] {Status}");
+            queueTotal = 0;
+            if (quitWhenDone)
+                Application.Quit(0);
+        }
+
+        void BeginSeries(BenchmarkConfig config, string outputPath)
+        {
             if (generator != null)
                 generator.Clear();
             session = new BenchmarkSession(config, outputPath ?? BenchmarkSession.DefaultOutputPath(config.ExperimentName), MachineInfo.Current());
+            SaveRendering();
             OutputPath = session.OutputPath;
             CurrentConfig = config;
             CompletedRuns = 0;
@@ -154,6 +232,8 @@ namespace WFC.Runtime
 
         public void Stop()
         {
+            queuedSeries.Clear();
+            queueTotal = 0;
             if (session == null)
                 return;
             if (pendingRun != null)
@@ -165,27 +245,52 @@ namespace WFC.Runtime
             session.Dispose();
             session = null;
             IsPaused = false;
+            RestoreRendering();
         }
 
         void Update()
         {
             SampleRenderStats();
+            Advance();
+        }
+
+        /// <summary>Jeden krok serii: w oknie wywoływany raz na klatkę. Błąd kończy tę serię, nie zawiesza aplikacji.</summary>
+        public void Advance()
+        {
             if (!IsRunning || IsPaused)
                 return;
-            if (pendingRun != null)
+            try
             {
-                MeasurePendingRun();
-                return;
+                if (pendingRun != null)
+                {
+                    pendingRun.FirstFrameMs ??= (Time.realtimeSinceStartupAsDouble - shownAt) * 1000.0;
+                    MeasurePendingRun();
+                    return;
+                }
+                BenchmarkRunResult run = session.StartNext(Show);
+                if (run.BuildMs != null && renderStats != null)
+                {
+                    pendingRun = run;
+                    settleLeft = SettleFrames;
+                }
+                else
+                {
+                    CompleteRun(run, null);
+                }
             }
-            BenchmarkRunResult run = session.StartNext(Show);
-            if (run.BuildMs != null && renderStats != null)
+            catch (Exception exception)
             {
-                pendingRun = run;
-                settleLeft = SettleFrames;
-            }
-            else
-            {
-                CompleteRun(run, null);
+                Debug.LogException(exception, this);
+                Status = $"Błąd w serii {session.Config.ExperimentName}: {exception.Message}";
+                finishedSeries.Add($"{session.Config.ExperimentName}: błąd, {exception.Message}");
+                pendingRun = null;
+                session.Dispose();
+                session = null;
+                RestoreRendering();
+                if (queueTotal > 0)
+                    StartNextQueued();
+                else if (quitWhenDone)
+                    Application.Quit(3);
             }
         }
 
@@ -210,7 +315,7 @@ namespace WFC.Runtime
                     renderStats.Reset();
                 return;
             }
-            if (renderStats.Frames < MeasuredFrames)
+            if (renderStats.Frames < session.Config.MeasuredFrames)
                 return;
             BenchmarkRunResult run = pendingRun;
             pendingRun = null;
@@ -238,26 +343,66 @@ namespace WFC.Runtime
             if (!run.Warmup && session.CompletedMeasuredRuns % session.Config.ShowEveryNth != 0)
                 return null;
             // Od zera, jak przycisk Generuj: inaczej powtórzone ziarno nie stawiałoby nic, a inne ziarno tylko różnicę między mapami.
+            if (run.Variant.Display is MapDisplay display)
+                mapBuilder.Display = display;
+            if (run.Variant.Batching is RenderBatching batching)
+                RenderBatchingSwitch.Apply(batching);
             mapBuilder.Clear();
             mapBuilder.Show(run.Variant.Tileset, run.Rules, run.Result.Grid, run.Result.States, run.Seed);
             run.Display = mapBuilder.Display.ToString();
+            run.Batching = RenderBatchingSwitch.Current.ToString();
+            run.ChunkSize = mapBuilder.Combined?.ChunkSize;
+            run.MeshBytes = mapBuilder.Combined?.MeshBytes;
+            shownAt = Time.realtimeSinceStartupAsDouble;
             return mapBuilder.LastBuildMs;
         }
 
         void Finish()
         {
             Status = $"Gotowe. Zapisane uruchomienia: {session.CompletedMeasuredRuns}, bez mapy: {session.FailedRuns}, naruszenia zasad: {session.Violations}." +
-                     DescribeDifference(session);
+                     DescribeDifference(session) + session.DescribeCorrelation();
             Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
+            finishedSeries.Add($"{session.Config.ExperimentName}: {Status}");
             session.Dispose();
             session = null;
+            RestoreRendering();
+            if (queueTotal > 0)
+            {
+                StartNextQueued();
+                return;
+            }
             if (quitWhenDone)
                 Application.Quit(0);
+        }
+
+        void SaveRendering()
+        {
+            if (renderingSaved)
+                return;
+            renderingSaved = true;
+            displayBeforeSeries = mapBuilder != null ? mapBuilder.Display : default;
+            batchingBeforeSeries = RenderBatchingSwitch.Current;
+        }
+
+        /// <summary>Po serii wraca sposób rysowania i łączenie sprzed niej, czyli to, co pokazuje okno.</summary>
+        void RestoreRendering()
+        {
+            if (!renderingSaved)
+                return;
+            renderingSaved = false;
+            if (mapBuilder != null)
+                mapBuilder.Display = displayBeforeSeries;
+            RenderBatchingSwitch.Apply(batchingBeforeSeries);
         }
 
         /// <summary>Cała seria od razu, bez okna. Zwraca kod wyjścia: 0 bez naruszeń zasad, 1 gdy były naruszenia.</summary>
         public int RunAllNow(BenchmarkConfig config, string outputPath)
         {
+            if (config.RequiresWindow)
+            {
+                Debug.LogError($"[BenchmarkRunner] Eksperyment {config.ExperimentName} porównuje rysowanie, więc działa tylko w oknie: uruchom go bez -batchmode -nographics.");
+                return 2;
+            }
             using (var batch = new BenchmarkSession(config, outputPath, MachineInfo.Current()))
             {
                 OutputPath = batch.OutputPath;
@@ -272,10 +417,19 @@ namespace WFC.Runtime
                     lastVariant = run.VariantIndex;
                 }
                 Status = $"Gotowe. Zapisane uruchomienia: {batch.CompletedMeasuredRuns}, bez mapy: {batch.FailedRuns}, naruszenia zasad: {batch.Violations}." +
-                         DescribeDifference(batch);
+                         DescribeDifference(batch) + batch.DescribeCorrelation();
                 Debug.Log($"[BenchmarkRunner] {Status} Wyniki: {OutputPath}");
                 return batch.Violations == 0 ? 0 : 1;
             }
+        }
+
+        /// <summary>Wszystkie eksperymenty od razu, bez okna, oprócz tych, które porównują rysowanie. Zwraca najgorszy kod wyjścia.</summary>
+        int RunAllNow(IEnumerable<BenchmarkConfig> configs)
+        {
+            int exitCode = 0;
+            foreach (BenchmarkConfig config in configs.Where(config => !config.RequiresWindow).OrderBy(config => config.TimeLimitSeconds > 0 ? 1 : 0))
+                exitCode = Math.Max(exitCode, RunAllNow(config, BenchmarkSession.DefaultOutputPath(config.ExperimentName)));
+            return exitCode;
         }
 
         static string DescribeDifference(BenchmarkSession finished) =>

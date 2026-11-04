@@ -24,6 +24,11 @@ namespace WFC.Runtime
         readonly List<TilesetDefinition> tilesetChoices = new List<TilesetDefinition>();
 
         const string CustomExperiment = "Własne (z sekcji Ustawienia)";
+        const string AllExperiments = "Wszystkie po kolei";
+
+        /// <summary>Ile wariantów wypisać w opisie eksperymentu; E7 i E9 mają ich kilkadziesiąt.</summary>
+        const int ListedVariants = 12;
+
         static readonly Color TextColor = new Color(0.93f, 0.94f, 0.96f);
         static readonly Color Muted = new Color(0.65f, 0.69f, 0.75f);
         static readonly Color Background = new Color(0.07f, 0.09f, 0.12f, 0.9f);
@@ -34,6 +39,7 @@ namespace WFC.Runtime
         static readonly SelectorKind[] Selectors = (SelectorKind[])Enum.GetValues(typeof(SelectorKind));
         static readonly ContradictionKind[] Contradictions = (ContradictionKind[])Enum.GetValues(typeof(ContradictionKind));
         static readonly MapDisplay[] Displays = (MapDisplay[])Enum.GetValues(typeof(MapDisplay));
+        static readonly RenderBatching[] Batchings = (RenderBatching[])Enum.GetValues(typeof(RenderBatching));
 
         VisualElement root;
         VisualElement panel;
@@ -46,6 +52,7 @@ namespace WFC.Runtime
         DropdownField selectorField;
         DropdownField contradictionField;
         DropdownField displayField;
+        DropdownField batchingField;
         Label liveStatsLabel;
         IntegerField sizeEastField;
         IntegerField sizeNorthField;
@@ -121,7 +128,7 @@ namespace WFC.Runtime
             panel.style.position = Position.Absolute;
             panel.style.left = 12;
             panel.style.top = 12;
-            panel.style.width = 400;
+            panel.style.width = 460;
             panel.style.maxHeight = Length.Percent(96);
             panel.style.backgroundColor = Background;
             SetRadius(panel, 6);
@@ -166,8 +173,16 @@ namespace WFC.Runtime
             scroll.Add(maxAttemptsField);
             MapBuilder builder = generator != null ? generator.MapBuilder : null;
             displayField = MakeDropdown("rysowanie", "Rysowanie", Displays.Select(d => WfcFactory.Label(d)).ToList(), Array.IndexOf(Displays, builder != null ? builder.Display : MapDisplay.GameObjects));
-            displayField.RegisterValueChangedCallback(_ => ApplyDisplay());
+            displayField.RegisterValueChangedCallback(_ =>
+            {
+                ApplyDisplay();
+                if (generator != null && (runner == null || !runner.IsRunning))
+                    generator.RedrawLastMap();
+            });
             scroll.Add(displayField);
+            batchingField = MakeDropdown("laczenie", "Łączenie", Batchings.Select(b => WfcFactory.Label(b)).ToList(), Array.IndexOf(Batchings, RenderBatchingSwitch.Current));
+            batchingField.RegisterValueChangedCallback(_ => ApplyDisplay());
+            scroll.Add(batchingField);
             liveStatsLabel = MakeInfo("rysowanie-na-zywo");
             liveStatsLabel.style.color = Muted;
             scroll.Add(liveStatsLabel);
@@ -196,6 +211,8 @@ namespace WFC.Runtime
             var experimentChoices = new List<string> { CustomExperiment };
             if (runner != null)
                 experimentChoices.AddRange(runner.Experiments.Where(e => e != null).Select(ExperimentLabel));
+            if (experimentChoices.Count > 1)
+                experimentChoices.Add(AllExperiments);
             experimentField = MakeDropdown("eksperyment", "Eksperyment", experimentChoices, 0);
             experimentField.RegisterValueChangedCallback(_ => OnExperimentChanged());
             seriesSection.Add(experimentField);
@@ -296,7 +313,7 @@ namespace WFC.Runtime
             if (runner.TotalRuns > 0)
             {
                 progressBar.value = 100f * runner.CompletedRuns / runner.TotalRuns;
-                progressBar.title = $"Uruchomienie {runner.CompletedRuns} z {runner.TotalRuns}";
+                progressBar.title = $"{runner.QueueLabel}uruchomienie {runner.CompletedRuns} z {runner.TotalRuns}";
             }
             if (statusLabel.text != runner.Status)
                 statusLabel.text = runner.Status;
@@ -329,11 +346,12 @@ namespace WFC.Runtime
             ApplyDisplay();
         }
 
-        /// <summary>Sposób rysowania działa od razu na następną mapę, także w serii.</summary>
+        /// <summary>Sposób rysowania działa od razu na następną mapę, także w serii; łączenie rysowania od następnej klatki.</summary>
         void ApplyDisplay()
         {
             if (generator != null && generator.MapBuilder != null)
                 generator.MapBuilder.Display = Displays[Mathf.Max(0, displayField.index)];
+            RenderBatchingSwitch.Apply(Batchings[Mathf.Max(0, batchingField.index)]);
         }
 
         void StartSeries()
@@ -341,6 +359,11 @@ namespace WFC.Runtime
             if (runner == null)
                 return;
             ApplyDisplay();
+            if (AllSelected)
+            {
+                runner.StartAllSeries(runner.Experiments.Where(e => e != null).Select(e => e.Clone()));
+                return;
+            }
             BenchmarkConfig config = SelectedPreset() is BenchmarkConfig preset ? preset.Clone() : CustomConfig();
             config.FirstSeed = (uint)Mathf.Max(0, firstSeedField.value);
             config.SeedCount = seedCountField.value;
@@ -380,6 +403,8 @@ namespace WFC.Runtime
             return config;
         }
 
+        bool AllSelected => experimentField.value == AllExperiments;
+
         BenchmarkConfig SelectedPreset()
         {
             int index = experimentField.index - 1;
@@ -414,18 +439,30 @@ namespace WFC.Runtime
                 warmupField.SetValueWithoutNotify(preset.WarmupRuns);
                 showEveryField.SetValueWithoutNotify(preset.ShowEveryNth);
             }
+            foreach (IntegerField field in new[] { firstSeedField, seedCountField, repetitionsField, warmupField, showEveryField })
+                field.SetEnabled(!AllSelected);
             UpdateSummary();
         }
 
         void UpdateSummary()
         {
+            if (AllSelected)
+            {
+                List<BenchmarkConfig> experiments = runner.Experiments.Where(e => e != null).ToList();
+                summaryLabel.text = $"{experiments.Count} eksperymentów jeden po drugim, każdy z własnym plikiem wyników i własnymi ustawieniami ziaren. " +
+                                    $"Uruchomienia do zapisu: {experiments.Sum(e => e.MeasuredRuns)}. Te z limitem czasu na mapę (najdłuższe) idą na końcu.";
+                return;
+            }
             BenchmarkConfig preset = SelectedPreset();
             if (preset == null)
             {
                 summaryLabel.text = "Jeden wariant z sekcji Ustawienia. Każde ziarno to jedna mapa; powtórzenia mierzą czas tej samej mapy jeszcze raz.";
                 return;
             }
-            string variants = string.Join("\n", preset.Variants().Select(v => "• " + v));
+            List<BenchmarkVariant> all = preset.Variants();
+            string variants = string.Join("\n", all.Take(ListedVariants).Select(v => "• " + v));
+            if (all.Count > ListedVariants)
+                variants += $"\n… i {all.Count - ListedVariants} kolejnych";
             summaryLabel.text = $"{preset.Description}\n{preset.Summary()}\n{variants}";
         }
 

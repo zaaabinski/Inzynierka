@@ -152,7 +152,9 @@ namespace WFC.Core
                     return StepStatus.Failed;
                 }
 
+                WfcMarkers.CellSelection.Begin();
                 int cell = Settings.Selector.SelectNext();
+                WfcMarkers.CellSelection.End();
                 metrics.SelectionTicks += Stopwatch.GetTimestamp() - start;
                 if (cell < 0)
                 {
@@ -162,7 +164,9 @@ namespace WFC.Core
 
                 int state = ChooseState(cell);
                 metrics.Decisions++;
-                metrics.RemovedPossibilities += GetPossibilityCount(cell) - 1;
+                int removedByDecision = GetPossibilityCount(cell) - 1;
+                metrics.RemovedPossibilities += removedByDecision;
+                metrics.RemovedByDecisions += removedByDecision;
                 if (keepUndoLog)
                     PushDecision(cell, state);
                 Collapse(cell, state);
@@ -182,10 +186,18 @@ namespace WFC.Core
 
         public GenerationResult Run()
         {
-            while (Step() is StepStatus.Decided or StepStatus.Contradiction)
+            WfcMarkers.Generation.Begin();
+            try
             {
+                while (Step() is StepStatus.Decided or StepStatus.Contradiction)
+                {
+                }
+                return result;
             }
-            return result;
+            finally
+            {
+                WfcMarkers.Generation.End();
+            }
         }
 
         public abstract int GetPossibilityCount(int cell);
@@ -249,6 +261,12 @@ namespace WFC.Core
 
         protected void CountRemoved(long possibilities) => metrics.RemovedPossibilities += possibilities;
 
+        protected void CountRemovedByPropagation(long possibilities)
+        {
+            metrics.RemovedPossibilities += possibilities;
+            metrics.RemovedByPropagation += possibilities;
+        }
+
         protected void CountPropagationSteps(long steps) => metrics.PropagationSteps += steps;
 
         /// <summary>Stany dozwolone w komórce przez krawędzie siatki: dół, góra i boki bez sąsiada.</summary>
@@ -308,12 +326,14 @@ namespace WFC.Core
         bool Propagate(bool initial)
         {
             long start = Stopwatch.GetTimestamp();
+            WfcMarkers.Propagation.Begin();
             try
             {
                 return initial ? PropagateInitial() : PropagateDecision();
             }
             finally
             {
+                WfcMarkers.Propagation.End();
                 metrics.PropagationTicks += Stopwatch.GetTimestamp() - start;
             }
         }
@@ -358,6 +378,7 @@ namespace WFC.Core
         bool Backtrack()
         {
             long start = Stopwatch.GetTimestamp();
+            WfcMarkers.Backtracking.Begin();
             metrics.Backtracks++;
             backtracksInAttempt++;
             Decision last = decisions[decisions.Count - 1];
@@ -366,6 +387,7 @@ namespace WFC.Core
             RecordingUndo = decisions.Count > 0;
             UndoLevel = RecordingUndo ? decisions[decisions.Count - 1].Level : 0;
             bool left = Ban(last.Cell, last.State);
+            WfcMarkers.Backtracking.End();
             metrics.BacktrackTicks += Stopwatch.GetTimestamp() - start;
             if (!left)
             {
@@ -382,6 +404,7 @@ namespace WFC.Core
         bool ResetAround(int center)
         {
             long start = Stopwatch.GetTimestamp();
+            WfcMarkers.Backtracking.Begin();
             metrics.Backtracks++;
             localResetsInAttempt++;
             int radius = Settings.ContradictionHandler.ResetRadius;
@@ -409,6 +432,7 @@ namespace WFC.Core
                                 EnqueuePropagation(neighbor);
                         }
                     }
+            WfcMarkers.Backtracking.End();
             metrics.BacktrackTicks += Stopwatch.GetTimestamp() - start;
             return Propagate(false);
         }

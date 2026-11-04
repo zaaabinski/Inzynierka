@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace WFC.Runtime
@@ -16,14 +17,35 @@ namespace WFC.Runtime
         /// <summary>x = E, y = piętra, z = N.</summary>
         public Vector3Int Size;
 
-        public override string ToString() =>
-            $"{Solver} + {Selector} + {Contradiction}, {(Tileset != null ? Tileset.name : "brak zestawu")}, {Size.x} × {Size.z} × {Size.y}";
+        /// <summary>Sposób rysowania albo null: ten ustawiony w oknie.</summary>
+        public MapDisplay? Display;
+
+        /// <summary>Łączenie rysowania w URP albo null: to ustawione w oknie.</summary>
+        public RenderBatching? Batching;
+
+        /// <summary>Procent dozwolonych par sąsiadów usuwany z reguł; 0 = reguły bez zmian.</summary>
+        public double TighteningPercent;
+
+        /// <summary>Numer losowania usuwanych par; 0 przy regułach bez zmian.</summary>
+        public uint TighteningDraw;
+
+        public override string ToString()
+        {
+            string text = $"{Solver} + {Selector} + {Contradiction}, {(Tileset != null ? Tileset.name : "brak zestawu")}, {Size.x} × {Size.z} × {Size.y}";
+            if (Display != null)
+                text += $", {Display}";
+            if (Batching != null)
+                text += $", {Batching}";
+            if (TighteningPercent > 0)
+                text += $", zaostrzenie {TighteningPercent}% (losowanie {TighteningDraw})";
+            return text;
+        }
     }
 
     /// <summary>
     /// Eksperyment (rozdział 7 handoffu): wszystkie kombinacje list rozwiązywaczy, heurystyk, reakcji na sprzeczność,
-    /// zestawów i rozmiarów, każda dla tych samych ziaren i tej samej liczby powtórzeń. Przed każdym wariantem
-    /// kilka uruchomień na rozgrzewkę, które nie trafiają do pliku wyników.
+    /// zestawów, rozmiarów, sposobów rysowania, łączenia rysowania i zaostrzenia reguł, każda dla tych samych ziaren i tej
+    /// samej liczby powtórzeń. Przed każdym wariantem kilka uruchomień na rozgrzewkę, które nie trafiają do pliku wyników.
     /// </summary>
     [CreateAssetMenu(menuName = "WFC/Eksperyment", fileName = "Eksperyment")]
     public sealed class BenchmarkConfig : ScriptableObject
@@ -38,6 +60,14 @@ namespace WFC.Runtime
         [SerializeField] List<TilesetDefinition> tilesets = new List<TilesetDefinition>();
         [Tooltip("x = E, y = piętra, z = N.")]
         [SerializeField] List<Vector3Int> gridSizes = new List<Vector3Int> { new Vector3Int(20, 13, 20) };
+        [Tooltip("Sposoby rysowania; pusta lista = sposób ustawiony w oknie.")]
+        [SerializeField] List<MapDisplay> displays = new List<MapDisplay>();
+        [Tooltip("Łączenie rysowania w URP; pusta lista = ustawienie z okna.")]
+        [SerializeField] List<RenderBatching> batchings = new List<RenderBatching>();
+        [Tooltip("Procent dozwolonych par sąsiadów usuwany z reguł; pusta lista = reguły bez zmian.")]
+        [SerializeField] List<float> tighteningPercents = new List<float>();
+        [Tooltip("Ile różnych losowań usuwanych par na każdy procent większy od zera.")]
+        [SerializeField, Min(1)] int tighteningDraws = 1;
 
         [Header("Ziarna, powtórzenia, limity")]
         [SerializeField, Min(0)] int firstSeed = 1;
@@ -51,6 +81,8 @@ namespace WFC.Runtime
         [SerializeField, Min(0f)] float timeLimitSeconds;
         [Tooltip("W oknie: pokazuj co N-tą mapę (1 = każdą). Czas stawiania kostek nie wlicza się do czasu generacji.")]
         [SerializeField, Min(1)] int showEveryNth = 1;
+        [Tooltip("W oknie: klatki po każdej pokazanej mapie, z których powstają czasy klatki i liczniki rysowania.")]
+        [SerializeField, Min(1)] int measuredFrames = 10;
 
         public string ExperimentName { get => experimentName; set => experimentName = value; }
         public string Description { get => description; set => description = value; }
@@ -59,6 +91,10 @@ namespace WFC.Runtime
         public List<ContradictionKind> ContradictionHandlers => contradictionHandlers;
         public List<TilesetDefinition> Tilesets => tilesets;
         public List<Vector3Int> GridSizes => gridSizes;
+        public List<MapDisplay> Displays => displays;
+        public List<RenderBatching> Batchings => batchings;
+        public List<float> TighteningPercents => tighteningPercents;
+        public int TighteningDraws { get => tighteningDraws; set => tighteningDraws = Mathf.Max(1, value); }
         public uint FirstSeed { get => (uint)firstSeed; set => firstSeed = (int)value; }
         public int SeedCount { get => seedCount; set => seedCount = Mathf.Max(1, value); }
         public int Repetitions { get => repetitions; set => repetitions = Mathf.Max(1, value); }
@@ -66,10 +102,15 @@ namespace WFC.Runtime
         public int MaxAttempts { get => maxAttempts; set => maxAttempts = Mathf.Max(1, value); }
         public float TimeLimitSeconds { get => timeLimitSeconds; set => timeLimitSeconds = Mathf.Max(0f, value); }
         public int ShowEveryNth { get => showEveryNth; set => showEveryNth = Mathf.Max(1, value); }
+        public int MeasuredFrames { get => measuredFrames; set => measuredFrames = Mathf.Max(1, value); }
+
+        /// <summary>Czy eksperyment porównuje rysowanie, czyli ma sens tylko w oknie.</summary>
+        public bool RequiresWindow => displays.Count > 0 || batchings.Count > 0;
 
         /// <summary>
-        /// Wszystkie kombinacje w kolejności: zestaw, rozmiar, rozwiązywacz, heurystyka, reakcja na sprzeczność. Pomija
-        /// rozwiązywacze, które nie umieją danej reakcji (SupportCount z cofaniem albo resetem lokalnym).
+        /// Wszystkie kombinacje w kolejności: zestaw, rozmiar, rozwiązywacz, heurystyka, reakcja na sprzeczność, łączenie
+        /// rysowania, sposób rysowania, zaostrzenie. Pomija rozwiązywacze, które nie umieją danej reakcji (SupportCount
+        /// z cofaniem albo resetem lokalnym).
         /// </summary>
         public List<BenchmarkVariant> Variants()
         {
@@ -80,20 +121,28 @@ namespace WFC.Runtime
                         foreach (SelectorKind selector in selectors)
                             foreach (ContradictionKind contradiction in contradictionHandlers)
                                 if (WfcFactory.IsSupported(solver, contradiction))
-                                    variants.Add(new BenchmarkVariant
-                                    {
-                                        Tileset = tileset,
-                                        Size = size,
-                                        Solver = solver,
-                                        Selector = selector,
-                                        Contradiction = contradiction
-                                    });
+                                    foreach (RenderBatching? batching in BatchingChoices())
+                                        foreach (MapDisplay? display in DisplayChoices())
+                                            foreach ((double percent, uint draw) in TighteningChoices())
+                                                variants.Add(new BenchmarkVariant
+                                                {
+                                                    Tileset = tileset,
+                                                    Size = size,
+                                                    Solver = solver,
+                                                    Selector = selector,
+                                                    Contradiction = contradiction,
+                                                    Display = display,
+                                                    Batching = batching,
+                                                    TighteningPercent = percent,
+                                                    TighteningDraw = draw
+                                                });
             return variants;
         }
 
         /// <summary>Kombinacje pominięte, bo rozwiązywacz nie umie danej reakcji na sprzeczność.</summary>
         public int SkippedVariants =>
-            tilesets.Count * gridSizes.Count * solvers.Count * selectors.Count * contradictionHandlers.Count - Variants().Count;
+            tilesets.Count * gridSizes.Count * solvers.Count * selectors.Count * contradictionHandlers.Count *
+            BatchingChoices().Count() * DisplayChoices().Count() * TighteningChoices().Count() - Variants().Count;
 
         /// <summary>Uruchomienia zapisywane do pliku: warianty × ziarna × powtórzenia.</summary>
         public int MeasuredRuns => Variants().Count * seedCount * repetitions;
@@ -107,6 +156,26 @@ namespace WFC.Runtime
             BenchmarkConfig copy = Instantiate(this);
             copy.name = name;
             return copy;
+        }
+
+        IEnumerable<MapDisplay?> DisplayChoices() =>
+            displays.Count == 0 ? new MapDisplay?[] { null } : displays.Select(display => (MapDisplay?)display);
+
+        IEnumerable<RenderBatching?> BatchingChoices() =>
+            batchings.Count == 0 ? new RenderBatching?[] { null } : batchings.Select(batching => (RenderBatching?)batching);
+
+        IEnumerable<(double Percent, uint Draw)> TighteningChoices()
+        {
+            if (tighteningPercents.Count == 0)
+                yield return (0, 0);
+            foreach (float percent in tighteningPercents)
+            {
+                if (percent <= 0)
+                    yield return (0, 0);
+                else
+                    for (uint draw = 1; draw <= tighteningDraws; draw++)
+                        yield return (percent, draw);
+            }
         }
 
         public string Summary()

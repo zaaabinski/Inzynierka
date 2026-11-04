@@ -100,6 +100,15 @@ namespace WFC.Core
         /// <summary>Sprawdzenia RuleChecker wyłączone w tym zestawie (warianty reguł E6); liczą się osobno, nie jako naruszenia.</summary>
         public List<ViolationType> DisabledChecks { get; } = new List<ViolationType>();
 
+        /// <summary>
+        /// Zaostrzenie reguł do eksperymentu E8: ułamek dozwolonych par sąsiadów (0–1), który kompilator usuwa losowo.
+        /// 0 = reguły bez zmian.
+        /// </summary>
+        public double TighteningFraction { get; set; }
+
+        /// <summary>Numer losowania zaostrzenia: inny numer to inne usunięte pary przy tym samym ułamku.</summary>
+        public uint TighteningDraw { get; set; }
+
         /// <summary>Oczekiwana liczba kafelków z sekcji kontrola; 0 = bez sprawdzania.</summary>
         public int ExpectedTileCount { get; set; }
 

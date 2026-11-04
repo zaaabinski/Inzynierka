@@ -25,6 +25,12 @@ namespace WFC.Core
         /// <summary>Usunięte możliwości (stan wykreślony z komórki), także przy decyzjach.</summary>
         public long RemovedPossibilities;
 
+        /// <summary>Część RemovedPossibilities usunięta przez samą propagację, bez losowania: miara jej skuteczności.</summary>
+        public long RemovedByPropagation;
+
+        /// <summary>Część RemovedPossibilities usunięta przez decyzje: stany wybranej komórki poza wylosowanym.</summary>
+        public long RemovedByDecisions;
+
         public int Contradictions;
         public int Restarts;
         public int Backtracks;

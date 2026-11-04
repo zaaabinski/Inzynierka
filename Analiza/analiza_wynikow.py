@@ -30,14 +30,14 @@ try:
 except ImportError:  # scipy jest potrzebne tylko do testu Manna-Whitneya
     mannwhitneyu = None
 
-USTAWIENIA = ["rozwiazywacz", "kolejnosc", "sprzecznosc", "zestaw", "rozmiar"]
+USTAWIENIA = ["rozwiazywacz", "kolejnosc", "sprzecznosc", "zestaw", "rozmiar", "rysowanie", "laczenie_rysowania", "zaostrzenie_proc", "losowanie_zaostrzenia"]
 
 
 def wczytaj(pliki):
     ramki = [pd.read_csv(plik) for plik in pliki]
     dane = pd.concat(ramki, ignore_index=True)
     dane["rozmiar"] = dane["x"].astype(str) + " × " + dane["y"].astype(str) + " × " + dane["z"].astype(str)
-    zmienne = [kolumna for kolumna in USTAWIENIA if dane[kolumna].nunique() > 1] or ["rozwiazywacz"]
+    zmienne = [kolumna for kolumna in USTAWIENIA if kolumna in dane and dane[kolumna].nunique() > 1] or ["rozwiazywacz"]
     dane["wariant"] = dane[zmienne].astype(str).agg(", ".join, axis=1)
     return dane, zmienne
 

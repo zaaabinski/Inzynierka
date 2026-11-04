@@ -168,7 +168,7 @@ namespace WFC.Core
             finally
             {
                 CountPropagationSteps(steps);
-                CountRemoved(removed);
+                CountRemovedByPropagation(removed);
             }
         }
 
@@ -195,7 +195,7 @@ namespace WFC.Core
         {
             BitMask.Clear(Mask(cell), state);
             counts[cell]--;
-            CountRemoved(1);
+            CountRemovedByPropagation(1);
             Changed.Enqueue(cell);
             PushRemoval(cell, state);
         }
