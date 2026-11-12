@@ -1,0 +1,17 @@
+eksperyment,rozwiazywacz,kolejnosc,sprzecznosc,zestaw,x,y,z,rysowanie,laczenie_rysowania,zaostrzenie_proc,losowanie_zaostrzenia,mapy,udane_mapy,proby,sprzecznosci,udane_proby_proc,zabudowa_proc,gestosc_regul_proc,gestosc_wazona_proc,kappa,czas_ms_mediana,czas_ms_q1,czas_ms_q3,czas_stawiania_ms_mediana,czas_klatki_ms_mediana,najdluzsza_klatka_ms_mediana,wywolania_rysowania_mediana,narysowane_obiekty_mediana,pamiec_rzeczywista_mb_mediana,pamiec_unity_mb_mediana
+E4,Naive,LevelFirst,Restart,Pelny,10,10,8,,,0,0,100,100,115,15,86.957,38.26,8.055,11.671,1.471,89.985,86.774,94.856,,,,,,0.875,156.75
+E4,SupportCount,LevelFirst,Restart,Pelny,10,10,8,,,0,0,100,100,115,15,86.957,38.26,8.055,11.671,1.471,10.269,10.136,10.419,,,,,,2.145,156.75
+E4,Bitset,LevelFirst,Restart,Pelny,10,10,8,,,0,0,100,100,115,15,86.957,38.26,8.055,11.671,1.471,3.059,2.897,3.284,,,,,,0.262,156.75
+E4,Burst,LevelFirst,Restart,Pelny,10,10,8,,,0,0,100,100,115,15,86.957,38.26,8.055,11.671,1.471,2.329,2.161,2.482,,,,,,0.258,156.75
+E4,Naive,LevelFirst,Restart,Pelny,20,20,13,,,0,0,100,100,139,39,71.942,39.445,8.055,11.671,1.471,835.455,799.232,1441.96,,,,,,6.098,156.75
+E4,SupportCount,LevelFirst,Restart,Pelny,20,20,13,,,0,0,100,100,139,39,71.942,39.445,8.055,11.671,1.471,82.94,81.363,135.084,,,,,,13.434,156.75
+E4,Bitset,LevelFirst,Restart,Pelny,20,20,13,,,0,0,100,100,139,39,71.942,39.445,8.055,11.671,1.471,25.967,24.744,36.418,,,,,,1.922,156.75
+E4,Burst,LevelFirst,Restart,Pelny,20,20,13,,,0,0,100,100,139,39,71.942,39.445,8.055,11.671,1.471,19.803,18.439,25.091,,,,,,1.922,156.75
+E4,Naive,LevelFirst,Restart,Pelny,40,40,13,,,0,0,100,100,642,542,15.576,41.198,8.055,11.671,1.471,12666.143,6141.285,19343.354,,,,,,24.41,156.75
+E4,SupportCount,LevelFirst,Restart,Pelny,40,40,13,,,0,0,100,100,642,542,15.576,41.198,8.055,11.671,1.471,1229.48,664.297,1826.75,,,,,,53.23,156.75
+E4,Bitset,LevelFirst,Restart,Pelny,40,40,13,,,0,0,100,100,642,542,15.576,41.198,8.055,11.671,1.471,297.225,175.44,429.757,,,,,,7.574,156.75
+E4,Burst,LevelFirst,Restart,Pelny,40,40,13,,,0,0,100,100,642,542,15.576,41.198,8.055,11.671,1.471,207.268,129.942,293.655,,,,,,7.574,156.75
+E4,Naive,LevelFirst,Restart,Pelny,80,80,13,,,0,0,100,5,8473,8373,0.059,41.653,8.055,11.671,1.471,601187.891,600004.045,603427.511,,,,,,85.715,156.75
+E4,SupportCount,LevelFirst,Restart,Pelny,80,80,13,,,0,0,100,45,66424,66324,0.068,41.498,8.055,11.671,1.471,600000.065,349389.795,600216.103,,,,,,212.449,156.75
+E4,Bitset,LevelFirst,Restart,Pelny,80,80,13,,,0,0,100,50,73864,73814,0.068,41.44,8.055,11.671,1.471,115059.462,58695.044,116926.03,,,,,,30.219,156.75
+E4,Burst,LevelFirst,Restart,Pelny,80,80,13,,,0,0,100,50,73864,73814,0.068,41.44,8.055,11.671,1.471,73773.377,37724.245,75056.144,,,,,,30.219,156.75

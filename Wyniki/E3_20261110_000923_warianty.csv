@@ -1,0 +1,13 @@
+eksperyment,rozwiazywacz,kolejnosc,sprzecznosc,zestaw,x,y,z,rysowanie,laczenie_rysowania,zaostrzenie_proc,losowanie_zaostrzenia,mapy,udane_mapy,proby,sprzecznosci,udane_proby_proc,zabudowa_proc,gestosc_regul_proc,gestosc_wazona_proc,kappa,czas_ms_mediana,czas_ms_q1,czas_ms_q3,czas_stawiania_ms_mediana,czas_klatki_ms_mediana,najdluzsza_klatka_ms_mediana,wywolania_rysowania_mediana,narysowane_obiekty_mediana,pamiec_rzeczywista_mb_mediana,pamiec_unity_mb_mediana
+E3,Bitset,LevelFirst,Restart,Pelny,10,10,8,,,0,0,100,100,115,15,86.957,38.26,8.055,11.671,1.471,3.038,2.897,3.266,,,,,,0.262,156.75
+E3,Bitset,LevelFirst,Backtrack,Pelny,10,10,8,,,0,0,100,100,100,15,100,38.3,8.055,11.671,1.471,3.028,2.891,3.181,,,,,,0.445,156.75
+E3,Bitset,LevelFirst,LocalReset,Pelny,10,10,8,,,0,0,100,100,100,15,100,38.09,8.055,11.671,1.471,3.007,2.855,3.178,,,,,,0.258,156.75
+E3,Bitset,LevelFirst,Restart,Pelny,20,20,13,,,0,0,100,100,139,39,71.942,39.445,8.055,11.671,1.471,26.268,24.683,36.328,,,,,,1.922,156.75
+E3,Bitset,LevelFirst,Backtrack,Pelny,20,20,13,,,0,0,100,100,100,36,100,39.618,8.055,11.671,1.471,25.655,24.537,26.568,,,,,,3.078,156.75
+E3,Bitset,LevelFirst,LocalReset,Pelny,20,20,13,,,0,0,100,100,100,33,100,39.353,8.055,11.671,1.471,25.382,24.285,26.428,,,,,,1.922,156.75
+E3,Bitset,LevelFirst,Restart,Pelny,40,40,13,,,0,0,100,100,642,542,15.576,41.198,8.055,11.671,1.471,300.088,176.298,429.662,,,,,,7.574,156.75
+E3,Bitset,LevelFirst,Backtrack,Pelny,40,40,13,,,0,0,100,100,100,167,100,41.064,8.055,11.671,1.471,117.123,115.612,119.401,,,,,,12.172,156.75
+E3,Bitset,LevelFirst,LocalReset,Pelny,40,40,13,,,0,0,100,100,100,174,100,40.94,8.055,11.671,1.471,116.742,115.068,118.695,,,,,,7.574,156.75
+E3,Bitset,LevelFirst,Restart,Pelny,80,80,13,,,0,0,100,50,73864,73814,0.068,41.44,8.055,11.671,1.471,114749.787,58499.184,116639.626,,,,,,30.219,156.75
+E3,Bitset,LevelFirst,Backtrack,Pelny,80,80,13,,,0,0,100,100,101,1727,99.01,41.533,8.055,11.671,1.471,496.62,493.322,500.256,,,,,,48.574,156.75
+E3,Bitset,LevelFirst,LocalReset,Pelny,80,80,13,,,0,0,100,100,100,792,100,41.438,8.055,11.671,1.471,497.249,493.896,500.672,,,,,,30.219,156.75

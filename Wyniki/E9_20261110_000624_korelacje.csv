@@ -1,0 +1,7 @@
+miara,warianty,liczba_wariantow,spearman_z_udanymi_probami
+gestosc_regul_proc,wszystkie,81,0.388
+gestosc_regul_proc,bez_map_zdegenerowanych,75,0.531
+gestosc_wazona_proc,wszystkie,81,0.43
+gestosc_wazona_proc,bez_map_zdegenerowanych,75,0.569
+kappa,wszystkie,81,-0.388
+kappa,bez_map_zdegenerowanych,75,-0.531
