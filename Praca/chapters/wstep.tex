@@ -1,0 +1,40 @@
+%% Układ tego rozdziału pochodzi z szablonu WIT, a wskazówki z wymagań Wydziału.
+
+\chapter{Wstęp}
+\label{chap:wstep}
+
+\CoTuMaByc{Wymagania Wydziału: cele pracy, motywacje jej podjęcia, krótki opis zawartości.}
+
+\section{Cel i struktura pracy}
+\label{sec:cel-pracy}
+
+\CoTuMaByc{Cel pracy, zwięźle i precyzyjnie. Cel i zakres zgodne z opisem tematu pracy.}
+
+\subsection*{Struktura pracy}
+
+\CoTuMaByc{Po kolei, krótko, wszystkie rozdziały.}
+
+\subsection*{Zastosowane technologie}
+
+\CoTuMaByc{Języki, kompilatory, środowisko uruchomienia i testów, najważniejsze biblioteki. Tabela wersji: \cref{tab:technologie}.}
+
+\section{Wykorzystanie AI}
+\label{sec:wykorzystanie-ai}
+
+\CoTuMaByc{Szablon WIT: tej części nie wolno pominąć, można ją tylko przenieść w inne miejsce pracy. Jakie narzędzia, do czego, których miejsc pracy to dotyczy. Jeśli AI generowało kod, trzeba o tym napisać tutaj i zaznaczyć te fragmenty w komentarzach kodu. Wytyczne Wydziału: \cite{WITWytyczneSI}. Zakres użycia uzgodnij z opiekunem. Wiersze tabeli wpisane według historii sesji Claude Code w tym projekcie (20.10--12.11.2026, jedna sesja, jeden model); do sprawdzenia i uzupełnienia o inne narzędzia, jeśli były używane, np. przy planie pracy, prototypie w Pythonie albo prezentacji.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Użyte narzędzia sztucznej inteligencji}
+  \label{tab:narzedzia-ai}
+  \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.1cm}LL@{}}
+    \toprule
+    Narzędzie i wersja & Do czego użyte & Których miejsc pracy dotyczy \\
+    \midrule
+    Claude Code 2.1.299 (Anthropic), model Claude Opus 5.5 & kod generatora, testów i aplikacji do badań (\kol{Assets/Scripts}); skrypty \kol{Analiza/analiza_wynikow.py} i \kol{Analiza/wykresy.py}; model \kol{Dach_Szczyt_Choragiew} w Blenderze i jego wpis w pliku reguł & listingi z kodu projektu; wykresy z wyników badań; \Wpisz{rozdziały o implementacji i badaniach} \\
+    \addlinespace
+    Claude Code 2.1.299 (Anthropic), model Claude Opus 5.5 & szablon LaTeX i strona tytułowa; tabele z danymi z kodu i ustawień projektu; zapis wzorów w LaTeX-u; wyszukanie i sformatowanie pozycji literatury; tłumaczenie tytułu na angielski & układ dokumentu; tabele z danymi projektu; wzory; załączniki; spis literatury; tytuł angielski \\
+    \bottomrule
+  \end{tabularx}
+\end{table}

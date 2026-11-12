@@ -1,0 +1,39 @@
+%% KATALOG KLOCKÓW: nie jest rozdziałem pracy, widać go tylko w szkicu.
+%% Klocek przenosisz przez wytnij i wklej z pliku w folderze klocki do swojego rozdziału.
+%% Wtedy etykiety się nie dublują, a katalog pokazuje, co jeszcze zostało.
+
+\chapter{Katalog klocków (do usunięcia)}
+\label{chap:katalog}
+
+\CoTuMaByc{Magazyn gotowych tabel, rysunków, wzorów, pseudokodów i listingów. Wytnij potrzebny blok z pliku w folderze \kol{klocki} i wklej do swojego rozdziału. Wymaganie Wydziału: każdą tabelę, każdy rysunek i każde źródło trzeba przywołać w tekście, np. przez \kol{\cref{tab:e1}}. Tabele powstałe z pomocą AI opisz w sekcji o AI (\cref{sec:wykorzystanie-ai}). Numery i odwołania przeliczą się same. Skróty w tekście wpisuj przez makro: \kol{\ac{wfc}} daje \ac{wfc}, a lista skrótów uzupełnia się sama.}
+
+\begingroup
+\floatplacement{table}{H}
+\floatplacement{figure}{H}
+\floatplacement{algorithm}{H}
+
+\section{Fakty o projekcie}
+\input{klocki/projekt}
+
+\section{Wzory}
+\input{klocki/wzory}
+
+\section{Pseudokody}
+\input{klocki/pseudokody}
+
+\section{Listingi}
+\input{klocki/listingi}
+
+\section{Rysunki}
+\input{klocki/rysunki}
+
+\section{Wyniki pomiarów}
+\input{klocki/wyniki}
+
+\section{Materiał na załączniki}
+\input{klocki/zalaczniki}
+
+\endgroup
+
+%% Propozycje literatury widać w szkicu; po \szkicfalse w spisie zostaje tylko to, co zacytowane.
+\nocite{*}

@@ -1,0 +1,560 @@
+%%% KLOCKI: TABELE WYNIKÓW
+%%% Wiersze i kolumny wynikają z ustawień eksperymentów. Wyniki wpisujesz w miejsce \wyn.
+%%% Do pracy tylko wyniki z aplikacji IL2CPP w wersji Release (kolumna srodowisko równa IL2CPP).
+%%% Pliki z folderu Wyniki: główny E1_*.csv oraz podsumowania E1_*_warianty.csv i E1_*_korelacje.csv.
+
+\CoTuMaByc{Z \kol{E1_*_warianty.csv}: \kol{czas_ms_mediana}, \kol{czas_ms_q1}, \kol{czas_ms_q3}, \kol{pamiec_rzeczywista_mb_mediana}. Z głównego pliku: \kol{czas_propagacja_ms}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E1: czas generacji i pamięć według rozwiązywacza}
+  \label{tab:e1}
+  \begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+    \toprule
+    Rozwiązywacz & Czas: mediana [ms] & Czas: Q1 [ms] & Czas: Q3 [ms] & Propagacja: mediana [ms] & Pamięć rzeczywista [MB] \\
+    \midrule
+    \kol{Naive} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{SupportCount} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Bitset} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Burst} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z \kol{*_mann_whitney.csv} ze skryptu \kol{Analiza/analiza_wynikow.py}: \kol{U}, \kol{p}. Test: \cite{MannWhitney1947}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E1: test Manna-Whitneya dla par rozwiązywaczy}
+  \label{tab:e1-mann-whitney}
+  \begin{tabular}{@{}llrr@{}}
+    \toprule
+    Wariant A & Wariant B & $U$ & $p$ \\
+    \midrule
+    \kol{Naive} & \kol{SupportCount} & \wyn & \wyn \\
+    \kol{Naive} & \kol{Bitset} & \wyn & \wyn \\
+    \kol{Naive} & \kol{Burst} & \wyn & \wyn \\
+    \kol{SupportCount} & \kol{Bitset} & \wyn & \wyn \\
+    \kol{SupportCount} & \kol{Burst} & \wyn & \wyn \\
+    \kol{Bitset} & \kol{Burst} & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E2_*_warianty.csv}: \kol{czas_ms_mediana}, \kol{proby}, \kol{sprzecznosci}, \kol{udane_proby_proc}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E2: czas i sprzeczności według heurystyki}
+  \label{tab:e2}
+  \begin{tabularx}{\linewidth}{@{}lCCCC@{}}
+    \toprule
+    Heurystyka & Czas: mediana [ms] & Próby & Sprzeczności & Udane próby [\%] \\
+    \midrule
+    \kol{LevelFirst} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Scanline} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{MinRemaining} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Entropy} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Random} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z głównego pliku E2: \kol{wieze}, \kol{donzony}, \kol{mosty}, \kol{schody}, \kol{wys_wiez_sr}, \kol{wys_murow_sr}, \kol{trawa_dostepna_proc}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E2: budowa map według heurystyki}
+  \label{tab:e2-budowa}
+  \begin{tabularx}{\linewidth}{@{}lCCCCCCC@{}}
+    \toprule
+    Heurystyka & Wieże & Donżony & Mosty & Schody & Wysokość wież & Wysokość murów & Teren osiągalny [\%] \\
+    \midrule
+    \kol{LevelFirst} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Scanline} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{MinRemaining} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Entropy} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Random} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Odsetek komórek innych niż w mapie poprzedniego ziarna. Z głównego pliku E2: \kol{roznica_mapy_proc}, \kol{roznica_parter_proc}, \kol{roznica_zabudowa_proc}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E2: różnorodność map według heurystyki}
+  \label{tab:roznorodnosc}
+  \begin{tabularx}{\linewidth}{@{}lCCC@{}}
+    \toprule
+    Heurystyka & Cała mapa [\%] & Parter [\%] & Zabudowa [\%] \\
+    \midrule
+    \kol{LevelFirst} & \wyn & \wyn & \wyn \\
+    \kol{Scanline} & \wyn & \wyn & \wyn \\
+    \kol{MinRemaining} & \wyn & \wyn & \wyn \\
+    \kol{Entropy} & \wyn & \wyn & \wyn \\
+    \kol{Random} & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z \kol{E3_*_warianty.csv}: \kol{czas_ms_mediana}. Limit 600 s na mapę; przekroczenie zapisuje się jako wynik.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E3: mediana czasu generacji [ms]}
+  \label{tab:e3-czas}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Reakcja & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \kol{Restart} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Backtrack} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{LocalReset} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E3_*_warianty.csv}: \kol{udane_mapy}, \kol{mapy}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E3: udane mapy na liczbę map}
+  \label{tab:e3-powodzenie}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Reakcja & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \kol{Restart} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Backtrack} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{LocalReset} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E4_*_warianty.csv}: \kol{czas_ms_mediana}. Nachylenie: \cref{eq:nachylenie}. Limit 600 s na mapę.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E4: mediana czasu generacji [ms]}
+  \label{tab:e4-czas}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Rozwiązywacz & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 & Nachylenie $a$ \\
+    \midrule
+    Komórki & 800 & 5200 & 20\,800 & 83\,200 & -- \\
+    \midrule
+    \kol{Naive} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{SupportCount} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Bitset} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Burst} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E4_*_warianty.csv}: \kol{pamiec_rzeczywista_mb_mediana}. Pojedyncze wartości pamięci szumią, więc porównuj mediany.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E4: mediana pamięci rzeczywistej [MB]}
+  \label{tab:e4-pamiec}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Rozwiązywacz & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 & Nachylenie $a$ \\
+    \midrule
+    Komórki & 800 & 5200 & 20\,800 & 83\,200 & -- \\
+    \midrule
+    \kol{Naive} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{SupportCount} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Bitset} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Burst} & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E5_*_warianty.csv}: \kol{czas_ms_mediana}, \kol{czas_ms_q1}, \kol{czas_ms_q3}, \kol{sprzecznosci}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E5: czas generacji według zestawu}
+  \label{tab:e5}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+    \toprule
+    Zestaw & Kafelki & Stany & Czas: mediana [ms] & Czas: Q1 [ms] & Czas: Q3 [ms] & Sprzeczności \\
+    \midrule
+    \kol{Prosty} & 8 & 26 & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Sredni} & 22 & 79 & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyBezDekoracji} & 41 & 146 & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Pelny} & 50 & 170 & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z \kol{E6_*_warianty.csv}: \kol{sprzecznosci}, \kol{udane_proby_proc}, \kol{zabudowa_proc}. Z głównego pliku: \kol{wieze}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E6: wyniki dla zestawu Pelny i wariantów reguł}
+  \label{tab:e6}
+  \begin{tabularx}{\linewidth}{@{}lCCCC@{}}
+    \toprule
+    Wariant & Sprzeczności & Udane próby [\%] & Zabudowa [\%] & Wieże \\
+    \midrule
+    \kol{Pelny} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyBezWolnegoPola} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyBezDrzwiNadSchodami} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyTrawa040} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyTrawa025} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv} albo mediana z głównego pliku: \kol{wywolania_rysowania_mediana}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana wywołań rysowania na klatkę}
+  \label{tab:e7-wywolania}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Rysowanie & Łączenie rysowania & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \multirow{3}{*}{\kol{GameObjects}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Instanced}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Combined}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{CombinedAtlas}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv} albo mediana z głównego pliku: \kol{narysowane_obiekty_mediana}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana narysowanych obiektów na wywołanie rysowania}
+  \label{tab:e7-obiekty}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Rysowanie & Łączenie rysowania & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \multirow{3}{*}{\kol{GameObjects}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Instanced}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Combined}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{CombinedAtlas}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv} albo mediana z głównego pliku: \kol{setpass}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana zmian stanu SetPass na klatkę}
+  \label{tab:e7-setpass}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Rysowanie & Łączenie rysowania & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \multirow{3}{*}{\kol{GameObjects}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Instanced}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Combined}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{CombinedAtlas}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv} albo mediana z głównego pliku: \kol{czas_klatki_ms_mediana}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana czasu klatki [ms]}
+  \label{tab:e7-klatka}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Rysowanie & Łączenie rysowania & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \multirow{3}{*}{\kol{GameObjects}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Instanced}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Combined}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{CombinedAtlas}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv} albo mediana z głównego pliku: \kol{najdluzsza_klatka_ms_mediana}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana najdłuższej klatki [ms]}
+  \label{tab:e7-najdluzsza}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Rysowanie & Łączenie rysowania & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \multirow{3}{*}{\kol{GameObjects}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Instanced}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{Combined}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{3}{*}{\kol{CombinedAtlas}} & SRP Batcher + Resident Drawer & \wyn & \wyn & \wyn & \wyn \\
+     & Sam SRP Batcher & \wyn & \wyn & \wyn & \wyn \\
+     & Samo instancjonowanie & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv}: \kol{czas_stawiania_ms_mediana}. Podaj, dla którego ustawienia łączenia rysowania.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana czasu stawiania mapy [ms]}
+  \label{tab:e7-stawianie}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Rysowanie & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \kol{GameObjects} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Instanced} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Combined} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{CombinedAtlas} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E7_*_warianty.csv}: \kol{pamiec_unity_mb_mediana}. Podaj, dla którego ustawienia łączenia rysowania.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: mediana pamięci silnika [MB]}
+  \label{tab:e7-pamiec}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Rysowanie & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \kol{GameObjects} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Instanced} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Combined} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{CombinedAtlas} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z głównego pliku E7: \kol{pamiec_siatek_mb}, \kol{bok_fragmentu}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E7: rozmiar scalonych siatek [MB]}
+  \label{tab:e7-siatki}
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Rysowanie & 10$\times$10$\times$8 & 20$\times$20$\times$13 & 40$\times$40$\times$13 & 80$\times$80$\times$13 \\
+    \midrule
+    \kol{Combined} & \wyn & \wyn & \wyn & \wyn \\
+    \kol{CombinedAtlas} & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E8_*_warianty.csv}: \kol{gestosc_regul_proc}, \kol{gestosc_wazona_proc}, \kol{kappa}, \kol{udane_proby_proc}, \kol{zabudowa_proc}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E8: restrykcyjność reguł i powodzenie generacji}
+  \label{tab:e8}
+  \begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+    \toprule
+    Zestaw lub wariant & Stany & Gęstość par [\%] & Gęstość ważona [\%] & $\kappa$ & Udane próby [\%] & Zabudowa [\%] \\
+    \midrule
+    \kol{Prosty} & 26 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Sredni} & 79 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyBezDekoracji} & 146 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Pelny} & 170 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \kol{PelnyBezWolnegoPola} & 170 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyBezDrzwiNadSchodami} & 170 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyTrawa040} & 170 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{PelnyTrawa025} & 170 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z \kol{*_korelacje.csv}: \kol{miara}, \kol{warianty}, \kol{liczba_wariantow}, \kol{spearman_z_udanymi_probami}. Mapa zdegenerowana w kodzie: zabudowa parteru poniżej 1\% albo powyżej 90\%. Korelacja rang: \cite{Spearman1904}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Korelacja Spearmana restrykcyjności z odsetkiem udanych prób}
+  \label{tab:korelacje}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Miara & Warianty & E8: liczba & E8: $\rho$ & E9: liczba & E9: $\rho$ \\
+    \midrule
+    \multirow{2}{*}{Gęstość par} & wszystkie & \wyn & \wyn & \wyn & \wyn \\
+     & bez map zdegenerowanych & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{2}{*}{Gęstość ważona} & wszystkie & \wyn & \wyn & \wyn & \wyn \\
+     & bez map zdegenerowanych & \wyn & \wyn & \wyn & \wyn \\
+    \midrule
+    \multirow{2}{*}{$\kappa$} & wszystkie & \wyn & \wyn & \wyn & \wyn \\
+     & bez map zdegenerowanych & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Z \kol{E9_*_warianty.csv}: \kol{zaostrzenie_proc}, \kol{losowanie_zaostrzenia}, \kol{udane_proby_proc}, \kol{zabudowa_proc}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{E9: wyniki według poziomu zaostrzenia reguł}
+  \label{tab:e9}
+  \begin{tabularx}{\linewidth}{@{}CCCCCCC@{}}
+    \toprule
+    Zaostrzenie [\%] & Losowania & Udane próby: mediana [\%] & Udane próby: minimum [\%] & Udane próby: maksimum [\%] & Zabudowa: mediana [\%] & Warianty z mapami zdegenerowanymi \\
+    \midrule
+    0 & 1 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    0,2 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    0,5 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    1 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    2 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    3 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    5 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    8 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    12 & 10 & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z głównego pliku E1: \kol{decyzje}, \kol{kroki_propagacji}, \kol{usuniete_propagacja}, \kol{usuniete_decyzje}. Udział i usunięcia na decyzję: \cref{eq:propagacja}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Propagacja według rozwiązywacza (E1)}
+  \label{tab:propagacja-rozwiazywacze}
+  \begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+    \toprule
+    Rozwiązywacz & Decyzje & Kroki propagacji & Usunięte przez propagację & Usunięte przez decyzje & Udział propagacji [\%] & Usunięcia na decyzję \\
+    \midrule
+    \kol{Naive} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{SupportCount} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Bitset} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \kol{Burst} & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Z głównego pliku E4; podaj, dla którego rozwiązywacza.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Propagacja według rozmiaru siatki (E4)}
+  \label{tab:propagacja-rozmiary}
+  \begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+    \toprule
+    Siatka & Decyzje & Kroki propagacji & Usunięte przez propagację & Usunięte przez decyzje & Udział propagacji [\%] & Usunięcia na decyzję \\
+    \midrule
+    10$\times$10$\times$8 & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    20$\times$20$\times$13 & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    40$\times$40$\times$13 & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    80$\times$80$\times$13 & \wyn & \wyn & \wyn & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Kolumny głównych plików: \kol{udane}, \kol{naruszenia}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Poprawność map we wszystkich eksperymentach}
+  \label{tab:naruszenia}
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Eksperyment & Uruchomienia & Udane mapy & Naruszenia zasad \\
+    \midrule
+    E1 & \wyn & \wyn & \wyn \\
+    E2 & \wyn & \wyn & \wyn \\
+    E3 & \wyn & \wyn & \wyn \\
+    E4 & \wyn & \wyn & \wyn \\
+    E5 & \wyn & \wyn & \wyn \\
+    E6 & \wyn & \wyn & \wyn \\
+    E7 & \wyn & \wyn & \wyn \\
+    E8 & \wyn & \wyn & \wyn \\
+    E9 & \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabular}
+\end{table}

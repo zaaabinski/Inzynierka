@@ -1,0 +1,71 @@
+%%% KLOCKI: WZORY
+%%% Wzory zapisane według tego, co liczy kod. Oznaczenia i opis dopisujesz pod wzorami.
+%%% Numeruj tylko te równania, do których się odwołujesz.
+
+\CoTuMaByc{Entropia komórki, kod: \kol{Assets/Scripts/Core/Generation/WeightedChooser.cs}. Źródło pojęcia: \cite{Shannon1948}. $D(c)$: możliwe stany komórki $c$, $w_s$: waga stanu $s$.}
+
+\begin{equation}
+  \begin{gathered}
+    H(c) = -\sum_{s \in D(c)} p_s \ln p_s
+         = \ln W_c - \frac{1}{W_c} \sum_{s \in D(c)} w_s \ln w_s , \\
+    p_s = \frac{w_s}{W_c} , \qquad W_c = \sum_{s \in D(c)} w_s
+  \end{gathered}
+  \label{eq:entropia}
+\end{equation}
+
+\CoTuMaByc{Trzy miary restrykcyjności, kod: \kol{Assets/Scripts/Core/Analysis/RuleRestrictiveness.cs}. $m$: liczba stanów, $P$: liczba dozwolonych trójek (stan, kierunek, sąsiad), $N_k(s)$: dozwoleni sąsiedzi stanu $s$ w kierunku $k$, $W$: suma wag. Kolumny: \kol{gestosc_regul_proc}, \kol{gestosc_wazona_proc}, \kol{kappa}. Współczynnik $\kappa$: \cite{Gent1996}; w siatce 3D przyjęto $c/n = 3$.}
+
+\begin{equation}
+  d = \frac{P}{6 m^2}
+  \label{eq:gestosc}
+\end{equation}
+
+\begin{equation}
+  d_w = \frac{1}{6} \sum_{k=1}^{6} \sum_{s=1}^{m} \frac{w_s}{W} \sum_{t \in N_k(s)} \frac{w_t}{W}
+  \label{eq:gestosc-wazona}
+\end{equation}
+
+\begin{equation}
+  \kappa = -\frac{c}{n} \log_m d
+  \label{eq:kappa}
+\end{equation}
+
+\CoTuMaByc{Odsetek udanych prób, kolumna \kol{udane_proby_proc} w pliku \kol{*_warianty.csv}. $M$: udane mapy, $A$: wszystkie próby.}
+
+\begin{equation}
+  u = 100 \cdot \frac{M}{A}
+  \label{eq:udane-proby}
+\end{equation}
+
+\CoTuMaByc{Udział propagacji w usunięciach i usunięcia na decyzję. Kolumny: \kol{usuniete_propagacja} ($r_p$), \kol{usuniete_decyzje} ($r_d$), \kol{decyzje} ($D$).}
+
+\begin{equation}
+  q = \frac{r_p}{r_p + r_d} , \qquad e = \frac{r_p}{D}
+  \label{eq:propagacja}
+\end{equation}
+
+\CoTuMaByc{Liczba obiektów na wywołanie rysowania. Kolumny: \kol{narysowane_obiekty} ($O$), \kol{wywolania_rysowania} ($V$).}
+
+\begin{equation}
+  b = \frac{O}{V}
+  \label{eq:obiekty-na-wywolanie}
+\end{equation}
+
+\CoTuMaByc{Rozstęp międzykwartylowy oraz korelacja rang: \cite{Spearman1904}. Kod: \kol{Assets/Scripts/Core/Analysis/Statistics.cs}.}
+
+\begin{equation}
+  \mathrm{IQR} = Q_3 - Q_1
+  \label{eq:iqr}
+\end{equation}
+
+\begin{equation}
+  \rho = \mathrm{corr}\bigl(\mathrm{rg}(X), \mathrm{rg}(Y)\bigr)
+  \label{eq:spearman}
+\end{equation}
+
+\CoTuMaByc{Nachylenie prostej w skali logarytmicznej dla czasu lub pamięci $t$ wobec liczby komórek $n$ (\cref{tab:e4-czas,tab:e4-pamiec}).}
+
+\begin{equation}
+  \log t = a \log n + b
+  \label{eq:nachylenie}
+\end{equation}

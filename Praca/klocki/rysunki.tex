@@ -1,0 +1,99 @@
+%%% KLOCKI: MIEJSCA NA RYSUNKI
+%%% Plik zapisz w folderze figures pod podaną nazwą (pdf, png albo jpg), a rysunek pojawi się sam.
+%%% Podpisy są robocze. Wykresy tworzy skrypt Analiza/wykresy.py od razu w folderze figures (python Analiza/wykresy.py);
+%%% szerokość pliku jest równa szerokości w nawiasie kwadratowym, więc nie zmieniaj jej bez ponownego uruchomienia skryptu.
+%%% Zrzuty ekranu przygotowujesz we własnym zakresie. Opis pokazuje tylko, z czego powstaje rysunek.
+
+\MiejsceNaRysunek{architektura}{Zależności bibliotek kodu}{fig:architektura}{Schemat 4 bibliotek, \cref{tab:biblioteki}.}
+
+\MiejsceNaRysunek{modele}{Modele zestawu kafelków}{fig:modele}{Podgląd 43 modeli; scena z \kol{TilesetPreviewSceneBuilder}.}
+
+\MiejsceNaRysunek{orientacja}{Etykiety ścian i obroty kafelka}{fig:orientacja}{Przykład: \kol{Mur_Dol} w 4 obrotach.}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{krok-1}{Zrzut z podglądu krok po kroku}
+    \caption{Etap pierwszy}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{krok-2}{Zrzut z podglądu krok po kroku}
+    \caption{Etap drugi}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{krok-3}{Zrzut z podglądu krok po kroku}
+    \caption{Etap trzeci}
+  \end{subfigure}
+  \caption{Generacja mapy krok po kroku}
+  \label{fig:krok-po-kroku}
+\end{figure}
+
+\MiejsceNaRysunek{okno-generatora}{Okno Generator zamków w edytorze}{fig:okno-generatora}{Zrzut okna z \kol{GeneratorWindow}.}
+
+\MiejsceNaRysunek{prefab}{Mapa zapisana jako prefab}{fig:prefab}{Zrzut prefabu z \kol{MapBaker}.}
+
+\MiejsceNaRysunek{aplikacja}{Aplikacja podczas badania}{fig:aplikacja}{Zrzut okna z panelem badań i zamkiem.}
+
+\MiejsceNaRysunek[0.5\linewidth]{atlas}{Atlas materiałów}{fig:atlas}{Tekstura z \kol{MaterialAtlas}.}
+
+\MiejsceNaRysunek{profiler}{Znaczniki w oknie Unity Profiler}{fig:profiler}{Zrzut ze znacznikami \kol{WFC.*}, \cref{tab:znaczniki}.}
+
+\MiejsceNaRysunek{e1-czas}{E1: czas generacji według rozwiązywacza}{fig:e1-czas}{Wykres pudełkowy, kolumna \kol{czas_ms}: pudełko od Q1 do Q3, wąsy do 1,5 rozstępu międzykwartylowego, kropki to pojedyncze mapy.}
+
+\MiejsceNaRysunek[\linewidth]{e2-czas-udane}{E2: czas generacji i odsetek udanych prób według heurystyki}{fig:e2-czas-udane}{Panel a: wykres pudełkowy kolumny \kol{czas_ms}; panel b: \kol{udane_proby_proc} liczone jak w \kol{*_warianty.csv}.}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{e2-levelfirst}{Zrzut zamku}
+    \caption{LevelFirst}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{e2-scanline}{Zrzut zamku}
+    \caption{Scanline}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{e2-minremaining}{Zrzut zamku}
+    \caption{MinRemaining}
+  \end{subfigure}
+
+  \medskip
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{e2-entropy}{Zrzut zamku}
+    \caption{Entropy}
+  \end{subfigure}\hspace{0.02\linewidth}
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \MiejsceNaObraz[\linewidth]{e2-random}{Zrzut zamku}
+    \caption{Random}
+  \end{subfigure}
+  \caption{E2: zamki z tego samego ziarna dla pięciu heurystyk}
+  \label{fig:e2-zamki}
+\end{figure}
+
+\MiejsceNaRysunek{e3-czas-rozmiar}{E3: czas generacji wobec rozmiaru siatki}{fig:e3-czas-rozmiar}{Mediana i rozstęp międzykwartylowy kolumny \kol{czas_ms} według \kol{sprzecznosc}; obie osie w skali logarytmicznej. Linia limitu 600 s pojawia się, gdy wyniki do niego dochodzą.}
+
+\MiejsceNaRysunek{e4-czas-log}{E4: czas generacji wobec liczby komórek}{fig:e4-czas-log}{Mediana i rozstęp międzykwartylowy kolumny \kol{czas_ms} według \kol{rozwiazywacz}; obie osie w skali logarytmicznej. Nachylenie $a$ (\cref{eq:nachylenie}) skrypt wypisuje w konsoli.}
+
+\MiejsceNaRysunek{e4-pamiec-log}{E4: pamięć wobec liczby komórek}{fig:e4-pamiec-log}{Jak wyżej dla \kol{pamiec_rzeczywista_mb}. Mediana równa 0 nie mieści się na skali logarytmicznej; skrypt wypisuje wtedy, czego brakuje.}
+
+\MiejsceNaRysunek{e5-czas-stany}{E5: czas generacji wobec liczby stanów}{fig:e5-czas-stany}{Mediana i rozstęp międzykwartylowy kolumny \kol{czas_ms} według \kol{zestaw}; stany z \cref{tab:zestawy}.}
+
+\MiejsceNaRysunek[\linewidth]{e6-udane-zabudowa}{E6: odsetek udanych prób i zabudowa według wariantu reguł}{fig:e6-udane-zabudowa}{Kolumny \kol{udane_proby_proc} i \kol{zabudowa_proc} liczone jak w \kol{*_warianty.csv}.}
+
+\MiejsceNaRysunek[\linewidth]{e7-wywolania}{E7: wywołania rysowania wobec rozmiaru siatki}{fig:e7-wywolania}{Mediana i rozstęp międzykwartylowy kolumny \kol{wywolania_rysowania}; panele według \kol{laczenie_rysowania}, linie według \kol{rysowanie}.}
+
+\MiejsceNaRysunek[\linewidth]{e7-klatka}{E7: czas klatki wobec rozmiaru siatki}{fig:e7-klatka}{Jak wyżej dla \kol{czas_klatki_ms}.}
+
+\MiejsceNaRysunek[\linewidth]{e8-restrykcyjnosc}{E8: restrykcyjność reguł a odsetek udanych prób}{fig:e8-restrykcyjnosc}{Wykres punktowy: \kol{gestosc_regul_proc}, \kol{gestosc_wazona_proc} i \kol{kappa} wobec \kol{udane_proby_proc}; pusty znacznik to mapy zdegenerowane.}
+
+\MiejsceNaRysunek{e9-zaostrzanie}{E9: odsetek udanych prób wobec zaostrzenia reguł}{fig:e9-zaostrzanie}{Kolumny \kol{udane_proby_proc} i \kol{zabudowa_proc} według \kol{zaostrzenie_proc}; kropka to jedno losowanie reguł, linia to mediana losowań.}
+
+\MiejsceNaRysunek{propagacja-udzial}{Udział propagacji w usuniętych możliwościach}{fig:propagacja-udzial}{Mapy rozwiązywacza \kol{Bitset} z E4; kolumny \kol{usuniete_propagacja}, \kol{usuniete_decyzje}, \cref{eq:propagacja}.}

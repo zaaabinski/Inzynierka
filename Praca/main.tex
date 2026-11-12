@@ -1,0 +1,111 @@
+%% PRACA DYPLOMOWA. Podstawa: szablon WIT PWr z 25.02.2026.
+%% Kompilacja: pdflatex, biber, pdflatex, pdflatex (szczegóły w README.md).
+%% Wszystkie pliki w UTF-8.
+
+\documentclass[12pt, a4paper, twoside, titlepage]{report}
+
+\input{settings}         % plik Wydziału, bez zmian
+\input{dodatki}          % tabele, styl C#, makra miejsc na treść
+\input{strona_tytulowa}  % strona tytułowa według pd_inz_pl.doc;
+                         % zakomentuj tę linię, aby wrócić do strony tytułowej z settings.tex
+
+%% PRZEŁĄCZNIK SZKICU
+%% \szkictrue:  widać ramki ze wskazówkami, puste komórki, rysunki zastępcze i katalog klocków
+%% \szkicfalse: wskazówki i katalog znikają, zostaje wygląd końcowy
+\szkictrue
+
+%% Zalecenia edytorskie Wydziału (nagłówki 14/13/12 pkt, interlinia pojedyncza).
+%% Bez tej linii obowiązuje wygląd z szablonu WIT.
+%\WlaczZaleceniaEdytorskie
+
+%% DANE PRACY
+\newcommand{\stKierunek}{Inżynieria systemów}
+\newcommand{\stKodKierunku}{INS}
+\newcommand{\stSpecjalnosc}{} %% pusty wpis = brak specjalności, wiersz znika
+\newcommand{\stKodSpecjalnosci}{} %% kody: skroty_kier_pd.xls na stronie Wydziału
+\newcommand{\stCzyMgr}{0} % 1 = Magisterska, 0 = Inżynierska
+%% Tytuł musi być identyczny z tytułem w Archiwum Prac Dyplomowych.
+\newcommand{\stTytulPL}{Analiza porównawcza i optymalizacja algorytmu Wave Function Collapse w procesie proceduralnej generacji środowisk 3D w środowisku Unity}
+%% Tytuł angielski: tłumaczenie robocze; musi być identyczny z tytułem angielskim w Archiwum Prac Dyplomowych.
+\newcommand{\stTytulAng}{Comparative analysis and optimization of the Wave Function Collapse algorithm in procedural generation of 3D environments in the Unity engine}
+\newcommand{\stAutor}{Imię i nazwisko dyplomanta}
+\newcommand{\stOpiekun}{tytuł/stopień naukowy, imię i nazwisko opiekuna}
+\newcommand{\stSlowaKluczowe}{3-6 słów kluczowych}
+\newcommand{\stRok}{ROK}  % rok złożenia pracy
+
+\SetMetaData % metadane pliku PDF
+
+%% WŁASNE SKRÓTY
+\newcommand{\NN}{\mathbb{N}} % liczby naturalne
+\newcommand{\RR}{\mathbb{R}} % liczby rzeczywiste
+
+\newtheorem{theorem}{Twierdzenie}[chapter]
+\newtheorem{lemma}{Lemat}[chapter]
+\newtheorem{corollary}{Wniosek}[chapter]
+\newtheorem{definition}{Definicja}[chapter]
+
+%% BIBLIOGRAFIA: biblatex i program biber
+\RequirePackage[
+    backend=biber,
+    style=numeric,
+    sorting=none,     % kolejność występowania w tekście
+    urldate=iso,
+    seconds=true
+]{biblatex}
+\addbibresource{bibliography.bib}
+% Długie adresy internetowe mogą się łamać także między literami i cyframi.
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{100}
+\setcounter{biburllcpenalty}{100}
+
+%% AKRONIMY
+\input{acronyms}
+
+\begin{document}
+
+%% NIE RUSZAJ NASTĘPNYCH TRZECH LINIJEK
+\StronaTytulowa
+\include{abstract}
+\SpisTresci
+
+\ShowAcronyms{lof}
+
+\pagenumbering{arabic}
+\pagestyle{plain} % dodane: w szablonie WIT numer strony był tylko na pierwszej stronie rozdziału
+
+%% ROZDZIAŁY
+\include{chapters/wstep}
+%% Tu dopisz swoje rozdziały, np.:
+%% \include{chapters/rozdzial02}
+%% \include{chapters/rozdzial03}
+
+%% Magazyn gotowych tabel, rysunków i wzorów; widoczny tylko w szkicu.
+\ifszkic
+  \include{chapters/katalog}
+\fi
+
+\include{chapters/zakonczenie}
+
+%% BIBLIOGRAFIA
+\printbibliography[heading=bibintoc, title={Spis literatury}]
+
+%% ZAŁĄCZNIKI
+\appendix
+%% \include{chapters/zalacznik_a}
+%% \include{chapters/zalacznik_b}
+
+%% SPISY
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\lstlistlistingname}
+\lstlistoflistings
+
+\end{document}

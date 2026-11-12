@@ -1,0 +1,76 @@
+%%% STRONA TYTUŁOWA WEDŁUG WZORU WYDZIAŁU pd_inz_pl.doc
+%%% Marginesy wzoru: górny 25 mm, dolny 17,5 mm, lewy 35 mm, prawy 25 mm.
+%%% Odległości w punktach bp odczytano z pliku PDF wyeksportowanego ze wzoru.
+%%% Wzór używa czcionki Garamond; tu EB Garamond (pakiet ebgaramond, jest w TeX Live i na Overleaf).
+%%% Gdy pakietu nie ma, strona powstaje czcionką główną pracy.
+%%% Długi tytuł zabiera tylko pusty odstęp nad słowami kluczowymi; dół strony stoi w miejscu.
+
+\newcommand{\stCzcionka}{%
+  \IfFileExists{T1EBGaramond-LF.fd}%
+    {\fontfamily{EBGaramond-LF}\selectfont}%
+    {\rmfamily}}
+
+% Wiersz: rozmiar czcionki w pkt, odległość linii bazowej od poprzedniego wiersza w bp, treść.
+\newcommand{\stWiersz}[3]{{\fontsize{#1}{#2bp}\selectfont #3\par}}
+
+% Kreska 0,48 bp, nieco szersza od tekstu jak we wzorze; #1 = odległość od linii bazowej wiersza nad nią.
+\newcommand{\stKreska}[1]{%
+  \par
+  \vskip\dimexpr#1-\prevdepth\relax
+  \nointerlineskip
+  \moveleft1.43bp\vbox{\hrule height0.48bp width\dimexpr\linewidth+2.86bp\relax}%
+}
+
+% Pierwsza litera 26 pkt, reszta wiersza 24 pkt.
+\newcommand{\stInicjal}[2]{{\fontsize{26}{29.3bp}\selectfont #1}#2}
+
+% Kierunek i specjalność: etykieta, położenie wartości od lewego marginesu, wartość.
+\newlength{\stSzerokosc}
+\newcommand{\stPole}[3]{%
+  \settowidth{\stSzerokosc}{\fontsize{14}{15.7bp}\selectfont #1\ }%
+  \ifdim\stSzerokosc<#2\relax\setlength{\stSzerokosc}{#2}\fi
+  \stWiersz{14}{15.7}{\raggedright\hangindent=\stSzerokosc\hangafter=1\relax
+    \makebox[\stSzerokosc][l]{#1}\textbf{#3}}}
+
+\renewcommand{\StronaTytulowa}{%
+  \pagenumbering{roman}%
+  \begin{titlepage}%
+    \newgeometry{top=25mm, bottom=17.5mm, left=35mm, right=25mm}%
+    \setstretch{1}%
+    \stCzcionka
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{0pt}%
+    \setlength{\topskip}{17.25bp}%
+    \lineskiplimit=-1000pt\relax
+    {\centering
+      \stWiersz{20}{22.5}{\bfseries Politechnika Wrocławska}%
+      \stWiersz{16}{19.1}{\bfseries Wydział Informatyki i Telekomunikacji}%
+    \par}%
+    \stKreska{5.02bp}%
+    \vskip19bp\relax
+    \stPole{Kierunek:}{106.25bp}{\stKierunek\ (\stKodKierunku)}%
+    \ifdefempty{\stSpecjalnosc}%
+      {\vskip15.7bp\relax}%
+      {\stPole{Specjalność:}{70.85bp}{\stSpecjalnosc\ (\stKodSpecjalnosci)}}%
+    {\centering
+      \vskip59.9bp\relax
+      \stWiersz{24}{29.3}{\hspace*{7.1bp}\stInicjal{P}{RACA} \stInicjal{D}{YPLOMOWA}}%
+      \stWiersz{24}{29.3}{\hspace*{7.1bp}\ifnum\stCzyMgr=1 \stInicjal{M}{AGISTERSKA}\else\stInicjal{I}{NŻYNIERSKA}\fi}%
+      \vskip74.15bp\relax
+      \stWiersz{18}{20.25}{\bfseries\stTytulPL}%
+      \vskip36.5bp\relax
+      \stWiersz{16}{18}{\stAutor}%
+      \vskip56.65bp\relax
+      \stWiersz{14}{15.75}{Opiekun pracy}%
+      \stWiersz{14}{15.8}{\bfseries\stOpiekun}%
+    \par}%
+    \vfill
+    \stWiersz{12}{13.5}{\raggedright Słowa kluczowe: \stSlowaKluczowe}%
+    \stKreska{39.98bp}%
+    {\centering\stWiersz{14}{12.14}{WROCŁAW \stRok}\par}%
+    \vskip\dimexpr47.09bp-\prevdepth\relax
+    \restoregeometry
+  \end{titlepage}%
+  \normalfont
+  \pagestyle{empty}%
+}

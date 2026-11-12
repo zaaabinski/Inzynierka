@@ -1,0 +1,67 @@
+%%% KLOCKI: MIEJSCA NA PSEUDOKOD
+%%% Kroki wpisujesz w miejsce pola w nawiasie. Składnia: \State, \For{...} \EndFor, \If{...} \EndIf, \While{...} \EndWhile.
+%%% Podpisy są robocze, a pole mówi tylko, gdzie w kodzie jest dana część.
+
+\begin{algorithm}
+  \caption{Główna pętla generacji}
+  \label{alg:petla}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{SolverBase.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Propagacja ograniczeń na listach}
+  \label{alg:propagacja-listy}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{NaiveSolver.cs}, \kol{CellQueue.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Propagacja z licznikami wsparcia}
+  \label{alg:propagacja-liczniki}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{SupportCountSolver.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Propagacja na maskach bitowych}
+  \label{alg:propagacja-maski}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{BitsetPropagation.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Wybór komórki}
+  \label{alg:wybor-komorki}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{CellSelectors.cs}, \kol{CellPriorityQueue.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Cofanie decyzji}
+  \label{alg:cofanie}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{IContradictionHandler.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Reset lokalny}
+  \label{alg:reset-lokalny}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{IContradictionHandler.cs}}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Scalanie siatek}
+  \label{alg:scalanie}
+  \begin{algorithmic}[1]
+    \State \Wpisz{kroki; kod: \kol{CombinedMap.cs}}
+  \end{algorithmic}
+\end{algorithm}

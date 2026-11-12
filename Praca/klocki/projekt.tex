@@ -1,0 +1,369 @@
+%%% KLOCKI: FAKTY O PROJEKCIE
+%%% Dane z kodu i zasobów projektu (stan: commit 4e10be9). Puste pola są do uzupełnienia.
+%%% Przenoszenie: wytnij blok od \begin{table} do \end{table} razem z ramką nad nim.
+
+\CoTuMaByc{Wersje pakietów z \kol{Packages/manifest.json} i \kol{ProjectSettings/ProjectVersion.txt}, wersja języka C\# z plików \kol{*.csproj}, Blender z nagłówka plików FBX, edytor kodu z ustawień Unity. Wersja kompilatora C++ będzie w dzienniku budowania (\kol{Editor.log}) po buildzie IL2CPP.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Użyte technologie i ich wersje}
+  \label{tab:technologie}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Składnik & Wersja & Zastosowanie \\
+    \midrule
+    Unity & 6000.6.2f1 & silnik i edytor \\
+    Universal Render Pipeline (URP) & 17.6.0 & potok renderowania \\
+    Burst & 2.0.0 & kompilacja zadań rozwiązywacza i scalania \\
+    Collections & 6.6.0 & kontenery pamięci natywnej \\
+    Mathematics & 1.4.0 & typy wektorowe \\
+    Input System & 1.20.0 & sterowanie kamerą \\
+    Test Framework & 1.8.0 & testy automatyczne \\
+    C\# & 9.0 & język generatora \\
+    IL2CPP (Unity) & 6000.6.2f1 & zamiana kodu C\# na C++ w aplikacji \\
+    Microsoft C/C++ (MSVC) & \wyn & kompilacja kodu C++ z IL2CPP \\
+    Visual Studio Code & 1.143.1 & edytor kodu \\
+    Blender & 5.1.2 & modele i eksport FBX \\
+    Python & 3.12.10 & prototyp reguł i analiza wyników \\
+    Git & 2.53.0 & kontrola wersji \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Zależności z plików \kol{*.asmdef}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Biblioteki kodu generatora}
+  \label{tab:biblioteki}
+  \begin{tabularx}{\linewidth}{@{}llLl@{}}
+    \toprule
+    Biblioteka & Folder & Zależy od bibliotek projektu & Platforma \\
+    \midrule
+    \kol{WFC.Core} & \kol{Assets/Scripts/Core} & brak & wszystkie \\
+    \kol{WFC.Runtime} & \kol{Assets/Scripts/Runtime} & \kol{WFC.Core} & wszystkie \\
+    \kol{WFC.Editor} & \kol{Assets/Scripts/Editor} & \kol{WFC.Core}, \kol{WFC.Runtime} & edytor \\
+    \kol{WFC.Tests} & \kol{Assets/Scripts/Tests} & \kol{WFC.Core}, \kol{WFC.Runtime}, \kol{WFC.Editor} & edytor \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Liczby z sekcji kontrolnej \kol{Assets/Data/Rules/wfc_rules_zamek.json}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Parametry zestawu kafelków}
+  \label{tab:parametry-regul}
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    Parametr & Wartość \\
+    \midrule
+    Moduł siatki & 3\,$\times$\,3\,$\times$\,3 m \\
+    Modele & 43 \\
+    Materiały & 12 \\
+    Kafelki & 50 \\
+    Stany (kafelek z obrotem) & 170 \\
+    Obroty kafelka & 1 albo 4 \\
+    Etykiety boczne & 36 \\
+    Etykiety pionowe & 13 \\
+    Pary zgodnych etykiet & 33 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Zestawy kafelków o rosnącej złożoności}
+  \label{tab:zestawy}
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Zestaw & Kafelki & Stany \\
+    \midrule
+    \kol{Prosty} & 8 & 26 \\
+    \kol{Sredni} & 22 & 79 \\
+    \kol{PelnyBezDekoracji} & 41 & 146 \\
+    \kol{Pelny} & 50 & 170 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Opisy z \kol{Assets/Scripts/Core/Rules/RuleVariant.cs}; numery zasad z arkusza reguł.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Warianty reguł powstałe z zestawu Pelny}
+  \label{tab:warianty-regul}
+  \begin{tabularx}{\linewidth}{@{}lL@{}}
+    \toprule
+    Wariant & Zmiana \\
+    \midrule
+    \kol{PelnyBezWolnegoPola} & bez zasad 12 i 23: boki murów oraz zewnętrzne ściany wież i donżonów mogą się stykać bezpośrednio \\
+    \kol{PelnyBezDrzwiNadSchodami} & bez zasady 35: powietrze nad schodami może stać przed ślepą ścianą wieży albo donżonu i przed okapem dachu \\
+    \kol{PelnyTrawa040} & wagi 5 kafelków trawy $\times$ 0,4 \\
+    \kol{PelnyTrawa025} & wagi 5 kafelków trawy $\times$ 0,25 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Rozwiązywacze}
+  \label{tab:rozwiazywacze}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Wartość w \kol{rozwiazywacz} & Przechowywanie możliwości & Cofanie i reset lokalny \\
+    \midrule
+    \kol{Naive} & listy & tak \\
+    \kol{SupportCount} & liczniki wsparcia & nie \\
+    \kol{Bitset} & maski bitowe & tak \\
+    \kol{Burst} & maski bitowe, kompilator Burst & tak \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Heurystyki wyboru komórki}
+  \label{tab:heurystyki}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Wartość w \kol{kolejnosc} & Kolejność \\
+    \midrule
+    \kol{LevelFirst} & piętrami, w piętrze najmniejsza entropia \\
+    \kol{Scanline} & po kolei \\
+    \kol{MinRemaining} & Minimum Remaining Values (MRV): najmniej możliwości \\
+    \kol{Entropy} & najmniejsza entropia \\
+    \kol{Random} & losowo \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Reakcje na sprzeczność}
+  \label{tab:reakcje}
+  \begin{tabularx}{\linewidth}{@{}lL@{}}
+    \toprule
+    Wartość w \kol{sprzecznosc} & Działanie \\
+    \midrule
+    \kol{Restart} & start od nowa; limit prób na mapę 1000, w E9: 30 \\
+    \kol{Backtrack} & cofanie decyzji, do 1000 cofnięć na próbę \\
+    \kol{LocalReset} & reset sześcianu 5\,$\times$\,5\,$\times$\,5 komórek wokół sprzeczności, do 100 resetów na próbę \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Sposoby rysowania mapy}
+  \label{tab:rysowanie}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Wartość w \kol{rysowanie} & Sposób \\
+    \midrule
+    \kol{GameObjects} & obiekty w scenie \\
+    \kol{Instanced} & instancje na karcie graficznej \\
+    \kol{Combined} & scalone siatki \\
+    \kol{CombinedAtlas} & scalone siatki z atlasem \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Ustawienia zasobu URP z \kol{Assets/Scripts/Runtime/Generation/RenderBatching.cs}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Ustawienia łączenia rysowania w URP}
+  \label{tab:laczenie}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    Wartość w \kol{laczenie_rysowania} & SRP Batcher & GPU Resident Drawer \\
+    \midrule
+    \kol{SrpBatcherAndResidentDrawer} & tak & tak \\
+    \kol{SrpBatcher} & tak & nie \\
+    \kol{InstancingOnly} & nie & nie \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Rozmiary siatki}
+  \label{tab:rozmiary}
+  \begin{tabular}{@{}lrl@{}}
+    \toprule
+    E\,$\times$\,N\,$\times$\,piętra & Komórki & Wymiar mapy [m] \\
+    \midrule
+    \siatka{10}{10}{8} & 800 & \siatka{30}{30}{24} \\
+    \siatka{20}{20}{13} & 5200 & \siatka{60}{60}{39} \\
+    \siatka{40}{40}{13} & 20\,800 & \siatka{120}{120}{39} \\
+    \siatka{80}{80}{13} & 83\,200 & \siatka{240}{240}{39} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Ustawienia z \kol{Assets/Scripts/Editor/ExperimentPresets.cs}. Bez innego zapisu: pierwsze ziarno 1, 1 powtórzenie, rozgrzewka 5 uruchomień na wariant, limit 1000 prób. Liczba ziaren w zasobach: E1--E6 i E8: 100, E7: 30, E9: 20. Argument \kol{-seeds} ją nadpisuje, więc wpisz tę, której naprawdę użyto.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Plan eksperymentów}
+  \label{tab:eksperymenty}
+  \begin{tabularx}{\linewidth}{@{}lLrrL@{}}
+    \toprule
+    Nr & Co się zmienia & Warianty & Ziarna & Ustawienia stałe \\
+    \midrule
+    E1 & rozwiązywacz (4) & 4 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{LevelFirst}, \kol{Restart} \\
+    E2 & heurystyka (5) & 5 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Bitset}, \kol{Restart} \\
+    E3 & reakcja (3) $\times$ rozmiar (4) & 12 & \wyn & \kol{Pelny}, \kol{Bitset}, \kol{LevelFirst}, limit 600 s na mapę \\
+    E4 & rozwiązywacz (4) $\times$ rozmiar (4) & 16 & \wyn & \kol{Pelny}, \kol{LevelFirst}, \kol{Restart}, limit 600 s na mapę \\
+    E5 & zestaw (4) & 4 & \wyn & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E6 & \kol{Pelny} i warianty reguł (4) & 5 & \wyn & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E7 & rysowanie (4) $\times$ łączenie (3) $\times$ rozmiar (4) & 48 & \wyn & \kol{Pelny}, \kol{Burst}, \kol{LevelFirst}, \kol{Backtrack}, rozgrzewka 3, 120 klatek na mapę, tylko w oknie \\
+    E8 & 4 zestawy i 4 warianty reguł & 8 & \wyn & \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart} \\
+    E9 & zaostrzenie reguł (9 poziomów) $\times$ 10 losowań & 81 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart}, rozgrzewka 1, limit 30 prób \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Część danych jest w każdym wierszu pliku wyników: \kol{komputer}, \kol{procesor}, \kol{ram_gb}, \kol{wersja_unity}, \kol{wersja_programu}, \kol{srodowisko}. Do pracy tylko wiersze z \kol{srodowisko} równym \kol{IL2CPP}. Karty graficznej plik wyników nie zapisuje: model i wersję sterownika trzeba zanotować z komputera pomiarowego. Rozdzielczość i rodzaj aplikacji wpisane według polecenia uruchomienia badań i ustawień \kol{AppBuilder}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Środowisko pomiarowe}
+  \label{tab:sprzet}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Element & Wartość \\
+    \midrule
+    Procesor & \wyn \\
+    Pamięć operacyjna & \wyn \\
+    Karta graficzna & \wyn \\
+    System operacyjny & \wyn \\
+    Rozdzielczość okna & 1600\,$\times$\,900 pikseli, aplikacja w oknie \\
+    Wersja Unity & 6000.6.2f1 \\
+    Rodzaj aplikacji & IL2CPP, wersja Release \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Główne metryki}
+  \label{tab:metryki}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Metryka & Kolumna pliku wyników & Jednostka \\
+    \midrule
+    Czas generacji & \kol{czas_ms} & ms \\
+    Czas wyboru komórki & \kol{czas_wybor_ms} & ms \\
+    Czas propagacji & \kol{czas_propagacja_ms} & ms \\
+    Czas cofania & \kol{czas_cofanie_ms} & ms \\
+    Próby i sprzeczności & \kol{proby}, \kol{sprzecznosci} & liczba \\
+    Naruszenia zasad & \kol{naruszenia} & liczba \\
+    Pamięć szacowana & \kol{pamiec_szczytowa_mb} & MB \\
+    Pamięć rzeczywista & \kol{pamiec_rzeczywista_mb} & MB \\
+    Wywołania rysowania & \kol{wywolania_rysowania} & liczba \\
+    Narysowane obiekty & \kol{narysowane_obiekty} & liczba \\
+    Zmiany stanu SetPass & \kol{setpass} & liczba \\
+    Czas klatki & \kol{czas_klatki_ms} & ms \\
+    Najdłuższa klatka & \kol{najdluzsza_klatka_ms} & ms \\
+    Czas stawiania mapy & \kol{czas_stawiania_ms} & ms \\
+    Pamięć silnika & \kol{pamiec_unity_mb} & MB \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Znaczniki z \kol{Assets/Scripts/Core/Generation/WfcMarkers.cs}. Czasy w plikach wyników liczy osobno \kol{Stopwatch}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Znaczniki w oknie Unity Profiler}
+  \label{tab:znaczniki}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Znacznik & Etap \\
+    \midrule
+    \kol{WFC.Generacja} & cała generacja mapy \\
+    \kol{WFC.WyborKomorki} & wybór komórki \\
+    \kol{WFC.Propagacja} & propagacja ograniczeń \\
+    \kol{WFC.Cofanie} & cofanie decyzji \\
+    \kol{WFC.SprawdzenieMapy} & sprawdzenie gotowej mapy \\
+    \kol{WFC.StawianieMapy} & stawianie mapy \\
+    \kol{WFC.Scalanie} & scalanie siatek \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\CoTuMaByc{Testy z \kol{Assets/Scripts/Tests}. Liczby jak w oknie Test Runner: test z \kol{TestCase} albo \kol{ValueSource} liczy się raz na każdy zestaw argumentów. Ostatni przebieg: 4.11.2026, 280 testów, wszystkie zaliczone.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Testy automatyczne}
+  \label{tab:testy}
+  \begin{tabularx}{\linewidth}{@{}lLr@{}}
+    \toprule
+    Obszar & Pliki testów & Testy \\
+    \midrule
+    Reguły i kafelki & \kol{RuleCompilerTests}, \kol{RulesControlTests}, \kol{RuleVariantTests}, \kol{TilesetValidatorTests}, \kol{OrientationTests}, \kol{DirectionTests}, \kol{SpreadsheetTests}, \kol{ImportedAssetsTests} & 115 \\
+    Generacja & \kol{GenerationTests}, \kol{SolverTests}, \kol{SelectorTests}, \kol{ContradictionTests}, \kol{StepPreviewTests} & 80 \\
+    Analiza map & \kol{RuleCheckerTests}, \kol{StructureAnalyzerTests}, \kol{DiversityTests} & 18 \\
+    Rysowanie i narzędzie & \kol{MapBuilderTests}, \kol{CombinedMapTests}, \kol{GeneratorWindowTests}, \kol{FlyCameraTests} & 29 \\
+    Pomiary & \kol{BenchmarkTests}, \kol{MeasurementTests} & 38 \\
+    \midrule
+    Razem & 22 pliki & 280 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Pusty układ do analizy wymagań; treść i liczbę wierszy ustalasz we własnym zakresie.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Wymagania}
+  \label{tab:wymagania}
+  \begin{tabularx}{\linewidth}{@{}lLL@{}}
+    \toprule
+    Oznaczenie & Wymaganie & Sposób sprawdzenia \\
+    \midrule
+    \wyn & \wyn & \wyn \\
+    \wyn & \wyn & \wyn \\
+    \wyn & \wyn & \wyn \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Wymaganie Wydziału: umiejscowienie zagadnienia na tle podobnych rozwiązań. Wiersz „Ta praca” ma dane projektu; pozostałe wiersze to propozycje do sprawdzenia, a kolumny i wnioski ustalasz we własnym zakresie.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Podobne rozwiązania}
+  \label{tab:podobne}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Rozwiązanie & Język lub silnik & Siatka 3D & Rysowanie \\
+    \midrule
+    Gumin \cite{Gumin2016} & \wyn & \wyn & \wyn \\
+    DeBroglie \cite{DeBroglie} & \wyn & \wyn & \wyn \\
+    marian42 \cite{Marian42WFC} & \wyn & \wyn & \wyn \\
+    Ta praca & C\#, Unity 6 & tak & 4 sposoby \\
+    \bottomrule
+  \end{tabular}
+\end{table}

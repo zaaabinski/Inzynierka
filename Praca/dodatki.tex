@@ -1,0 +1,138 @@
+%%% DODATKI DO SZABLONU WIT
+%%% Plik settings.tex zostaje bez zmian; wszystko, co dodane, jest tutaj.
+
+%%% 1. TABELE
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\RequirePackage{longtable}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% Zalecenia edytorskie Wydziału: tytuł tabeli centralnie nad tabelą, podpis rysunku
+% centralnie pod rysunkiem, tabela 10 pkt. Przy klasie 12 pkt to \footnotesize: każda tabela
+% ma je wpisane sama, bo LaTeX zeruje rozmiar czcionki na początku wstawki.
+\captionsetup{justification=centering}
+\captionsetup[table]{position=top, skip=6pt}
+\AtBeginEnvironment{longtable}{\footnotesize}
+
+% Domyślne położenie: klocki nie podają go same, więc w katalogu mogą stać w miejscu.
+\floatplacement{table}{htbp}
+\floatplacement{figure}{htbp}
+
+%%% 2. POLSKIE NAZWY DLA \cref (settings.tex definiuje tylko rysunki, tabele, równania, listingi, algorytmy)
+\crefname{chapter}{rozdz.}{rozdz.}
+\Crefname{chapter}{Rozdział}{Rozdziały}
+\crefname{section}{podrozdz.}{podrozdz.}
+\Crefname{section}{Podrozdział}{Podrozdziały}
+\crefname{subsection}{podrozdz.}{podrozdz.}
+\Crefname{subsection}{Podrozdział}{Podrozdziały}
+\crefname{appendix}{zał.}{zał.}
+\Crefname{appendix}{Załącznik}{Załączniki}
+\crefname{subfigure}{Rys.}{Rys.}
+\Crefname{subfigure}{Rysunek}{Rysunki}
+\Crefname{listing}{Listing}{Listingi}
+\crefname{lstlisting}{listing}{listingi}
+\Crefname{lstlisting}{Listing}{Listingi}
+
+%%% 3. STYL KODU C#
+%%% literate zastępuje ustawienie z settings.tex, więc są tu też polskie znaki.
+\lstdefinestyle{csharp}{
+  language=[Sharp]C,
+  morekeywords={var, get, set, yield, where, nameof, unsafe, stackalloc, ref},
+  % 10 pkt jak w tabelach; długi wiersz łamie się na spacji, a ciąg dalszy ma strzałkę.
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=true,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  literate={ą}{{\k{a}}}1 {ć}{{\'c}}1 {ę}{{\k{e}}}1 {ł}{{\l{}}}1 {ń}{{\'n}}1 {ó}{{\'o}}1 {ś}{{\'s}}1 {ż}{{\.z}}1 {ź}{{\'z}}1
+           {Ą}{{\k{A}}}1 {Ć}{{\'C}}1 {Ę}{{\k{E}}}1 {Ł}{{\L{}}}1 {Ń}{{\'N}}1 {Ó}{{\'O}}1 {Ś}{{\'S}}1 {Ż}{{\.Z}}1 {Ź}{{\'Z}}1
+           {×}{{$\times$}}1 {–}{{\textendash}}1 {−}{{$-$}}1 {·}{{$\cdot$}}1 {°}{{$^\circ$}}1 {…}{{$\ldots$}}1
+           {→}{{$\rightarrow$}}1 {↔}{{$\leftrightarrow$}}1 {≈}{{$\approx$}}1 {κ}{{$\kappa$}}1 {Σ}{{$\Sigma$}}1
+           {„}{{\quotedblbase}}1 {”}{{\textquotedblright}}1 {•}{{$\bullet$}}1 {■}{{$\blacksquare$}}1 {✓}{{$\checkmark$}}1
+}
+
+%%% 4. PRZEŁĄCZNIK SZKICU I MIEJSCA NA TREŚĆ
+%%% \szkictrue albo \szkicfalse ustawia się w main.tex.
+\newif\ifszkic
+\definecolor{szkicramka}{RGB}{176,112,0}
+\definecolor{szkictlo}{RGB}{255,246,224}
+\newcounter{szkicwskazowki}
+\newcounter{szkicpola}
+\newcounter{szkicobrazy}
+\newcounter{szkiclistingi}
+
+\newcommand{\szkicRamka}[1]{%
+  \par\smallskip\noindent
+  \fcolorbox{szkicramka}{szkictlo}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+      \raggedright\footnotesize\sffamily #1}}%
+  \par\smallskip}
+
+% Wskazówka w ramce; po \szkicfalse znika, a \cite w niej przestaje się liczyć do bibliografii.
+\newcommand{\CoTuMaByc}[1]{%
+  \stepcounter{szkicwskazowki}%
+  \ifszkic\szkicRamka{\textbf{Co tu ma być:} #1}\fi}
+
+% Pole do wpisania w tekście, tabeli albo pseudokodzie; po \szkicfalse jest puste.
+\newcommand{\Wpisz}[1]{%
+  \stepcounter{szkicpola}%
+  \ifszkic\textcolor{szkicramka}{[#1]}\fi}
+
+% Pusta komórka tabeli na wynik.
+\newcommand{\wyn}{\Wpisz{?}}
+
+% Nazwa kolumny CSV albo pliku z podkreśleniami.
+\newcommand{\kol}[1]{\texttt{\detokenize{#1}}}
+
+% Rozmiar siatki: E × N × piętra.
+\newcommand{\siatka}[3]{#1\,$\times$\,#2\,$\times$\,#3}
+
+% Obraz z folderu figures, bez rozszerzenia. Gdy pliku nie ma, stoi ramka zastępcza.
+% [szerokość]{plik}{co ma przedstawiać}
+\newcommand{\MiejsceNaObraz}[3][0.85\linewidth]{%
+  \IfFileExists{figures/#2.pdf}{\includegraphics[width=#1]{figures/#2.pdf}}{%
+  \IfFileExists{figures/#2.png}{\includegraphics[width=#1]{figures/#2.png}}{%
+  \IfFileExists{figures/#2.jpg}{\includegraphics[width=#1]{figures/#2.jpg}}{%
+    \stepcounter{szkicobrazy}%
+    \fbox{\parbox[c][\dimexpr#1*9/16\relax][c]{\dimexpr#1-2\fboxsep-2\fboxrule\relax}{%
+      \centering
+      \ifszkic
+        \footnotesize\sffamily\textbf{figures/\detokenize{#2}}\par\smallskip #3%
+      \fi}}%
+  }}}}
+
+% Cały rysunek: [szerokość]{plik}{podpis}{etykieta}{co ma przedstawiać}
+\newcommand{\MiejsceNaRysunek}[5][0.85\linewidth]{%
+  \begin{figure}
+    \centering
+    \MiejsceNaObraz[#1]{#2}{#5}
+    \caption{#3}
+    \label{#4}
+  \end{figure}}
+
+% Listing z folderu listingi, bez rozszerzenia .cs: {plik}{podpis}{etykieta}{skąd wziąć kod}
+\newcommand{\MiejsceNaListing}[4]{%
+  \IfFileExists{listingi/#1.cs}{%
+    \lstinputlisting[style=csharp, caption={#2}, label={#3}]{listingi/#1.cs}%
+  }{%
+    \stepcounter{szkiclistingi}%
+    \ifszkic\szkicRamka{\textbf{Listing:} zapisz fragment jako \kol{listingi/#1.cs}. #4}\fi
+    \lstinputlisting[style=csharp, caption={#2}, label={#3}]{listingi/brak.cs}%
+  }}
+
+% Po kompilacji: ile miejsc zostało do uzupełnienia (ostrzeżenie w dzienniku kompilacji).
+\AtEndDocument{%
+  \ifnum\numexpr\value{szkicwskazowki}+\value{szkicpola}+\value{szkicobrazy}+\value{szkiclistingi}\relax>0
+    \PackageWarningNoLine{szablon pracy}{Do uzupelnienia: wskazowki \arabic{szkicwskazowki}, pola \arabic{szkicpola}, rysunki \arabic{szkicobrazy}, listingi \arabic{szkiclistingi}}%
+  \fi}
+
+%%% 5. ZALECENIA EDYTORSKIE WYDZIAŁU
+%%% Szablon WIT ma większe nagłówki i interlinię 1,15. Zalecenia edytorskie: tytuł rozdziału 14 pkt,
+%%% podrozdziału 13 pkt, niższego stopnia 12 pkt, interlinia pojedyncza. Włączenie: jedna linia w main.tex.
+\newcommand{\WlaczZaleceniaEdytorskie}{%
+  \setstretch{1}%
+  \titleformat{\chapter}[display]{\bfseries\fontsize{14}{17}\selectfont}{\chaptertitlename\ \thechapter}{0.5ex}{}%
+  \titleformat{\section}{\bfseries\fontsize{13}{16}\selectfont}{\thesection.}{1em}{}%
+  \titleformat{\subsection}{\bfseries\fontsize{12}{15}\selectfont}{\thesubsection.}{1em}{}%
+}
