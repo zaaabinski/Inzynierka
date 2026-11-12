@@ -1,0 +1,160 @@
+%%% KLOCKI: MATERIAŁ NA ZAŁĄCZNIKI
+%%% Dane z kodu: CsvWriter.cs, BenchmarkSession.cs, BenchmarkRunner.cs. Załącznik zakładasz przez \chapter po \appendix w main.tex.
+
+\CoTuMaByc{Kolejność jak w pliku. Kolumny związane z rysowaniem są puste bez okna.}
+
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{8.9cm}l@{}}
+  \caption{Kolumny pliku wyników}\label{tab:kolumny-csv}\\
+  \toprule
+    Kolumna & Znaczenie & Jednostka \\
+    \midrule
+  \endfirsthead
+  \caption[]{Kolumny pliku wyników (ciąg dalszy)}\\
+  \toprule
+    Kolumna & Znaczenie & Jednostka \\
+    \midrule
+  \endhead
+  \bottomrule
+  \endlastfoot
+    \kol{data} & data i godzina zapisu wiersza & -- \\
+    \kol{komputer} & nazwa komputera & -- \\
+    \kol{procesor} & model procesora & -- \\
+    \kol{ram_gb} & pamięć operacyjna & GB \\
+    \kol{wersja_unity} & wersja Unity & -- \\
+    \kol{wersja_programu} & wersja aplikacji & -- \\
+    \kol{eksperyment} & nazwa eksperymentu & -- \\
+    \kol{rozwiazywacz} & rozwiązywacz & -- \\
+    \kol{kolejnosc} & heurystyka wyboru komórki & -- \\
+    \kol{sprzecznosc} & reakcja na sprzeczność & -- \\
+    \kol{zestaw} & zestaw kafelków albo wariant reguł & -- \\
+    \kol{x} & rozmiar siatki: E & komórki \\
+    \kol{y} & rozmiar siatki: N & komórki \\
+    \kol{z} & rozmiar siatki: piętra & komórki \\
+    \kol{ziarno} & ziarno generatora liczb losowych & -- \\
+    \kol{powtorzenie} & numer powtórzenia ziarna & -- \\
+    \kol{udane} & czy mapa powstała: 1 albo 0 & -- \\
+    \kol{proby} & liczba prób & -- \\
+    \kol{czas_ms} & czas generacji & ms \\
+    \kol{czas_wybor_ms} & czas wyboru komórek & ms \\
+    \kol{czas_propagacja_ms} & czas propagacji & ms \\
+    \kol{czas_cofanie_ms} & czas cofania & ms \\
+    \kol{decyzje} & liczba decyzji & -- \\
+    \kol{kroki_propagacji} & liczba kroków propagacji & -- \\
+    \kol{usuniete_mozliwosci} & wszystkie usunięte możliwości & -- \\
+    \kol{sprzecznosci} & liczba sprzeczności & -- \\
+    \kol{cofniecia} & liczba cofnięć & -- \\
+    \kol{restarty} & liczba startów od nowa & -- \\
+    \kol{pamiec_szczytowa_mb} & największy rozmiar struktur rozwiązywacza i selektora, szacowany z rozmiarów tablic & MB \\
+    \kol{alokacje_gc_kb} & pamięć zaalokowana na stercie przez rozwiązywacz; w aplikacji przyrost sterty & KB \\
+    \kol{naruszenia} & naruszenia zasad w gotowej mapie & -- \\
+    \kol{wieze} & liczba wież & -- \\
+    \kol{donzony} & liczba donżonów & -- \\
+    \kol{mosty} & liczba mostów & -- \\
+    \kol{schody} & liczba schodów & -- \\
+    \kol{wys_wiez_sr} & średnia wysokość wież & piętra \\
+    \kol{wys_murow_sr} & średnia wysokość murów & piętra \\
+    \kol{wys_donzonow_sr} & średnia wysokość donżonów & piętra \\
+    \kol{trawa_dostepna_proc} & odsetek terenu na parterze połączonego z krawędzią mapy & \% \\
+    \kol{dziedzince_zamkniete} & obszary terenu na parterze bez połączenia z krawędzią mapy & -- \\
+    \kol{czas_stawiania_ms} & czas stawiania mapy w oknie & ms \\
+    \kol{srodowisko} & rodzaj uruchomienia: Edytor, Mono albo IL2CPP, z dopiskiem przy wersji deweloperskiej & -- \\
+    \kol{roznica_mapy_proc} & odsetek komórek innych niż w mapie poprzedniego ziarna: wszystkie komórki & \% \\
+    \kol{roznica_parter_proc} & to samo: parter & \% \\
+    \kol{roznica_zabudowa_proc} & to samo: komórki zabudowy & \% \\
+    \kol{rysowanie} & sposób rysowania & -- \\
+    \kol{wywolania_rysowania} & wywołania rysowania na klatkę, razem z cieniami i oknem ustawień & -- \\
+    \kol{narysowane_obiekty} & obiekty narysowane przez te wywołania & -- \\
+    \kol{setpass} & zmiany stanu SetPass na klatkę & -- \\
+    \kol{trojkaty} & trójkąty na klatkę & -- \\
+    \kol{wierzcholki} & wierzchołki na klatkę & -- \\
+    \kol{czas_klatki_ms} & średni czas między klatkami & ms \\
+    \kol{czas_klatki_cpu_ms} & czas pracy procesora nad klatką & ms \\
+    \kol{czas_klatki_gpu_ms} & czas pracy karty graficznej nad klatką & ms \\
+    \kol{usuniete_propagacja} & możliwości usunięte przez propagację & -- \\
+    \kol{usuniete_decyzje} & możliwości usunięte przez decyzje & -- \\
+    \kol{pamiec_rzeczywista_mb} & przyrost sterty po generacji i odśmieceniu, gdy rozwiązywacz jeszcze żyje & MB \\
+    \kol{zabudowa_proc} & odsetek parteru zajęty przez budynki & \% \\
+    \kol{gestosc_regul_proc} & gęstość par & \% \\
+    \kol{gestosc_wazona_proc} & gęstość ważona & \% \\
+    \kol{kappa} & współczynnik $\kappa$ & -- \\
+    \kol{zaostrzenie_proc} & odsetek usuniętych dozwolonych par & \% \\
+    \kol{losowanie_zaostrzenia} & numer losowania usuwanych par & -- \\
+    \kol{laczenie_rysowania} & ustawienie łączenia rysowania w URP & -- \\
+    \kol{bok_fragmentu} & bok fragmentu scalonej mapy; puste w innych sposobach rysowania & komórki \\
+    \kol{pamiec_siatek_mb} & rozmiar scalonych siatek & MB \\
+    \kol{pamiec_unity_mb} & pamięć przydzielona przez silnik & MB \\
+    \kol{pamiec_gc_mb} & sterta zarządzana & MB \\
+    \kol{pamiec_procesu_mb} & pamięć procesu w systemie & MB \\
+    \kol{najdluzsza_klatka_ms} & najdłuższa klatka z pomiaru & ms \\
+    \kol{pierwsza_klatka_ms} & od postawienia mapy do początku następnej klatki & ms \\
+\end{longtable}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Pliki z podsumowaniem serii}
+  \label{tab:pliki-podsumowania}
+  \begin{tabularx}{\linewidth}{@{}lL@{}}
+    \toprule
+    Plik & Kolumny \\
+    \midrule
+    \kol{*_warianty.csv} & \kol{eksperyment}, \kol{rozwiazywacz}, \kol{kolejnosc}, \kol{sprzecznosc}, \kol{zestaw}, \kol{x}, \kol{y}, \kol{z}, \kol{rysowanie}, \kol{laczenie_rysowania}, \kol{zaostrzenie_proc}, \kol{losowanie_zaostrzenia}, \kol{mapy}, \kol{udane_mapy}, \kol{proby}, \kol{sprzecznosci}, \kol{udane_proby_proc}, \kol{zabudowa_proc}, \kol{gestosc_regul_proc}, \kol{gestosc_wazona_proc}, \kol{kappa}, \kol{czas_ms_mediana}, \kol{czas_ms_q1}, \kol{czas_ms_q3}, \kol{czas_stawiania_ms_mediana}, \kol{czas_klatki_ms_mediana}, \kol{najdluzsza_klatka_ms_mediana}, \kol{wywolania_rysowania_mediana}, \kol{narysowane_obiekty_mediana}, \kol{pamiec_rzeczywista_mb_mediana}, \kol{pamiec_unity_mb_mediana} \\
+    \kol{*_korelacje.csv} & \kol{miara}, \kol{warianty}, \kol{liczba_wariantow}, \kol{spearman_z_udanymi_probami} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Argumenty uruchomienia aplikacji}
+  \label{tab:argumenty}
+  \begin{tabularx}{\linewidth}{@{}lL@{}}
+    \toprule
+    Argument & Znaczenie \\
+    \midrule
+    \kol{-benchmark} & badanie startuje samo, a aplikacja zamyka się po nim \\
+    \kol{-config E1} & eksperyment do uruchomienia; \kol{-config wszystkie} uruchamia E1--E9 po kolei \\
+    \kol{-out plik.csv} & plik wyników; domyślnie folder \kol{Wyniki} obok aplikacji \\
+    \kol{-seeds N}, \kol{-firstSeed N} & liczba ziaren i pierwsze ziarno \\
+    \kol{-repetitions N}, \kol{-warmup N} & powtórzenia ziarna i uruchomienia na rozgrzewkę \\
+    \kol{-showEvery N} & w oknie pokazuje co N-tą mapę \\
+    \kol{-display}, \kol{-batching} & sposób rysowania i łączenie rysowania \\
+    \kol{-batchmode -nographics} & bez okna i bez pomiaru rysowania; E7 działa tylko w oknie \\
+    \kol{-screen-fullscreen 0} & okno zamiast pełnego ekranu; rozmiar: \kol{-screen-width}, \kol{-screen-height} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\CoTuMaByc{Pierwsze polecenie to zaplanowana seria pomiarów, drugie to przykład trybu bez okna. Po pomiarach popraw je na takie, jakich naprawdę użyto.}
+
+\begin{lstlisting}[numbers=none, caption={Przykładowe uruchomienie badań}, label={lst:uruchomienie}]
+./Build/Zamek.exe -screen-fullscreen 0 -screen-width 1600 -screen-height 900 -benchmark -config wszystkie -seeds 30
+./Build/Zamek.exe -batchmode -nographics -benchmark -config E1 -out wyniki_E1.csv
+\end{lstlisting}
+
+\CoTuMaByc{Adres repozytorium: \url{https://github.com/zaaabinski/Inzynierka}.}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Zawartość repozytorium}
+  \label{tab:repozytorium}
+  \begin{tabularx}{\linewidth}{@{}lL@{}}
+    \toprule
+    Folder & Zawartość \\
+    \midrule
+    \kol{Assets/Scripts/Core} & reguły, rozwiązywacze, analiza map \\
+    \kol{Assets/Scripts/Runtime} & zasoby, stawianie mapy, badania, panel aplikacji \\
+    \kol{Assets/Scripts/Editor} & okno generatora, import reguł i modeli, budowanie aplikacji \\
+    \kol{Assets/Scripts/Tests} & testy automatyczne \\
+    \kol{Assets/Data/Rules} & plik reguł \\
+    \kol{Assets/Data/Tiles}, \kol{Assets/Data/Tilesets} & kafelki i zestawy \\
+    \kol{Assets/Data/Experiments} & ustawienia eksperymentów E1--E9 \\
+    \kol{Assets/Materials}, \kol{Assets/Prefabs}, \kol{Assets/Scenes} & materiały, prefaby, sceny \\
+    \kol{Analiza} & skrypt analizy wyników \\
+    \kol{Wyniki} & pliki wyników \\
+    \kol{Praca} & tekst pracy w LaTeX-u \\
+    \bottomrule
+  \end{tabularx}
+\end{table}

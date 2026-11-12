@@ -1,0 +1,96 @@
+%%% LISTA AKRONIMÓW
+%%% W pracy pisz \ac{wfc}. Pierwsze użycie daje pełną nazwę ze skrótem, następne sam skrót.
+%%% Na liście pojawiają się tylko akronimy użyte w tekście.
+
+\RequirePackage{acro}
+
+\DeclareAcronym{ac3}{
+  short = AC-3 ,
+  long  = Arc Consistency Algorithm 3
+}
+\DeclareAcronym{ac4}{
+  short = AC-4 ,
+  long  = Arc Consistency Algorithm 4
+}
+\DeclareAcronym{ai}{
+  short = AI ,
+  long  = Artificial Intelligence
+}
+\DeclareAcronym{api}{
+  short = API ,
+  long  = Application Programming Interface
+}
+\DeclareAcronym{cpu}{
+  short = CPU ,
+  long  = Central Processing Unit
+}
+\DeclareAcronym{csp}{
+  short = CSP ,
+  long  = Constraint Satisfaction Problem
+}
+\DeclareAcronym{csv}{
+  short = CSV ,
+  long  = Comma-Separated Values
+}
+\DeclareAcronym{fbx}{
+  short = FBX ,
+  long  = Filmbox
+}
+\DeclareAcronym{gc}{
+  short = GC ,
+  long  = Garbage Collector
+}
+\DeclareAcronym{gpu}{
+  short = GPU ,
+  long  = Graphics Processing Unit
+}
+\DeclareAcronym{il2cpp}{
+  short = IL2CPP ,
+  long  = Intermediate Language To C++
+}
+\DeclareAcronym{json}{
+  short = JSON ,
+  long  = JavaScript Object Notation
+}
+\DeclareAcronym{mrv}{
+  short = MRV ,
+  long  = Minimum Remaining Values
+}
+\DeclareAcronym{pcg}{
+  short = PCG ,
+  long  = Procedural Content Generation
+}
+\DeclareAcronym{srp}{
+  short = SRP ,
+  long  = Scriptable Render Pipeline
+}
+\DeclareAcronym{urp}{
+  short = URP ,
+  long  = Universal Render Pipeline
+}
+\DeclareAcronym{wfc}{
+  short = WFC ,
+  long  = Wave Function Collapse
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% NIE RUSZAJ TEGO CO JEST NIŻEJ JEŚLI  %%%
+%% NIE ZNASZ ZBYT DOBRZE LATEX'A        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ShowAcronyms}[1]{
+  \begin{center}
+    {\Large\bfseries Lista skrótów \par}
+  \end{center}
+  \vspace{0.5em}
+
+  \ifboolexpr{
+      test {\ifstrequal{#1}{lof}} or
+      test {\ifstrequal{#1}{toc}} or
+      test {\ifstrequal{#1}{description}}
+    }{%
+      \printacronyms[sort=true, heading=none, template=#1]
+    }{%
+      \printacronyms[sort=true, heading=none, template=lof]
+     }%
+  \clearpage
+}
