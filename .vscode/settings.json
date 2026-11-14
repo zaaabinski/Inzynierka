@@ -13,7 +13,6 @@
         "**/*.unityproj": true,
         "**/*.dll": true,
         "**/*.exe": true,
-        "**/*.pdf": true,
         "**/*.mid": true,
         "**/*.midi": true,
         "**/*.wav": true,
@@ -67,5 +66,32 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "InzynierkaWFC.slnx"
+    "dotnet.defaultSolution": "InzynierkaWFC.slnx",
+    // Praca w LaTeX-u (folder Praca), gdy w VS Code otwarty jest cały projekt, a nie sam folder Praca.
+    // Te same przepisy co w Praca/.vscode/settings.json: pdflatex, biber, pdflatex, pdflatex.
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "Pełna kompilacja (pdflatex, biber, pdflatex, pdflatex)",
+            "tools": ["pdflatex", "biber", "pdflatex", "pdflatex"]
+        },
+        {
+            "name": "Szybki podgląd (jeden pdflatex, odwołania mogą być nieaktualne)",
+            "tools": ["pdflatex"]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
+        },
+        {
+            "name": "biber",
+            "command": "biber",
+            "args": ["%DOCFILE%"]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "first",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.view.pdf.viewer": "tab"
 }

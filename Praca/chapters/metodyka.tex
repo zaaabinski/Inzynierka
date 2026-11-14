@@ -1,0 +1,234 @@
+% !TEX root = ../main.tex
+%% Rozdział 5. Plan: 3–4 strony tekstu. Same fakty o badaniach; wyniki są w rozdziale 6.
+
+\chapter{Metodyka badań}
+\label{chap:metodyka}
+
+Rozdział opisuje sposób przeprowadzenia badań generatora: postawione pytania, sprzęt i środowisko pomiarowe, przebieg pojedynczego pomiaru, plan eksperymentów, mierzone wielkości oraz sposób opracowania wyników. Same wyniki omawia \cref{chap:wyniki}.
+
+\section{Pytania badawcze}
+\label{sec:pytania}
+
+Opis tematu pracy zakłada porównanie wariantów algorytmu \ac{wfc} pod względem czasu generacji, zużycia pamięci i kosztu rysowania gotowej mapy. Wynika z tego osiem pytań badawczych. Każde z nich ma przypisany eksperyment (\cref{tab:eksperymenty}).
+
+\begin{enumerate}
+  \item Jak sposób przechowywania możliwości komórek wpływa na czas generacji i zużycie pamięci? (E1)
+  \item Która kolejność wyboru komórek daje najwięcej udanych prób i czy heurystyki \ac{mrv} oraz najmniejszej entropii sprawdzają się przy generacji zamków? (E2)
+  \item Jak reakcja na sprzeczność wpływa na powodzenie i czas generacji przy rosnącym rozmiarze siatki? (E3)
+  \item Jak czas generacji i pamięć rosną wraz z liczbą komórek siatki? (E4)
+  \item Jak liczba kafelków w zestawie wpływa na czas i powodzenie generacji? (E5)
+  \item Jak zmiany reguł i wag kafelków wpływają na zabudowę mapy i powodzenie generacji? (E6)
+  \item Jak konsolidacja geometrii i atlas materiałów wpływają na koszt rysowania mapy? (E7)
+  \item Czy miary restrykcyjności reguł pozwalają przewidzieć powodzenie generacji? (E8 i E9)
+\end{enumerate}
+
+Niezależnie od pytania każdy eksperyment sprawdza też poprawność map: każda gotowa mapa jest porównywana ze wszystkimi regułami zestawu kafelków (\cref{sec:metryki}).
+
+\section{Środowisko pomiarowe}
+\label{sec:srodowisko}
+
+Wszystkie pomiary wykonano na jednym komputerze, opisanym w \cref{tab:sprzet}. Badania prowadzono w zbudowanej aplikacji \kol{Zamek.exe} dla 64-bitowego systemu Windows, a nie w edytorze Unity. Edytor wykonuje w tle własną pracę (odświeża okna, dodaje sprawdzenia bezpieczeństwa w kodzie silnika) i nie pozwala wyłączyć odśmiecania pamięci na czas pomiaru, co w zbudowanej aplikacji jest możliwe (\cref{sec:procedura}). Okno edytora i aplikacja korzystają z tej samej biblioteki \kol{WFC.Core} (\cref{sec:architektura}), więc wyniki dotyczą obu.
+
+Aplikację zbudowano z backendem \ac{il2cpp} \cite{UnityIL2CPP} w konfiguracji Release: kod C\# jest zamieniany na C++, a ten kompilowany kompilatorem MSVC z włączonymi optymalizacjami. Wersje narzędzi podaje \cref{tab:technologie}. Wersja Development, która łączy się z oknem Unity Profiler \cite{UnityProfiler}, posłużyła wyłącznie do analizy działania programu i do zrzutów ekranu. Żadnej serii pomiarowej nie wykonano z podłączonym Profilerem, bo zbieranie przez niego danych wydłuża pracę programu. Liczby do tabel zbiera kod aplikacji.
+
+Serie E1--E6, E8 i E9 mierzą wyłącznie generację, więc uruchomiono je bez okna, z argumentami \kol{-batchmode -nographics}. Seria E7 mierzy koszt rysowania, dlatego działała w oknie o rozmiarze 1600\,$\times$\,900 pikseli. Wszystkie argumenty uruchomienia zestawia \cref{tab:argumenty}. Serie E1--E6, E8 i E9 wykonano 10 i 11 listopada 2026 r., a serię E7 12 listopada 2026 r. Każdy wiersz plików wyników ma w kolumnie \kol{srodowisko} wartość \kol{IL2CPP}, czyli pochodzi z wersji Release.
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Środowisko pomiarowe}
+  \label{tab:sprzet}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Element & Wartość \\
+    \midrule
+    Procesor & AMD Ryzen 7 9800X3D, 8 rdzeni \\
+    Pamięć operacyjna & 32 GB DDR5-6000, CL30 \\
+    Karta graficzna & ASUS PRIME GeForce RTX 5080 OC Edition, 16 GB GDDR7 \\
+    Sterownik karty graficznej & NVIDIA 610.88 \\
+    System operacyjny & Windows 11 Pro \\
+    Rozdzielczość okna & 1600\,$\times$\,900 pikseli, aplikacja w oknie \\
+    Wersja Unity & 6000.6.2f1 \\
+    Rodzaj aplikacji & IL2CPP, wersja Release \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Procedura pomiaru}
+\label{sec:procedura}
+
+Eksperyment składa się z wariantów, czyli kombinacji ustawień generatora: rozwiązywacza, kolejności wyboru komórek, reakcji na sprzeczność, zestawu kafelków i rozmiaru siatki, a w E7 także sposobu rysowania i ustawienia łączenia rysowania. Warianty są wykonywane po kolei. Każdy zaczyna się od uruchomień rozgrzewkowych, których wyniki nie trafiają do pliku: domyślnie pięciu, w E7 trzech, a w E9 jednego. Rozgrzewka pochłania koszty pierwszego użycia kodu i danych, takie jak pierwsze alokacje pamięci, wczytanie modeli czy przygotowanie zadań kompilatora Burst \cite{UnityBurst}.
+
+Po rozgrzewce następują uruchomienia mierzone, po jednym na każde ziarno generatora liczb losowych. Ziarna to kolejne liczby całkowite od 1, a ich liczbę w każdym eksperymencie podaje \cref{tab:eksperymenty}. Wszystkie warianty dostają ten sam zestaw ziaren, więc są porównywane na tych samych losowaniach. Generacja jest powtarzalna: to samo ziarno w tym samym wariancie zawsze daje tę samą mapę. Rozwiązywacze różnią się tylko sposobem przechowywania możliwości, więc z tego samego ziarna budują tę samą mapę. Potwierdza to E1: dla każdego ziarna wszystkie cztery rozwiązywacze wykonały tyle samo prób i decyzji, napotkały tyle samo sprzeczności, a gotowe mapy mają identyczną budowę.
+
+Przed każdym uruchomieniem program dwukrotnie wywołuje odśmiecanie pamięci (\ac{gc}), czeka na zakończenie finalizatorów, a na czas generacji wyłącza odśmiecanie. Dzięki temu przerwa na odśmiecanie nie wpada w mierzony czas, a przyrost sterty po generacji jest równy temu, co zaalokował rozwiązywacz. Czas generacji mierzy sam rozwiązywacz zegarem \kol{Stopwatch}. Obejmuje on wszystkie próby danej mapy, razem ze startami od nowa i cofaniem decyzji. Osobno zapisywane są czasy wyboru komórki, propagacji i cofania. Sprawdzenie gotowej mapy z regułami i analiza jej budowy odbywają się już po zatrzymaniu zegara.
+
+Generacja jednej mapy ma dwa limity: 1000 prób (w E9 30 prób) oraz, w E3 i E4, 600 s. Mapa, która przekroczy którykolwiek z nich, jest zapisywana jako nieudana (kolumna \kol{udane}), ale jej czas, pamięć i liczniki trafiają do pliku tak samo jak w pozostałych uruchomieniach. Mediany czasu wariantów z nieudanymi mapami obejmują więc także czas potrzebny do osiągnięcia limitu. W zebranych wynikach nieudane mapy wystąpiły tylko przy siatce \siatka{80}{80}{13} ze startem od nowa: rozwiązywacze \kol{Bitset} i \kol{Burst} zatrzymał limit 1000 prób (po 74--120~s), a rozwiązywacze \kol{Naive} i \kol{SupportCount} limit 600~s.
+
+W E7 każda wygenerowana mapa jest stawiana w scenie. Pomiar rysowania zaczyna się dopiero pięć klatek później, bo liczniki silnika podają wartości z poprzedniej klatki, a pierwsze klatki po postawieniu mapy niosą jeszcze koszt jej stawiania. Następnie przez 120 klatek program odczytuje liczniki renderowania przez \kol{ProfilerRecorder} i zapisuje ich średnie na klatkę. Czas klatki to średni odstęp między kolejnymi klatkami (\kol{Time.unscaledDeltaTime}), a najdłuższa klatka to największy z tych odstępów. Ogólne liczniki wywołań rysowania nie działają w wersji Release, dlatego wywołania rysowania są sumą liczników osobnych dla każdej drogi rysowania w \ac{urp}, m.in. zwykłej, instancjonowanej, SRP Batchera i GPU Resident Drawera. Liczniki obejmują też cienie i panel aplikacji, co daje niewielki, stały narzut przy każdej mapie. Generacja w E7 używa rozwiązywacza \kol{Burst} z cofaniem decyzji, więc każda mapa powstaje w jednej próbie, a dla danego ziarna wszystkie dwanaście ustawień rysowania pokazuje tę samą mapę.
+
+Każde mierzone uruchomienie zapisuje się jako jeden wiersz pliku \ac{csv}. Po zakończeniu serii aplikacja zapisuje obok podsumowanie wariantów (plik \kol{_warianty.csv}), a w eksperymentach z różnymi regułami także korelacje (plik \kol{_korelacje.csv}). Kolumny plików opisują \cref{tab:kolumny-csv,tab:pliki-podsumowania}.
+
+\section{Plan eksperymentów}
+\label{sec:plan}
+
+Ustawienia wszystkich eksperymentów zestawia \cref{tab:eksperymenty}, a rozmiary siatki \cref{tab:rozmiary}. Eksperymenty, które nie badają danego ustawienia, używają zestawu \kol{Pelny}, siatki \siatka{20}{20}{13}, kolejności \kol{LevelFirst} i startu od nowa (\kol{Restart}).
+\begin{itemize}
+  \item E1 porównuje cztery rozwiązywacze (\cref{tab:rozwiazywacze}).
+  \item E2 porównuje pięć kolejności wyboru komórek (\cref{tab:heurystyki}).
+  \item E3 porównuje trzy reakcje na sprzeczność (\cref{tab:reakcje}) na czterech rozmiarach siatki.
+  \item E4 mierzy czas i pamięć czterech rozwiązywaczy na tych samych czterech rozmiarach. W E3 i E4 limit 600~s na mapę nie pozwala najwolniejszym wariantom zablokować serii.
+  \item E5 porównuje cztery zestawy kafelków o rosnącej liczbie stanów (\cref{tab:zestawy}).
+  \item E6 porównuje zestaw \kol{Pelny} z czterema jego wariantami reguł (\cref{tab:warianty-regul}).
+  \item E7 porównuje cztery sposoby rysowania mapy (\cref{tab:rysowanie}) przy trzech ustawieniach łączenia rysowania w \ac{urp} (\cref{tab:laczenie}) i czterech rozmiarach siatki.
+  \item E8 zestawia restrykcyjność reguł ośmiu zestawów i wariantów z E5 i E6 z odsetkiem udanych prób.
+  \item E9 zaostrza reguły zestawu \kol{Pelny}: program usuwa losowo 0,2, 0,5, 1, 2, 3, 5, 8 albo 12\% dozwolonych par sąsiadów, po dziesięć losowań na poziom. Razem z regułami niezmienionymi daje to 81 wariantów. Limit 30 prób na mapę skraca serię przy regułach, które rzadko dają mapę.
+\end{itemize}
+
+Łącznie wykonano 8460 mierzonych uruchomień (\cref{tab:naruszenia}).
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Plan eksperymentów}
+  \label{tab:eksperymenty}
+  \begin{tabularx}{\linewidth}{@{}lLrrL@{}}
+    \toprule
+    Nr & Co się zmienia & Warianty & Ziarna & Ustawienia stałe \\
+    \midrule
+    E1 & rozwiązywacz (4) & 4 & 100 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{LevelFirst}, \kol{Restart} \\
+    E2 & heurystyka (5) & 5 & 100 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Bitset}, \kol{Restart} \\
+    E3 & reakcja (3) $\times$ rozmiar (4) & 12 & 100 & \kol{Pelny}, \kol{Bitset}, \kol{LevelFirst}, limit 600 s na mapę \\
+    E4 & rozwiązywacz (4) $\times$ rozmiar (4) & 16 & 100 & \kol{Pelny}, \kol{LevelFirst}, \kol{Restart}, limit 600 s na mapę \\
+    E5 & zestaw (4) & 4 & 100 & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E6 & \kol{Pelny} i warianty reguł (4) & 5 & 100 & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E7 & rysowanie (4) $\times$ łączenie (3) $\times$ rozmiar (4) & 48 & 30 & \kol{Pelny}, \kol{Burst}, \kol{LevelFirst}, \kol{Backtrack}, rozgrzewka 3, 120 klatek na mapę, tylko w oknie \\
+    E8 & 4 zestawy i 4 warianty reguł & 8 & 100 & \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart} \\
+    E9 & zaostrzenie reguł (9 poziomów) $\times$ 10 losowań & 81 & 20 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart}, rozgrzewka 1, limit 30 prób \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Rozmiary siatki}
+  \label{tab:rozmiary}
+  \begin{tabular}{@{}lrl@{}}
+    \toprule
+    E\,$\times$\,N\,$\times$\,piętra & Komórki & Wymiar mapy [m] \\
+    \midrule
+    \siatka{10}{10}{8} & 800 & \siatka{30}{30}{24} \\
+    \siatka{20}{20}{13} & 5200 & \siatka{60}{60}{39} \\
+    \siatka{40}{40}{13} & 20\,800 & \siatka{120}{120}{39} \\
+    \siatka{80}{80}{13} & 83\,200 & \siatka{240}{240}{39} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Metryki}
+\label{sec:metryki}
+
+Główne mierzone wielkości zestawia \cref{tab:metryki}, a pełną listę kolumn pliku wyników \cref{tab:kolumny-csv}. Poniżej opisano te, których znaczenie nie wynika wprost z nazwy.
+
+\begin{table}
+  \centering
+  \footnotesize
+  \caption{Główne metryki}
+  \label{tab:metryki}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Metryka & Kolumna pliku wyników & Jednostka \\
+    \midrule
+    Czas generacji & \kol{czas_ms} & ms \\
+    Czas wyboru komórki & \kol{czas_wybor_ms} & ms \\
+    Czas propagacji & \kol{czas_propagacja_ms} & ms \\
+    Czas cofania & \kol{czas_cofanie_ms} & ms \\
+    Próby i sprzeczności & \kol{proby}, \kol{sprzecznosci} & liczba \\
+    Naruszenia zasad & \kol{naruszenia} & liczba \\
+    Pamięć szacowana & \kol{pamiec_szczytowa_mb} & MB \\
+    Pamięć rzeczywista & \kol{pamiec_rzeczywista_mb} & MB \\
+    Wywołania rysowania & \kol{wywolania_rysowania} & liczba \\
+    Narysowane obiekty & \kol{narysowane_obiekty} & liczba \\
+    Zmiany stanu SetPass & \kol{setpass} & liczba \\
+    Czas klatki & \kol{czas_klatki_ms} & ms \\
+    Najdłuższa klatka & \kol{najdluzsza_klatka_ms} & ms \\
+    Czas stawiania mapy & \kol{czas_stawiania_ms} & ms \\
+    Pamięć silnika & \kol{pamiec_unity_mb} & MB \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Pamięć.} Pamięć szacowana to największy rozmiar struktur danych rozwiązywacza, liczony z rozmiarów jego tablic. Pamięć rzeczywista to przyrost sterty po generacji i pełnym odśmieceniu, zmierzony, gdy rozwiązywacz jeszcze istnieje, czyli pamięć, którą rozwiązywacz naprawdę zajmuje. Tabele wyników podają pamięć rzeczywistą. Pamięć silnika (E7) to cała pamięć zaalokowana przez Unity według licznika silnika.
+
+\paragraph{Udane próby.} Odsetek udanych prób wariantu wynosi
+\begin{equation}
+  u = 100 \cdot \frac{M}{A} ,
+  \label{eq:udane-proby}
+\end{equation}
+gdzie $M$ to liczba udanych map wariantu, a $A$ to liczba wszystkich prób wszystkich jego map. Przy starcie od nowa każdy start jest osobną próbą, więc $u$ mówi, jak często jedno przejście algorytmu dochodzi do końca bez sprzeczności.
+
+\paragraph{Zabudowa i mapy zdegenerowane.} Zabudowa to odsetek komórek parteru zajętych przez budowle, uśredniony po udanych mapach wariantu. Wariant, w którym ta średnia jest mniejsza niż 1\% albo większa niż 90\%, ma mapy zdegenerowane: reguły usunęły z mapy budynki albo teren. Mapa powstaje wtedy łatwo, ale nie jest zamkiem, dlatego korelacje w E8 i E9 są liczone także bez takich wariantów.
+
+\paragraph{Różnorodność map.} Każda udana mapa jest porównywana z ostatnią udaną mapą poprzedniego ziarna w tym samym wariancie. Miarą jest odsetek komórek z innym kafelkiem, osobno dla całej mapy, parteru i zabudowy.
+
+\paragraph{Naruszenia zasad.} Każda udana mapa jest sprawdzana ze wszystkimi regułami zestawu kafelków niezależnie od rozwiązywacza. Kolumna \kol{naruszenia} podaje liczbę miejsc, w których mapa łamie reguły.
+
+\paragraph{Propagacja.} Możliwości komórek znikają na dwa sposoby: przy decyzji, gdy wybrana komórka zostaje ustalona na jeden stan, i w propagacji, która usuwa stany niezgodne z sąsiadami. Udział propagacji $q$ i liczbę możliwości usuniętych przez propagację na jedną decyzję $e$ opisuje
+\begin{equation}
+  q = \frac{r_p}{r_p + r_d} , \qquad e = \frac{r_p}{D} ,
+  \label{eq:propagacja}
+\end{equation}
+gdzie $r_p$ i $r_d$ to możliwości usunięte odpowiednio przez propagację (\kol{usuniete_propagacja}) i przez decyzje (\kol{usuniete_decyzje}), a $D$ to liczba decyzji (\kol{decyzje}). W tabelach $q$ jest podawane w procentach.
+
+\paragraph{Obiekty na wywołanie rysowania.} Skuteczność łączenia rysowania w E7 opisuje liczba obiektów narysowanych jednym wywołaniem
+\begin{equation}
+  b = \frac{O}{V} ,
+  \label{eq:obiekty-na-wywolanie}
+\end{equation}
+gdzie $O$ to narysowane obiekty (\kol{narysowane_obiekty}), a $V$ to wywołania rysowania (\kol{wywolania_rysowania}).
+
+\paragraph{Restrykcyjność reguł.} W E8 i E9 porównywane są trzy miary restrykcyjności reguł (kod: \kol{RuleRestrictiveness.cs}). Niech $m$ oznacza liczbę stanów, $P$ liczbę dozwolonych trójek (stan, kierunek, sąsiad), $N_k(s)$ zbiór dozwolonych sąsiadów stanu $s$ w kierunku $k$, $w_s$ wagę stanu $s$, a $W$ sumę wag. Gęstość par to odsetek dozwolonych par sąsiadów wśród wszystkich możliwych w sześciu kierunkach:
+\begin{equation}
+  d = \frac{P}{6 m^2} .
+  \label{eq:gestosc}
+\end{equation}
+Gęstość ważona uwzględnia, jak często stany pojawiają się zgodnie z wagami:
+\begin{equation}
+  d_w = \frac{1}{6} \sum_{k=1}^{6} \sum_{s=1}^{m} \frac{w_s}{W} \sum_{t \in N_k(s)} \frac{w_t}{W} .
+  \label{eq:gestosc-wazona}
+\end{equation}
+Trzecią miarą jest współczynnik $\kappa$ \cite{Gent1996}, opisujący, jak bardzo ograniczony jest problem spełniania ograniczeń:
+\begin{equation}
+  \kappa = -\frac{c}{n} \log_m d ,
+  \label{eq:kappa}
+\end{equation}
+gdzie $c/n$ to liczba ograniczeń na jedną zmienną. W siatce trójwymiarowej każda komórka ma sześciu sąsiadów, a każde ograniczenie łączy dwie komórki, więc przyjęto $c/n = 3$. Im większe $\kappa$, tym ostrzejsze reguły, dlatego korelacja $\kappa$ z powodzeniem ma znak przeciwny niż korelacja gęstości. Tabele podają $d$ i $d_w$ w procentach.
+
+\section{Analiza statystyczna}
+\label{sec:statystyka}
+
+Czasy generacji mają rozkład silnie prawoskośny: większość map powstaje w pierwszej próbie, a nieliczne potrzebują wielu startów od nowa (\cref{fig:e1-czas}). Dlatego wyniki są podawane jako mediana oraz kwartyle $Q_1$ i $Q_3$, a nie jako średnia i odchylenie standardowe. Rozrzut opisuje rozstęp międzykwartylowy
+\begin{equation}
+  \mathrm{IQR} = Q_3 - Q_1 .
+  \label{eq:iqr}
+\end{equation}
+Kwantyle są liczone z interpolacją liniową między sąsiednimi wartościami, tak samo w aplikacji (\kol{Statistics.cs}) i w skryptach analizy. Wyjątkiem są liczby elementów zamku (wież, donżonów, mostów, schodów), ich wysokości i różnorodność map. Te wielkości podawane są jako średnie na mapę, bo mediany liczb całkowitych słabo rozróżniają warianty. Podpisy tabel zaznaczają, które wartości są średnimi, a które sumami.
+
+Różnice czasu generacji między dwoma wariantami sprawdzono dwustronnym testem Manna-Whitneya \cite{MannWhitney1947}, który nie zakłada rozkładu normalnego. Przyjęto poziom istotności 0,05. Test zastosowano do par rozwiązywaczy w E1 (\cref{tab:e1-mann-whitney}).
+
+Związek miar restrykcyjności z odsetkiem udanych prób opisuje współczynnik korelacji rang Spearmana \cite{Spearman1904}
+\begin{equation}
+  \rho = \mathrm{corr}\bigl(\mathrm{rg}(X), \mathrm{rg}(Y)\bigr) ,
+  \label{eq:spearman}
+\end{equation}
+czyli współczynnik korelacji liniowej rang $\mathrm{rg}$ obu wielkości. Wartości równe dostają średnią rangę. Korelację policzono na wariantach (8 w E8 i 81 w E9), także bez wariantów z mapami zdegenerowanymi.
+
+Tempo wzrostu czasu i pamięci wraz z liczbą komórek $n$ opisuje nachylenie $a$ prostej
+\begin{equation}
+  \log t = a \log n + b ,
+  \label{eq:nachylenie}
+\end{equation}
+dopasowanej metodą najmniejszych kwadratów do median czasu albo pamięci $t$. Wartość $a \approx 1$ oznacza wzrost liniowy, a $a \approx 2$ kwadratowy. Nachylenie czasu dopasowano tylko do trzech mniejszych siatek, bo przy \siatka{80}{80}{13} część map nie powstaje, a mediana zależy wtedy od limitów, a nie od samego rozwiązywacza.
+
+Pliki wyników opracowano w języku Python z bibliotekami pandas, SciPy i matplotlib (skrypty \kol{Analiza/analiza_wynikow.py} i \kol{Analiza/wykresy.py}). Skrypt wykresów liczy wartości na wariant tak samo jak aplikacja i porównuje je z plikiem \kol{_warianty.csv}. W zebranych wynikach nie wykazał żadnych różnic.

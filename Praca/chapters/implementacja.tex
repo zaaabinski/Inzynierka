@@ -1,0 +1,37 @@
+% !TEX root = ../main.tex
+%% Rozdział 4. Plan: 8–10 stron.
+
+\chapter{Implementacja}
+\label{chap:implementacja}
+
+\CoTuMaByc{Krótki wstęp: najważniejsze elementy implementacji, kolejność jak w \cref{chap:projekt}.}
+
+\section{Rozwiązywacze}
+\label{sec:rozwiazywacze}
+
+\CoTuMaByc{Wspólna pętla generacji i cztery sposoby przechowywania możliwości: listy, liczniki wsparcia, maski bitowe, maski bitowe w kompilatorze Burst \cite{UnityBurst}. Wybór komórki i powtarzalne losowanie z ziarna. Klocki: \kol{alg:petla}, \kol{alg:wybor-komorki}, \kol{lst:ziarno}, \kol{lst:kompilacja-regul}.}
+
+\section{Propagacja ograniczeń}
+\label{sec:propagacja}
+
+\CoTuMaByc{Związek z \ac{ac3} i \ac{ac4} (\cref{sec:csp}); kolejka komórek, liczniki wsparcia w \kol{SupportCountSolver}, propagacja na maskach bitowych i jej wersja w Burst. Klocki: \kol{alg:propagacja-listy}, \kol{alg:propagacja-liczniki}, \kol{alg:propagacja-maski}, \kol{lst:maska-propagacja}, \kol{lst:zadanie-burst}.}
+
+\section{Obsługa sprzeczności}
+\label{sec:sprzecznosc}
+
+\CoTuMaByc{Start od nowa, cofanie decyzji i reset lokalny sześcianu 5\,$\times$\,5\,$\times$\,5 komórek. Klocki: \kol{alg:cofanie}, \kol{alg:reset-lokalny}.}
+
+\section{Scalanie siatek i atlas materiałów}
+\label{sec:scalanie}
+
+\CoTuMaByc{Scalanie mapy w fragmenty o boku 16 komórek (zadania \cite{UnityJobSystem}, \cite{UnityAllocateWritableMeshData,UnitySetVertexBufferParams}). Atlas jako paleta materiałów: modele nie mają tekstur, więc \kol{MaterialAtlas} to tekstura z jednym tekselem na materiał; nazwać to wprost i uzasadnić. Klocki: \kol{alg:scalanie}, \kol{lst:uklad-wierzcholka}, \kol{lst:zadanie-fragmentu}, \kol{lst:zapis-siatek}, \kol{lst:atlas}, \kol{lst:zwalnianie-pamieci}, \kol{fig:atlas}.}
+
+\section{Znaczniki dla okna Profiler}
+\label{sec:profiler}
+
+\CoTuMaByc{Znaczniki etapów generacji \cite{UnityProfilerMarker} i ich podgląd w oknie Unity Profiler \cite{UnityProfiler}; wersja Development tylko do analizy, liczby do tabel zbiera kod (\cref{sec:procedura}). Klocki: \kol{tab:znaczniki}, \kol{lst:znaczniki}, \kol{fig:profiler}.}
+
+\section{Testy automatyczne}
+\label{sec:testy}
+
+\CoTuMaByc{Testy w Unity Test Framework \cite{UnityTestFramework}: co sprawdzają i ile ich jest. Klocek: \kol{tab:testy}.}
