@@ -22,7 +22,7 @@
     Test Framework & 1.8.0 & testy automatyczne \\
     C\# & 9.0 & język generatora \\
     IL2CPP (Unity) & 6000.6.2f1 & zamiana kodu C\# na C++ w aplikacji \\
-    Microsoft C/C++ (MSVC) & \wyn & kompilacja kodu C++ z IL2CPP \\
+    Microsoft C/C++ (MSVC) & 19.51 & kompilacja kodu C++ z IL2CPP \\
     Visual Studio Code & 1.143.1 & edytor kodu \\
     Blender & 5.1.2 & modele i eksport FBX \\
     Python & 3.12.10 & prototyp reguł i analiza wyników \\
@@ -224,15 +224,15 @@
     \toprule
     Nr & Co się zmienia & Warianty & Ziarna & Ustawienia stałe \\
     \midrule
-    E1 & rozwiązywacz (4) & 4 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{LevelFirst}, \kol{Restart} \\
-    E2 & heurystyka (5) & 5 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Bitset}, \kol{Restart} \\
-    E3 & reakcja (3) $\times$ rozmiar (4) & 12 & \wyn & \kol{Pelny}, \kol{Bitset}, \kol{LevelFirst}, limit 600 s na mapę \\
-    E4 & rozwiązywacz (4) $\times$ rozmiar (4) & 16 & \wyn & \kol{Pelny}, \kol{LevelFirst}, \kol{Restart}, limit 600 s na mapę \\
-    E5 & zestaw (4) & 4 & \wyn & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
-    E6 & \kol{Pelny} i warianty reguł (4) & 5 & \wyn & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
-    E7 & rysowanie (4) $\times$ łączenie (3) $\times$ rozmiar (4) & 48 & \wyn & \kol{Pelny}, \kol{Burst}, \kol{LevelFirst}, \kol{Backtrack}, rozgrzewka 3, 120 klatek na mapę, tylko w oknie \\
-    E8 & 4 zestawy i 4 warianty reguł & 8 & \wyn & \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart} \\
-    E9 & zaostrzenie reguł (9 poziomów) $\times$ 10 losowań & 81 & \wyn & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart}, rozgrzewka 1, limit 30 prób \\
+    E1 & rozwiązywacz (4) & 4 & 100 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{LevelFirst}, \kol{Restart} \\
+    E2 & heurystyka (5) & 5 & 100 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Bitset}, \kol{Restart} \\
+    E3 & reakcja (3) $\times$ rozmiar (4) & 12 & 100 & \kol{Pelny}, \kol{Bitset}, \kol{LevelFirst}, limit 600 s na mapę \\
+    E4 & rozwiązywacz (4) $\times$ rozmiar (4) & 16 & 100 & \kol{Pelny}, \kol{LevelFirst}, \kol{Restart}, limit 600 s na mapę \\
+    E5 & zestaw (4) & 4 & 100 & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E6 & \kol{Pelny} i warianty reguł (4) & 5 & 100 & \siatka{20}{20}{13}, \kol{Bitset}, \kol{LevelFirst}, \kol{Restart} \\
+    E7 & rysowanie (4) $\times$ łączenie (3) $\times$ rozmiar (4) & 48 & 30 & \kol{Pelny}, \kol{Burst}, \kol{LevelFirst}, \kol{Backtrack}, rozgrzewka 3, 120 klatek na mapę, tylko w oknie \\
+    E8 & 4 zestawy i 4 warianty reguł & 8 & 100 & \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart} \\
+    E9 & zaostrzenie reguł (9 poziomów) $\times$ 10 losowań & 81 & 20 & \kol{Pelny}, \siatka{20}{20}{13}, \kol{Burst}, \kol{LevelFirst}, \kol{Restart}, rozgrzewka 1, limit 30 prób \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -248,10 +248,11 @@
     \toprule
     Element & Wartość \\
     \midrule
-    Procesor & \wyn \\
-    Pamięć operacyjna & \wyn \\
-    Karta graficzna & \wyn \\
-    System operacyjny & \wyn \\
+    Procesor & AMD Ryzen 7 9800X3D, 8 rdzeni \\
+    Pamięć operacyjna & 32 GB DDR5-6000, CL30 \\
+    Karta graficzna & ASUS PRIME GeForce RTX 5080 OC Edition, 16 GB GDDR7 \\
+    Sterownik karty graficznej & NVIDIA 610.88 \\
+    System operacyjny & Windows 11 Pro \\
     Rozdzielczość okna & 1600\,$\times$\,900 pikseli, aplikacja w oknie \\
     Wersja Unity & 6000.6.2f1 \\
     Rodzaj aplikacji & IL2CPP, wersja Release \\

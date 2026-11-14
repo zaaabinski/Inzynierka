@@ -5,7 +5,7 @@ Komplet eksperymentów E1–E9, wykonanych na zbudowanej aplikacji `Zamek.exe`.
 | | |
 |---|---|
 | Backend skryptowy | **IL2CPP** (Release), wszystkie serie |
-| Maszyna | ZAAABINSKIPC, i7-12700K, 64 GB RAM |
+| Maszyna | ZAAABINSKIPC, AMD Ryzen 7 9800X3D, 32 GB RAM, ASUS PRIME GeForce RTX 5080 OC Edition 16 GB |
 | Unity | 6000.6.2f1 |
 | Daty serii | E1–E6, E8, E9: 10.11.2026 · E7: 12.11.2026 |
 | Zmierzone uruchomienia | **8460** |
