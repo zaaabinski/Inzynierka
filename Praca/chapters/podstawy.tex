@@ -1,0 +1,42 @@
+% !TEX root = ../main.tex
+%% Rozdział 2. Plan: 8–10 stron. Wszystkie pozycje literatury z opisu tematu muszą mieć tu \cite.
+
+\chapter{Podstawy teoretyczne}
+\label{chap:podstawy}
+
+\CoTuMaByc{Krótki wstęp: co zawiera rozdział i po co jest potrzebny w dalszej części pracy.}
+
+\section{Proceduralna generacja treści}
+\label{sec:pcg}
+
+\CoTuMaByc{Definicja \ac{pcg}, zastosowania w grach, podział metod. Źródła: \cite{ShortAdams2017,Togelius2011,Hendrikx2013,Shaker2016}.}
+
+\section{Algorytm Wave Function Collapse}
+\label{sec:wfc}
+
+\CoTuMaByc{Pochodzenie algorytmu \cite{Gumin2016}, synteza modeli \cite{Merrell2007,MerrellManocha2011}, model kafelkowy, pętla: wybór komórki, kolaps, propagacja. Powtarzalność: to samo ziarno daje tę samą mapę. Przegląd zastosowań: \cite{KarthSmith2017,KarthSmith2022}. Klocki: \kol{eq:entropia}, \kol{alg:petla}.}
+
+\section{WFC jako problem spełniania ograniczeń}
+\label{sec:csp}
+
+\CoTuMaByc{\ac{csp} \cite{RussellNorvig2020}. Spójność łukowa: \ac{ac3} z funkcją REVISE \cite{Mackworth1977}, złożoność $O(ed^3)$; \ac{ac4} z licznikami wsparcia \cite{MohrHenderson1986}; przegląd \cite{Bessiere2006}. Propagacja w implementacji Gumina jest bliższa \ac{ac4}. Propagacja na maskach bitowych.}
+
+\section{Heurystyki wyboru komórki}
+\label{sec:heurystyki-teoria}
+
+\CoTuMaByc{\ac{mrv} jako zasada fail-first \cite{HaralickElliott1980}; entropia Shannona \cite{Shannon1948} jako \ac{mrv} z wagami (przy równych wagach ten sam wybór); kolejność wynikająca ze struktury zadania. Praca porównuje heurystyki, a nie dodaje \ac{mrv}.}
+
+\section{Reakcja na sprzeczność}
+\label{sec:sprzecznosc-teoria}
+
+\CoTuMaByc{Start od nowa, cofanie decyzji (backtracking) \cite{RussellNorvig2020}, modyfikacja w blokach \cite{MerrellManocha2011} jako podstawa resetu lokalnego.}
+
+\section{Rysowanie dużych scen w czasie rzeczywistym}
+\label{sec:rysowanie-teoria}
+
+\CoTuMaByc{Potok graficzny i koszt wywołań rysowania \cite{AkenineMoller2018}; łączenie wywołań: \cite{UnitySRPBatcher,UnityStaticBatching}, instancjonowanie \cite{UnityGPUInstancing}, GPU Resident Drawer \cite{UnityResidentDrawer}. Konsolidacja geometrii i atlas tekstur (warunek jednego materiału). Wada scalania: gorsze odrzucanie niewidocznych obiektów (occlusion culling); podział na fragmenty je zachowuje (jedno zdanie). Wzorce z \cite{Nystrom2014}, np. pyłek (Flyweight) przy instancjonowaniu.}
+
+\section{Podobne rozwiązania}
+\label{sec:podobne}
+
+\CoTuMaByc{Wymaganie Wydziału: umiejscowienie pracy na tle podobnych rozwiązań. Klocek: \kol{tab:podobne} \cite{Gumin2016,DeBroglie,Marian42WFC}.}

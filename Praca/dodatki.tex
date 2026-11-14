@@ -21,6 +21,12 @@
 \floatplacement{table}{htbp}
 \floatplacement{figure}{htbp}
 
+% Lista skrótów: pakiet acro bierze układ ze spisu rysunków, gdzie kolumna numeru ma 2,3 em,
+% a skrót IL2CPP jest szerszy. Szersza kolumna tylko dla listy skrótów (acro ładuje acronyms.tex później).
+\makeatletter
+\AtBeginDocument{\renewcommand*{\l@acro}{\@dottedtocline{1}{1.5em}{4em}}}
+\makeatother
+
 %%% 2. POLSKIE NAZWY DLA \cref (settings.tex definiuje tylko rysunki, tabele, równania, listingi, algorytmy)
 \crefname{chapter}{rozdz.}{rozdz.}
 \Crefname{chapter}{Rozdział}{Rozdziały}

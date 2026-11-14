@@ -1,0 +1,62 @@
+% !TEX root = ../main.tex
+%% Rozdział 6. Plan: 12–15 stron. Tabele są wypełnione w klocki/wyniki.tex, wykresy leżą w figures.
+
+\chapter{Wyniki i dyskusja}
+\label{chap:wyniki}
+
+\CoTuMaByc{Krótki wstęp: kolejność jak pytania badawcze w \cref{sec:pytania}. Każdy podrozdział: co zmierzono, najważniejsze liczby, interpretacja.}
+
+\section{Rozwiązywacze}
+\label{sec:wyniki-e1}
+
+\CoTuMaByc{E1. Klocki: \kol{tab:e1}, \kol{tab:e1-mann-whitney}, \kol{fig:e1-czas}.}
+
+\section{Skuteczność propagacji}
+\label{sec:wyniki-propagacja}
+
+\CoTuMaByc{Ok. 99,7\% wykreślonych możliwości usuwa propagacja: bezpośrednia odpowiedź na punkt opisu tematu o redukcji przestrzeni stanów. Klocki: \kol{tab:propagacja-rozwiazywacze}, \kol{tab:propagacja-rozmiary}, \kol{fig:propagacja-udzial}.}
+
+\section{Kolejność wyboru komórek}
+\label{sec:wyniki-e2}
+
+\CoTuMaByc{E2. \ac{mrv} i entropia najgorsze (2--4\% udanych prób), wygrywa \kol{LevelFirst}; wyjaśnić dlaczego (hipoteza do sprawdzenia w podglądzie krok po kroku: ustalają wyższe piętra przed parterem). Klocki: \kol{tab:e2}, \kol{tab:e2-budowa}, \kol{tab:roznorodnosc}, \kol{fig:e2-czas-udane}, \kol{fig:e2-zamki}.}
+
+\section{Reakcja na sprzeczność}
+\label{sec:wyniki-e3}
+
+\CoTuMaByc{E3. Przy \siatka{80}{80}{13} start od nowa nie mieści się w limicie 1000 prób, a cofanie i reset lokalny dają 100/100. Klocki: \kol{tab:e3-czas}, \kol{tab:e3-powodzenie}, \kol{fig:e3-czas-rozmiar}.}
+
+\section{Skalowanie}
+\label{sec:wyniki-e4}
+
+\CoTuMaByc{E4. Klocki: \kol{tab:e4-czas}, \kol{tab:e4-pamiec}, \kol{fig:e4-czas-log}, \kol{fig:e4-pamiec-log}.}
+
+\section{Liczba kafelków}
+\label{sec:wyniki-e5}
+
+\CoTuMaByc{E5. Klocki: \kol{tab:e5}, \kol{fig:e5-czas-stany}.}
+
+\section{Reguły i wagi}
+\label{sec:wyniki-e6}
+
+\CoTuMaByc{E6. Klocki: \kol{tab:e6}, \kol{fig:e6-udane-zabudowa}.}
+
+\section{Rysowanie mapy}
+\label{sec:wyniki-e7}
+
+\CoTuMaByc{E7. Podać oba porównania wywołań rysowania: względem \kol{GameObjects} z SRP Batcherem 51\,603 $\rightarrow$ 67 (770 razy mniej) i względem \kol{GameObjects} z GPU Resident Drawer 211 $\rightarrow$ 67 (około 3 razy mniej). Główny wniosek: scalenie z atlasem uniezależnia czas klatki od ustawień potoku. Klocki: \kol{tab:e7-wywolania}, \kol{tab:e7-obiekty}, \kol{tab:e7-setpass}, \kol{tab:e7-klatka}, \kol{tab:e7-najdluzsza}, \kol{tab:e7-stawianie}, \kol{tab:e7-pamiec}, \kol{tab:e7-siatki}, \kol{fig:e7-wywolania}, \kol{fig:e7-klatka}.}
+
+\section{Restrykcyjność reguł}
+\label{sec:wyniki-e8-e9}
+
+\CoTuMaByc{E8 i E9. Klocki: \kol{tab:e8}, \kol{tab:korelacje}, \kol{tab:e9}, \kol{fig:e8-restrykcyjnosc}, \kol{fig:e9-zaostrzanie}.}
+
+\section{Poprawność map}
+\label{sec:wyniki-poprawnosc}
+
+\CoTuMaByc{Klocek: \kol{tab:naruszenia}.}
+
+\section{Dyskusja}
+\label{sec:dyskusja}
+
+\CoTuMaByc{Odpowiedzi na pytania badawcze po kolei, ograniczenia badań (jeden komputer, jeden zestaw kafelków), zagrożenia dla trafności.}
